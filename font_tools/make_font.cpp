@@ -405,7 +405,7 @@ int main ( int argc, char **argv )
 
 	double ww = 0;	// maximal width
 
-	for(chr=' '; chr<0xFFFFFF; chr++ )
+	for(chr=' '; chr<0xFFFF; chr++ )
 //	for ( chr=' '; chr<0xFFFFFF; chr++ )	// NOTE: Look as FTGL don't support more than 0xFFFF symbols
 	{
 		// print one character string
