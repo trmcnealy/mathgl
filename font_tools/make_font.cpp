@@ -442,14 +442,12 @@ int main ( int argc, char **argv )
 	fprintf ( fout, "# font %s has %lu glyphs \n", filename, TriangleFont.size() );
 	double d1 = 500./fontT->Ascender(), d2 = -500./fontT->Descender(), d3 = 1000./ww, dx;
 	dx = d1<d2 ? d1:d2;		dx = dx<d3 ? dx:d3;
-	unsigned i, *posl, *post, len, cur, numg=TriangleFont.size();
-	size_t *ids;
+	unsigned i, *posl, *post, cur, numg=TriangleFont.size();
+	size_t *ids, len;
 	short *wdt, *numl, *numt, *buf, *xx, *yy;
 
 	for ( chr =0, len=0; chr < numg; chr++ )
-		len += TriangleFont[chr].contourpoints.size();
-	for ( chr =0; chr < numg; chr++ )
-		len += 3*TriangleFont[chr].points.size();
+		len += 4*TriangleFont[chr].triangles.size() + TriangleFont[chr].contourpoints.size() + 3*TriangleFont[chr].points.size();
 
 	ids = new size_t [numg];
 	wdt = new short[numg];
@@ -458,7 +456,7 @@ int main ( int argc, char **argv )
 	numt= new short[numg];
 	post= new unsigned[numg];
 	buf = new short[2*len];
-	printf("Allocated %d\n",2*len);
+	printf("Allocated %lu\n",2*len);
 	// prepare wire font data
 	for ( chr =0, cur=0; chr < numg; chr++ )
 	{
@@ -521,7 +519,7 @@ int main ( int argc, char **argv )
 				if( tt[ii]==tt[ii+4] && tt[ii+1]==tt[ii+5] )	continue;
 				if( tt[ii+2]==tt[ii+4] && tt[ii+3]==tt[ii+5] )	continue;
 			}
-			memcpy(tt+ll,tt+ii,6*sizeof(int));	last++;
+			memcpy(tt+ll,tt+ii,6*sizeof(short));	last++;
 		}
 		// write glyph to tables
 		numt[chr] = last;	post[chr] = cur;
