@@ -533,7 +533,7 @@ void MGL_EXPORT mgl_area_xyz(HMGL gr, HCDT x, HCDT y, HCDT z, const char *pen, c
 		for(size_t i=1;i<np;i++)
 		{
 			long iq = kq+2*i;
-			if(gr->SamePnt(iq,iq-2) || gr->SamePnt(iq+1,iq-1))	continue;
+// 			if(gr->SamePnt(iq,iq-2) || gr->SamePnt(iq+1,iq-1))	continue;
 			if(wire)
 			{
 				gr->line_plot(iq,iq+1);	gr->line_plot(iq-1,iq+1);
@@ -583,7 +583,7 @@ void MGL_EXPORT mgl_area_xy(HMGL gr, HCDT x, HCDT y, const char *pen, const char
 		for(size_t i=1;i<np;i++)
 		{
 			long iq = kq+2*i;
-			if(gr->SamePnt(iq,iq-2) || gr->SamePnt(iq+1,iq-1))	continue;
+// 			if(gr->SamePnt(iq,iq-2) || gr->SamePnt(iq+1,iq-1))	continue;
 			if(wire)
 			{
 				gr->line_plot(iq,iq+1);	gr->line_plot(iq-1,iq+1);
@@ -737,7 +737,7 @@ void MGL_EXPORT mgl_region_3d(HMGL gr, HCDT x1, HCDT y1, HCDT z1, HCDT x2, HCDT 
 		for(size_t i=1;i<np;i++)
 		{
 			long iq = kq+2*i;
-			if(gr->SamePnt(iq,iq-2) || gr->SamePnt(iq+1,iq-1))	continue;
+// 			if(gr->SamePnt(iq,iq-2) || gr->SamePnt(iq+1,iq-1))	continue;
 			if(wire)
 			{
 				gr->line_plot(iq,iq+1);	gr->line_plot(iq-1,iq+1);
@@ -790,7 +790,7 @@ void MGL_EXPORT mgl_region_xy(HMGL gr, HCDT x, HCDT y1, HCDT y2, const char *pen
 		for(size_t i=1;i<np;i++)
 		{
 			long iq = kq+2*i;
-			if(gr->SamePnt(iq,iq-2) || gr->SamePnt(iq+1,iq-1))	continue;
+// 			if(gr->SamePnt(iq,iq-2) || gr->SamePnt(iq+1,iq-1))	continue;
 			if(wire)
 			{
 				gr->line_plot(iq,iq+1);

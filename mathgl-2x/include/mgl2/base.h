@@ -117,16 +117,24 @@ public:
 /// Structure for transformation matrix
 struct MGL_EXPORT mglMatrix
 {
-	float x,y,z,pf;
-	float b[9];
+	float x,y,z,pf;	// shifting values
+	float b[9];		// matrix coefficients
+	float ib[9];	// inverse matrix coefficients
 	bool norot;	// flag to disable pnts rotation
 	mglMatrix()	{	clear();	}
-	mglMatrix(const mglMatrix &aa) : x(aa.x),y(aa.y),z(aa.z),pf(aa.pf),norot(aa.norot) 	{	memcpy(b,aa.b,9*sizeof(float));	}
+	mglMatrix(const mglMatrix &aa) : x(aa.x),y(aa.y),z(aa.z),pf(aa.pf),norot(aa.norot)
+	{	memcpy(b,aa.b,9*sizeof(float));	memcpy(ib,aa.ib,9*sizeof(float));	}
 	void Rotate(mreal tetz,mreal tetx,mreal tety);
 	void RotateN(mreal Tet,mreal x,mreal y,mreal z);
-	inline void clear()	{	x=y=z=pf=0;	memset(b,0,9*sizeof(float));	b[0]=b[4]=b[8]=1;	norot=false;	}
+	inline void clear()
+	{	x=y=z=pf=0;	memset(b,0,9*sizeof(float));	memset(ib,0,9*sizeof(float));	b[0]=b[4]=b[8]=ib[0]=ib[4]=ib[8]=1;	norot=false;	}
 	inline const mglMatrix &operator=(const mglMatrix &a)
-	{	x=a.x;	y=a.y;	z=a.z;	pf=a.pf;	memcpy(b,a.b,9*sizeof(float));	norot=false;	return a;	}
+	{	x=a.x;	y=a.y;	z=a.z;	pf=a.pf;	memcpy(b,a.b,9*sizeof(float));	memcpy(ib,a.ib,9*sizeof(float));	norot=false;	return a;	}
+	inline void invert()
+	{	float d = b[0]*(b[4]*b[8]-b[5]*b[7])-b[1]*(b[3]*b[8]-b[5]*b[6])+b[2]*(b[3]*b[7]-b[4]*b[6]);	// determinant
+		ib[0] = (b[4]*b[8]-b[5]*b[7])/d;	ib[1] = (b[2]*b[7]-b[1]*b[8])/d;	ib[2] = (b[1]*b[5]-b[2]*b[4])/d;
+		ib[3] = (b[5]*b[6]-b[3]*b[8])/d;	ib[4] = (b[0]*b[8]-b[2]*b[6])/d;	ib[5] = (b[2]*b[3]-b[0]*b[5])/d;
+		ib[6] = (b[3]*b[7]-b[4]*b[6])/d;	ib[7] = (b[1]*b[6]-b[0]*b[7])/d;	ib[8] = (b[0]*b[4]-b[1]*b[3])/d;	}
 };
 inline bool operator==(const mglMatrix &a, const mglMatrix &b)
 {	return ((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y)+(a.z-b.z)*(a.z-b.z)+(a.pf-b.pf)*(a.pf-b.pf)==0)&&!memcmp(b.b,a.b,9*sizeof(float));}

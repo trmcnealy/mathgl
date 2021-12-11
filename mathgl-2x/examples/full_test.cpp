@@ -77,7 +77,8 @@ void test(mglGraph *gr)
 //	gr->Box();	gr->WritePNG("1.png");	return;
 	
 	mglParse par;
-	par.Execute(gr,"colorbar;size -2;crange 0 1;value 90");
+	par.Execute(gr,"plot [0,-1,nan,0.1,0.5,1.1] 'o'");	//fplot 'x'");	//"box:fplot '2*sin(pi*x)' 'ko'");
+// 	par.Execute(gr,"colorbar;size -2;crange 0 1;value 90");
 // 	par.Execute(gr,"fplot 'x';legend 'рус':legend");
 //	par.Execute(gr,"fsurf 'x*y':rasterize:clf:fplot 'sin(x)' '2q':axis");
 //	par.Execute(gr,"xrange 0 1:new x 10 '3*x':echo x\nnew a 10 'value([0,1,-1],3*x)':echo a\nnew b 10 'spline([0,1,-1],3*x)':echo b");

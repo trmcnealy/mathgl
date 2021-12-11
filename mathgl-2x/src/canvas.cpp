@@ -342,6 +342,46 @@ mreal mglCanvas::GetOrgZ(char dir, bool inv) const
 	return res;
 }
 //-----------------------------------------------------------------------------
+long mglCanvas::AddPairBnd(const mglPnt &q1, const mglPnt &q2)
+{
+	mglPnt q;
+	mreal p1[3],p2[3], x,y,z;
+	const float *b = B.ib, f = 1/(2*B.pf);
+	x = (q1.xx-B.x)/f;	y = (q1.yy-B.y)/f;	z = (q1.zz-B.z)/f;
+	p1[0] = x*b[0] + y*b[1] + z*b[2];
+	p1[1] = x*b[3] + y*b[4] + z*b[5];
+	p1[2] = x*b[6] + y*b[7] + z*b[8];
+	x = (q2.xx-B.x)/f;	y = (q2.yy-B.y)/f;	z = (q2.zz-B.z)/f;
+	p2[0] = x*b[0] + y*b[1] + z*b[2] - p1[0];
+	p2[1] = x*b[3] + y*b[4] + z*b[5] - p1[1];
+	p2[2] = x*b[6] + y*b[7] + z*b[8] - p1[2];
+	mreal s=1,ss;
+	const mreal eps = 1e-5;
+	ss = -(1+p1[0])/p2[0];	if(ss>eps && ss<s)	s=ss;
+	ss = (1-p1[0])/p2[0];	if(ss>eps && ss<s)	s=ss;
+	ss = -(1+p1[1])/p2[1];	if(ss>eps && ss<s)	s=ss;
+	ss = (1-p1[1])/p2[1];	if(ss>eps && ss<s)	s=ss;
+	ss = -(1+p1[2])/p2[2];	if(ss>eps && ss<s)	s=ss;
+	ss = (1-p1[2])/p2[2];	if(ss>eps && ss<s)	s=ss;
+	if(s==1)	return -1;
+	q.x = q.xx = q1.xx + s*(q2.xx-q1.xx);
+	q.y = q.yy = q1.yy + s*(q2.yy-q1.yy);
+	q.z = q.zz = q1.zz + s*(q2.zz-q1.zz);
+	q.u = q1.u + s*(q2.u-q1.u);
+	q.v = q1.v + s*(q2.v-q1.v);
+	q.w = q1.w + s*(q2.w-q1.w);
+	q.r = q1.r + s*(q2.r-q1.r);
+	q.g = q1.g + s*(q2.g-q1.g);
+	q.b = q1.b + s*(q2.b-q1.b);
+	q.a = q1.a + s*(q2.a-q1.a);
+	q.c = q1.c + s*(q2.c-q1.c);
+	q.ta = q1.ta + s*(q2.ta-q1.ta);
+	long k;
+#pragma omp critical(pnt)
+	{k=Pnt.size();	MGL_PUSH(Pnt,q,mutexPnt);}
+	return k;
+}
+//-----------------------------------------------------------------------------
 //	Put primitives
 //-----------------------------------------------------------------------------
 #define MGL_MARK_PLOT	if(Quality&MGL_DRAW_LMEM)	\
@@ -371,9 +411,16 @@ void mglCanvas::mark_plot(long p, char type, mreal size)
 							a.n1 = p1;	a.n2 = p2;	a.w = pw;	a.angl=0;	add_prim(a);	}
 void mglCanvas::line_plot(long p1, long p2)
 {
-	if(PDef==0)	return;
-	if(SamePnt(p1,p2))	return;
+	if(PDef==0 || p1<0 || p2<0)	return;	// nothing to do
 	if(p1>p2)	{	long kk=p1;	p1=p2;	p2=kk;	}	// rearrange start/end for proper dashing
+	const mglPnt &q1=Pnt[p1], &q2=Pnt[p2];
+	if(q1.x==q2.x && q1.y==q2.y)	return;	// the same points
+	if(mgl_isnan(q1.x) && mgl_isnum(q2.x))
+		p1 = AddPairBnd(q2,q1);
+	if(mgl_isnum(q1.x) && mgl_isnan(q2.x))
+		p2 = AddPairBnd(q1,q2);
+	if(p1<0 || p2<0 || mgl_isnan(Pnt[p1].x) || mgl_isnan(Pnt[p2].x))	return;
+
 	long pp1=p1,pp2=p2;
 	mreal pw = fabs(PenWidth)*sqrt(font_factor/400), d=0;
 	if(TernAxis&12) for(int i=0;i<4;i++)
@@ -515,6 +562,7 @@ pthread_mutex_lock(&mutexPtx);
 		q.u = q.v = NAN;	q.a=q.ta=1;
 		memset(Bt.b,0,9*sizeof(float));
 		Bt.b[0] = Bt.b[4] = Bt.b[8] = fscl;
+		Bt.ib[0] = Bt.ib[4] = Bt.ib[8] = 1./fscl;
 		float opf = Bt.pf;
 		Bt.RotateN(ftet,0,0,1);	Bt.pf = Bt.norot?1.55:opf;
 		if(strchr(font,'@'))	// draw box around text
@@ -635,6 +683,7 @@ void mglCanvas::InPlot(mreal x1,mreal x2,mreal y1,mreal y2, const char *st)
 	B.b[0] = Width*(x2-x1);	B.b[4] = Height*(y2-y1);
 	B.b[8] = sqrt(B.b[0]*B.b[4]);
 	B.z = (1.f-B.b[8]/(2*Depth))*Depth;
+	B.invert();
 	B1=B;	font_factor = B.b[0] < B.b[4] ? B.b[0] : B.b[4];
 
 	mglBlock p;	p.AmbBr = AmbBr;	p.DifBr = DifBr;	p.B = B;
@@ -656,6 +705,7 @@ void mglCanvas::InPlot(mglMatrix &M,mreal x1,mreal x2,mreal y1,mreal y2, bool re
 		M.b[0] = B1.b[0]*(x2-x1);	M.b[4] = B1.b[4]*(y2-y1);
 		M.b[8] = sqrt(M.b[0]*M.b[4]);
 		M.z = B1.z + (1.f-M.b[8]/(2*Depth))*B1.b[8];
+		M.invert();
 	}
 	else
 	{
@@ -664,7 +714,7 @@ void mglCanvas::InPlot(mglMatrix &M,mreal x1,mreal x2,mreal y1,mreal y2, bool re
 		M.b[0] = Width*(x2-x1);	M.b[4] = Height*(y2-y1);
 		M.b[8] = sqrt(M.b[0]*M.b[4]);
 		M.z = (1.f-M.b[8]/(2*Depth))*Depth;
-		B1=M;
+		M.invert();	B1=M;
 	}
 	inW=M.b[0];	inH=M.b[4];	ZMin=1;
 	inX=Width*x1;	inY=Height*y1;
@@ -730,6 +780,7 @@ void mglMatrix::Rotate(mreal tetz,mreal tetx,mreal tety)
 	b[6] = R[0]*O[6] + R[3]*O[7] + R[6]*O[8];
 	b[7] = R[1]*O[6] + R[4]*O[7] + R[7]*O[8];
 	b[8] = R[2]*O[6] + R[5]*O[7] + R[8]*O[8];
+	invert();
 }
 //-----------------------------------------------------------------------------
 void mglCanvas::RotateN(mreal Tet,mreal x,mreal y,mreal z)
@@ -761,6 +812,7 @@ void mglMatrix::RotateN(mreal Tet,mreal vx,mreal vy,mreal vz)
 	b[6] = T[0]*R[6] + T[3]*R[7] + T[6]*R[8];
 	b[7] = T[1]*R[6] + T[4]*R[7] + T[7]*R[8];
 	b[8] = T[2]*R[6] + T[5]*R[7] + T[8]*R[8];
+	invert();
 }
 //-----------------------------------------------------------------------------
 void mglCanvas::View(mreal tetx,mreal tetz,mreal tety)
@@ -773,6 +825,7 @@ void mglCanvas::Zoom(mreal x1, mreal y1, mreal x2, mreal y2)
 	x1=2*x1-1;	x2=2*x2-1;	y1=2*y1-1;	y2=2*y2-1;
 	Bp.b[0]=2/fabs(x2-x1);	Bp.b[4]=2/fabs(y2-y1);
 	Bp.x=(x1+x2)/fabs(x2-x1);Bp.y=(y1+y2)/fabs(y2-y1);
+	Bp.invert();
 }
 //-----------------------------------------------------------------------------
 int mglCanvas::GetSplId(long x,long y) const
@@ -808,6 +861,7 @@ void mglCanvas::Aspect(mreal Ax,mreal Ay,mreal Az)
 	B.b[0] *= Ax;	B.b[3] *= Ax;	B.b[6] *= Ax;
 	B.b[1] *= Ay;	B.b[4] *= Ay;	B.b[7] *= Ay;
 	B.b[2] *= Az;	B.b[5] *= Az;	B.b[8] *= Az;
+	B.invert();
 	size_t n = Sub.size();	if(n>0)	Sub[n-1].B = B;
 }
 //-----------------------------------------------------------------------------
@@ -817,6 +871,7 @@ void mglCanvas::Shear(mreal Sx,mreal Sy)
 	const float R[6]={B.b[0],B.b[1],B.b[2],B.b[3],B.b[4],B.b[5]};
 	B.b[0] = (R[0]+Sx*R[3])/Fx;	B.b[1] = (R[1]+Sx*R[4])/Fx;	B.b[2] = (R[2]+Sx*R[5])/Fx;
 	B.b[3] = (R[3]+Sy*R[0])/Fy;	B.b[4] = (R[4]+Sy*R[1])/Fy;	B.b[5] = (R[5]+Sy*R[2])/Fy;
+	B.invert();
 	size_t n = Sub.size();	if(n>0)	Sub[n-1].B = B;
 }
 //-----------------------------------------------------------------------------

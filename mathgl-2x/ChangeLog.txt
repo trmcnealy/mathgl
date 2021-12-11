@@ -1,3 +1,7 @@
+2.5.1 Released ??? 2022
+
+* Add accurate line segment cutting at axis border crossing.
+
 2.5 Released 8 December 2021
 
 * Add 'keep' for keeping the data phase/sign or value along line i and j in given direction

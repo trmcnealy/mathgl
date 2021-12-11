@@ -512,6 +512,7 @@ bool mglBase::AddPntQ(mglPnt &q, const mglMatrix *mat, mglPoint p, mreal c, mglP
 	// scl&4 -- disable NAN for normales if no light
 	// scl&8 -- bypass palette for enabling alpha
 	// scl&16 -- put points inside axis range
+	q.xx = NAN;
 	if(mgl_isnan(c) || mgl_isnan(a))	{	q.x=NAN;	return false;	}
 	bool norefr = mgl_isnan(n.x) && mgl_isnan(n.y) && !mgl_isnan(n.z), res=true;
 	if(scl>0)
@@ -519,7 +520,7 @@ bool mglBase::AddPntQ(mglPnt &q, const mglMatrix *mat, mglPoint p, mreal c, mglP
 		if(scl&16)	mgl_coor_box(this, p);
 		res = ScalePoint(mat,p,n,!(scl&2));
 	}
-	if(mgl_isnan(p.x))	{	q.x=NAN;	return false;	}
+// 	if(mgl_isnan(p.x))	{	q.x=NAN;	return false;	}
 	a = (a>=0 && a<=1) ? a : AlphaDef;
 	c = (c>=0) ? c:CDef;
 
@@ -536,6 +537,8 @@ bool mglBase::AddPntQ(mglPnt &q, const mglMatrix *mat, mglPoint p, mreal c, mglP
 		q.x=q.xx=p.x;	q.y=q.yy=p.y;	q.z=q.zz=p.z;
 		q.c=c;	q.ta=a;	q.u=n.x;	q.v=n.y;	q.w=n.z;
 	}
+	if(!(scl&2) && !res)	q.x = NAN;
+
 	long ci=long(c);
 	if(ci<0 || ci>=(long)Txt.size())	ci=0;	// NOTE never should be here!!!
 	const mglTexture &txt=Txt[ci];
@@ -780,8 +783,9 @@ bool mglBase::ScalePoint(const mglMatrix *, mglPoint &p, mglPoint &n, bool use_n
 	}
 	if(fabs(x)>MGL_FEPSILON || fabs(y)>MGL_FEPSILON || fabs(z)>MGL_FEPSILON)	res = false;
 
-	if(!res && use_nan)	x = NAN;	// extra sign that point shouldn't be plotted
-	else if(limit_pm1)
+// 	if(!res && use_nan)	x = NAN;	// extra sign that point shouldn't be plotted
+// 	else if(limit_pm1)
+	if(limit_pm1 && (res || !use_nan))
 	{
 		x = x>1?1:(x<-1?-1:x);
 		y = y>1?1:(y<-1?-1:y);
@@ -1781,20 +1785,15 @@ void mglBase::ClearPrmInd()
 void mglBase::curve_plot(size_t num, size_t k0, size_t step)
 {
 	// exclude straight-line parts
-	if(get(MGL_FULL_CURV))	for(size_t i=0;i+1<num;i++)
+	if(get(MGL_FULL_CURV) || num<3 || B.b[8]<2)	for(size_t i=0;i+1<num;i++)
 		line_plot(k0+i*step,k0+(i+1)*step);
-	else	for(size_t i=0;i+1<num;i++)
+	else	for(size_t i=0;i+1<num;i++)	// NOTE: this work well for 2D output only!!!
 	{
-		const mglPoint p1(GetPntP(k0+i*step)), ps(GetPntP(k0+(i+1)*step));
-		if(mgl_isnan(p1.x) || mgl_isnan(ps.x))	continue;
+		const mglPoint p1(GetPntP(k0+i*step));	//, ps(GetPntP(k0+(i+1)*step));
+// 		if(mgl_isnan(p1.x) || mgl_isnan(ps.x))	continue;
 		const mglColor c1(GetPntC(k0+i*step));
 		// remove duplicates
-		for(;i+1<num;i++)
-		{
-			size_t ii = k0+(i+1)*step;
-			const mglPoint pp(GetPntP(ii));
-			if(p1!=pp || mgl_isnan(pp.x))	break;
-		}
+		while(p1.same(GetPntP(k0+(i+1)*step)))	i++;
 		if(i+1>=num)	break;
 
 		float t1=-100, t2=100;		// XY angle boundary
@@ -1804,22 +1803,21 @@ void mglBase::curve_plot(size_t num, size_t k0, size_t step)
 		for(k=i+1;k<num;k++)
 		{
 			const mglPoint p2(GetPntP(k0+k*step)-p1);
-			if(mgl_isnan(p2.x))	break;
-			float dd=p2.x*p2.x+p2.y*p2.y+p2.z*p2.z;
-			if(dd<=0)	continue;	// the same point (micro-loop? :) )
-			float t = atan2(p2.y,p2.x), d = atan(0.03/dd);
-			if(t1 > t+d || t2 < t-d)	break;		// too curved
-			const mglColor c2(GetPntC(k0+(k-1)*step)-c1);	dd = c2.NormS();
-			if(dd>0)	// color are different
+			float dd=1/sqrt(p2.x*p2.x+p2.y*p2.y), t = atan2(p2.y,p2.x);
+			if(t>t1 && t<t2)
+			{	t1 = t1<t-dd?t-dd:t1;	t2 = t2>t+dd?t+dd:t2;	}	// new range
+			else	break;
+			const mglColor c2(GetPntC(k0+(k-1)*step)-c1);	dd = sqrt(c2.NormS());
+			if(dd>0)	// colors are different
 			{
-				float rg = atan2(c2.r,c2.g), gb = atan2(c2.g,c2.b);	d = atan(1e-4/dd);
-				if(rg1 > rg+d || rg2 < rg-d || gb1 > gb+d || gb2 < gb-d)	break;		// too curved
+				float rg = atan2(c2.r,c2.g), gb = atan2(c2.g,c2.b),	d = 1e-2/dd;
+				if(rg1 > rg || rg2 < rg || gb1 > gb || gb2 < gb)	break;		// too curved
 				rg1 = rg1<rg-d?rg-d:rg1;	rg2 = rg2>rg+d?rg+d:rg2;	// new RG range
 				gb1 = gb1<gb-d?gb-d:gb1;	gb2 = gb2>gb+d?gb+d:gb2;	// new GB range
 			}
-			t1 = t1<t-d?t-d:t1;	t2 = t2>t+d?t+d:t2;	// new range
 		}
-		k--;	line_plot(k0+i*step,k0+k*step);	i = k-1;
+		if(k>i+1)	k--;
+		line_plot(k0+i*step,k0+k*step);	i = k-1;
 	}
 }
 //-----------------------------------------------------------------------------

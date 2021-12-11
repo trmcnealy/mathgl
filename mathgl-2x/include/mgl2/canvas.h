@@ -418,6 +418,8 @@ protected:
 	bool ScalePoint(const mglMatrix *M, mglPoint &p, mglPoint &n, bool use_nan=true) const;
 	void LightScale(const mglMatrix *M);	///< Additionally scale positions of light sources
 	void LightScale(const mglMatrix *M, mglLight &l);	///< Additionally scale positions of light
+	/// Add crossing point at the boundary and straight line between q1, q2. At this q1 should be inside.
+	long AddPairBnd(const mglPnt &q1, const mglPnt &q2);
 	/// Push drawing data (for frames only). NOTE: can be VERY large
 	long PushDrwDat();
 	/// Retur color for primitive depending lighting

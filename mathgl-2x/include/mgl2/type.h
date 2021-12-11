@@ -46,6 +46,8 @@ struct MGL_EXPORT mglPoint
 	inline mreal val(int i) const	{	mreal dat[4]={x,y,z,c};	return dat[i];	}
 	inline mreal norm() const		{	return sqrt(x*x+y*y+z*z);	}
 	inline void Normalize()	{	mreal v=norm();	x/=v;	y/=v;	z/=v;	}
+	inline bool same(const mglPoint &a) const	// NOTE: exact comparison is used here
+	{	return (a.x-x)*(a.x-x)+(a.y-y)*(a.y-y)==0;	}
 
 	inline const mglPoint &operator=(const mglPoint &p)
 	{	x=p.x;	y=p.y;	z=p.z;	c=p.c;	return p;	}
