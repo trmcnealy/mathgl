@@ -79,7 +79,7 @@ TextPanel::TextPanel(QWidget *parent) : QWidget(parent)
 	edit->setLineWrapMode(QTextEdit::NoWrap);
 	setCompleter(mglCompleter);
 	QFontMetrics metrics(edit->currentFont());
-	edit->setTabStopWidth(4 * metrics.width(' '));
+	edit->setTabStopDistance(4 * metrics.horizontalAdvance(' '));
 
 	menu = new QMenu(_("Edit"),this);
 	QBoxLayout *v = new QVBoxLayout(this);
@@ -262,7 +262,7 @@ void TextPanel::setEditorFont(QFont *f)
 	QFont d(defFontFamily, defFontSize);
 	edit->setFont(f ? *f : d);
 	QFontMetrics metrics(f ? *f : d);
-	edit->setTabStopWidth(4 * metrics.width(' '));
+	edit->setTabStopDistance(4*metrics.horizontalAdvance(' '));
 }
 //-----------------------------------------------------------------------------
 QString TextPanel::selection()

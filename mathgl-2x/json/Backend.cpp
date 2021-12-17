@@ -57,7 +57,7 @@ QString Backend::coor(const QString& xy, const QString& text) const
 	int y = (int)xy.section(" ",1,1).toDouble();
 	mglPoint p = gr.CalcXYZ(x,y);
 	QString res;
-	res.sprintf("x = %g, y = %g, z = %g for point (%d, %d)\n", p.x, p.y, p.z, x,y);
+	res.asprintf("x = %g, y = %g, z = %g for point (%d, %d)\n", p.x, p.y, p.z, x,y);
 	qDebug() << res+"\nask"+xy;
 	return res+"\nask"+xy;
 }

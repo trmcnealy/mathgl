@@ -72,7 +72,8 @@ MGL_EXPORT char *mgl_fgetstr(FILE *fp)
 		if(mgl_fgetstr_script && s[0]=='#' && s[1]=='M' && s[2]=='G' && s[3]=='L' && s[4]==' ')
 		{
 			std::string buf("mglconv -n ");	buf+= s+5;
-			system(buf.c_str());
+			if(system(buf.c_str())==-1)
+				mgl_info("Couldn't execute '%s'",buf.c_str());
 		}
 		//		strlwr(s);
 	} while(!feof(fp) && (s[0]==0 || s[0]=='%' || s[0]=='#'));

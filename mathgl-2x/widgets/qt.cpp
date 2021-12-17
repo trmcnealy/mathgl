@@ -665,14 +665,14 @@ void QMathGL::wheelEvent(QWheelEvent *ev)
 	if(!enableWheel)	{	ev->ignore();	return;	}
 	if(rotate)	// zoom
 	{
-		mreal d,c,f=exp(0.001*ev->delta())/2;
+		mreal d,c,f=exp(0.001*ev->angleDelta().y())/2;
 		d = (y2-y1)*f;	c = (y2+y1)/2;	y1 = c-d;	y2 = c+d;
 		d = (x2-x1)*f;	c = (x2+x1)/2;	x1 = c-d;	x2 = c+d;
 		refresh();	ev->accept();
 	}
 	else 		// zoom axis
 	{
-		mreal d,c,f=exp(0.001*ev->delta())/2;
+		mreal d,c,f=exp(0.001*ev->angleDelta().y())/2;
 		d = (ay2-ay1)*f;	c = (ay2+ay1)/2;	ay1 = c-d;	ay2 = c+d;
 		d = (ax2-ax1)*f;	c = (ax2+ax1)/2;	ax1 = c-d;	ax2 = c+d;
 		mgl_zoom_axis(gr,ax1,ay1,0,0,ax2,ay2,0,0);
@@ -882,7 +882,7 @@ void QMathGL::aboutQt()	{	QMessageBox::aboutQt(this, _("About Qt"));	}
 void QMathGL::print()
 {
 	QPrinter *printer = new QPrinter;
-	printer->setOrientation(getRatio()>1 ? QPrinter::Landscape : QPrinter::Portrait);
+	printer->setPageOrientation(getRatio()>1 ? QPageLayout::Landscape : QPageLayout::Portrait);
 	QPrintDialog printDlg(printer, this);
 	if (printDlg.exec() == QDialog::Accepted)
 	{

@@ -32,6 +32,14 @@ class QSpinBox;
 class QTimer;
 class mglCanvas;
 class mglTask;
+#if MGL_FORCE_QT4
+#define angleDelta()	delta()
+#define setPageOrientation(a)	setOrientation(a)
+#define horizontalAdvance(a)	width(a)
+#define asprintf(a)	sprintf(a)
+#define setTabStopWidth(a)	setTabStopDistance(a)	
+#define QPageLayout	QPrinter
+#endif
 //-----------------------------------------------------------------------------
 /// Class is Qt widget which display MathGL graphics
 class MGL_EXPORT QMathGL : public QWidget

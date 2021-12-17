@@ -421,7 +421,7 @@ bool parse_file(const char *fname, FILE *out)
 		{
 			do
 			{
-				fgets(buf, 1024, fp);
+				if(!fgets(buf, 1024, fp))	break;
 			}
 			while ( !strstr(buf, "*/") );
 			continue;

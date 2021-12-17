@@ -21,6 +21,7 @@
 #include <QMenu>
 #include <QPrinter>
 #include <QTimer>
+#include <QElapsedTimer>
 #include <QScrollArea>
 #include <QPainter>
 #include <QPrintDialog>
@@ -103,7 +104,7 @@ void PlotPanel::execute()
 	raisePanel(this);
 	objId = subId = -1;
 	emit clearWarn();
-	QTime t;	t.start();
+	QElapsedTimer t;	t.start();
 	mgl_set_facenum(mgl->getGraph(),0);
 	draw->text=textMGL->toPlainText();
 	draw->line=curPos;
@@ -123,7 +124,7 @@ void PlotPanel::pressF9()
 	parser.AddParam(0,str);
 	delete []str;
 
-	QTime t;	t.start();
+	QElapsedTimer t;	t.start();
 	parser.RestoreOnce();
 	draw->text=textMGL->toPlainText();
 	draw->line=curPos;	mgl->update();
