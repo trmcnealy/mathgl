@@ -445,35 +445,346 @@ void mglCanvas::line_plot(long p1, long p2)
 							trig_draw(Pnt[p1],Pnt[p2],Pnt[p3],true,&d);	}\
 						else{	mglPrim a(2);	a.n1 = p1;	a.n2 = p2;	a.n3 = p3;	\
 							a.m=mask;	a.angl=MaskAn;	a.w = pw;	add_prim(a);}
-void mglCanvas::trig_plot(long p1, long p2, long p3)
-{
-	if(SamePnt(p1,p2) || SamePnt(p1,p3))	return;
-	long pp1=p1,pp2=p2,pp3=p3;
-	mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
-	if(TernAxis&12) for(int i=0;i<4;i++)
-	{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
-		p3 = ProjScale(i, pp3);	if(p1>=0&&p2>=0&&p3>=0)	{MGL_TRIG_PLOT}	}
-	else	{	MGL_TRIG_PLOT	}
-}
-//-----------------------------------------------------------------------------
 #define MGL_QUAD_PLOT	if(Quality&MGL_DRAW_LMEM)	\
 						{	mglDrawReg d;	d.set(this,dr_x,dr_y,dr_p);	d.PenWidth=pw;	\
 							quad_draw(Pnt[p1],Pnt[p2],Pnt[p3],Pnt[p4],&d);	}\
 						else{	mglPrim a(3);	a.n1 = p1;	a.n2 = p2;	a.n3 = p3;	a.n4 = p4;	\
 							a.m=mask;	a.angl=MaskAn;	a.w = pw;	add_prim(a);	}
+void mglCanvas::trig_plot(long p1, long p2, long p3)
+{
+	if(p1<0 || p2<0 || p3<0)	return;	// nothing to do
+	const mglPnt &q1=Pnt[p1], &q2=Pnt[p2], &q3=Pnt[p3];
+	if(mgl_isnum(q1.x) && mgl_isnum(q2.x) && mgl_isnum(q3.x))	// valid trig
+	{
+		long pp1=p1,pp2=p2,pp3=p3;
+		mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+		if(TernAxis&12) for(int i=0;i<4;i++)
+		{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+			p3 = ProjScale(i, pp3);	if(p1>=0&&p2>=0&&p3>=0)	{MGL_TRIG_PLOT}	}
+		else	{	MGL_TRIG_PLOT	}
+	}
+	else if(mgl_isnan(q1.x) && mgl_isnum(q2.x) && mgl_isnum(q3.x))
+	{
+		p1 = AddPairBnd(q2,q1);
+		long p4 = AddPairBnd(q3,q1);
+		if(p1>=0 && p4>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p4].x))	// valid quad
+		{
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;	// TODO check order!!!
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+	}
+	else if(mgl_isnan(q2.x) && mgl_isnum(q1.x) && mgl_isnum(q3.x))
+	{
+		p2 = AddPairBnd(q1,q2);
+		long p4 = AddPairBnd(q3,q2);
+		if(p2>=0 && p4>=0 && mgl_isnum(Pnt[p2].x) && mgl_isnum(Pnt[p4].x))	// valid quad
+		{
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;	// TODO check order!!!
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+	}
+	else if(mgl_isnan(q3.x) && mgl_isnum(q2.x) && mgl_isnum(q1.x))
+	{
+		p3 = AddPairBnd(q2,q3);
+		long p4 = AddPairBnd(q1,q3);
+		if(p3>=0 && p4>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p4].x))	// valid quad
+		{
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;	// TODO check order!!!
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+	}
+}
+//-----------------------------------------------------------------------------
 void mglCanvas::quad_plot(long p1, long p2, long p3, long p4)
 {
-	if(SamePnt(p1,p2))	{	trig_plot(p4,p2,p3);	return;	}
-	if(SamePnt(p2,p4))	{	trig_plot(p1,p4,p3);	return;	}
-	if(SamePnt(p1,p3))	{	trig_plot(p1,p2,p4);	return;	}
-	if(SamePnt(p3,p4))	{	trig_plot(p1,p2,p3);	return;	}
-	long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
-	mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
-	if(TernAxis&12) for(int i=0;i<4;i++)
-	{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
-		p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
-		if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
-	else	{	MGL_QUAD_PLOT	}
+	if(p1<0)	{	trig_plot(p4,p2,p3);	return;	}
+	if(p2<0)	{	trig_plot(p1,p4,p3);	return;	}
+	if(p3<0)	{	trig_plot(p1,p2,p4);	return;	}
+	if(p4<0)	{	trig_plot(p1,p2,p3);	return;	}
+	const mglPnt &q1=Pnt[p1], &q2=Pnt[p2], &q3=Pnt[p3], &q4=Pnt[p4];
+	if(mgl_isnum(q1.x) && mgl_isnum(q2.x) && mgl_isnum(q3.x) && mgl_isnum(q4.x))	// valid quad
+	{
+		long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
+		mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+		if(TernAxis&12) for(int i=0;i<4;i++)
+		{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+			p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+			if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+		else	{	MGL_QUAD_PLOT	}
+	}
+	else if(mgl_isnan(q1.x) && mgl_isnum(q2.x) && mgl_isnum(q3.x) && mgl_isnum(q4.x))
+	{
+		p1 = p4;	// valid trig
+		long pp1=p1,pp2=p2,pp3=p3;
+		mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+		if(TernAxis&12) for(int i=0;i<4;i++)
+		{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+			p3 = ProjScale(i, pp3);	if(p1>=0&&p2>=0&&p3>=0)	{MGL_TRIG_PLOT}	}
+		else	{	MGL_TRIG_PLOT	}
+		p1 = AddPairBnd(q2,q1);	p4=p3;
+		p3 = AddPairBnd(q3,q1);
+		if(p1>=0 && p3>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p3].x))	// valid quad
+		{	long pp = p2;	p2=p3;	p3=pp;
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+	}
+	else if(mgl_isnum(q1.x) && mgl_isnan(q2.x) && mgl_isnum(q3.x) && mgl_isnum(q4.x))
+	{
+		p2 = p4;	// valid trig
+		long pp1=p1,pp2=p2,pp3=p3;
+		mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+		if(TernAxis&12) for(int i=0;i<4;i++)
+		{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+			p3 = ProjScale(i, pp3);	if(p1>=0&&p2>=0&&p3>=0)	{MGL_TRIG_PLOT}	}
+		else	{	MGL_TRIG_PLOT	}
+		p2 = AddPairBnd(q1,q2);	p3=p4;
+		p4 = AddPairBnd(q4,q2);
+		if(p2>=0 && p4>=0 && mgl_isnum(Pnt[p2].x) && mgl_isnum(Pnt[p4].x))	// valid quad
+		{	long pp = p2;	p2=p3;	p3=pp;
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+	}
+	else if(mgl_isnum(q1.x) && mgl_isnum(q2.x) && mgl_isnan(q3.x) && mgl_isnum(q4.x))
+	{
+		p3 = p4;	// valid trig
+		long pp1=p1,pp2=p2,pp3=p3;
+		mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+		if(TernAxis&12) for(int i=0;i<4;i++)
+		{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+			p3 = ProjScale(i, pp3);	if(p1>=0&&p2>=0&&p3>=0)	{MGL_TRIG_PLOT}	}
+		else	{	MGL_TRIG_PLOT	}
+		p3 = AddPairBnd(q1,q3);	p2=p4;
+		p4 = AddPairBnd(q4,q3);
+		if(p4>=0 && p3>=0 && mgl_isnum(Pnt[p4].x) && mgl_isnum(Pnt[p3].x))	// valid quad
+		{	long pp = p2;	p2=p3;	p3=pp;
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+	}
+	else if(mgl_isnum(q1.x) && mgl_isnum(q2.x) && mgl_isnum(q3.x) && mgl_isnan(q4.x))
+	{
+		long pp1=p1,pp2=p2,pp3=p3;	// valid trig
+		mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+		if(TernAxis&12) for(int i=0;i<4;i++)
+		{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+			p3 = ProjScale(i, pp3);	if(p1>=0&&p2>=0&&p3>=0)	{MGL_TRIG_PLOT}	}
+		else	{	MGL_TRIG_PLOT	}
+		p1 = AddPairBnd(q2,q4);	p4=p3;
+		p3 = AddPairBnd(q3,q4);
+		if(p3>=0 && p1>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p1].x))	// valid quad
+		{	long pp = p2;	p2=p3;	p3=pp;
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+	}
+	else if(mgl_isnum(q1.x) && mgl_isnum(q2.x) && mgl_isnan(q3.x) && mgl_isnan(q4.x))
+	{
+		p3 = AddPairBnd(q1,q3);
+		p4 = AddPairBnd(q2,q4);
+		if(p3>=0 && p4>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p4].x))	// valid quad
+		{
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+	}
+	else if(mgl_isnum(q1.x) && mgl_isnan(q2.x) && mgl_isnum(q3.x) && mgl_isnan(q4.x))
+	{
+		p2 = AddPairBnd(q1,q2);
+		p4 = AddPairBnd(q3,q4);
+		if(p2>=0 && p4>=0 && mgl_isnum(Pnt[p2].x) && mgl_isnum(Pnt[p4].x))	// valid quad
+		{
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+	}
+	else if(mgl_isnan(q1.x) && mgl_isnum(q2.x) && mgl_isnan(q3.x) && mgl_isnum(q4.x))
+	{
+		p1 = AddPairBnd(q2,q1);
+		p3 = AddPairBnd(q4,q3);
+		if(p3>=0 && p1>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p1].x))	// valid quad
+		{
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+	}
+	else if(mgl_isnan(q1.x) && mgl_isnan(q2.x) && mgl_isnum(q3.x) && mgl_isnum(q4.x))
+	{
+		p1 = AddPairBnd(q3,q1);
+		p2 = AddPairBnd(q4,q2);
+		if(p1>=0 && p2>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p2].x))	// valid quad
+		{
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+	}
+	else if(mgl_isnum(q1.x) && mgl_isnan(q2.x) && mgl_isnan(q3.x) && mgl_isnan(q4.x))
+	{
+		p2 = AddPairBnd(q1,q2);
+		p3 = AddPairBnd(q1,q3);
+		if(p3>=0 && p2>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p2].x))	// valid trig
+		{
+			long pp1=p1,pp2=p2,pp3=p3;	// valid trig
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	if(p1>=0&&p2>=0&&p3>=0)	{MGL_TRIG_PLOT}	}
+			else	{	MGL_TRIG_PLOT	}
+		}
+	}
+	else if(mgl_isnan(q1.x) && mgl_isnum(q2.x) && mgl_isnan(q3.x) && mgl_isnan(q4.x))
+	{
+		p1 = AddPairBnd(q2,q1);
+		p3 = AddPairBnd(q2,q4);
+		if(p3>=0 && p1>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p1].x))	// valid trig
+		{
+			long pp1=p1,pp2=p2,pp3=p3;	// valid trig
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	if(p1>=0&&p2>=0&&p3>=0)	{MGL_TRIG_PLOT}	}
+			else	{	MGL_TRIG_PLOT	}
+		}
+	}
+	else if(mgl_isnan(q1.x) && mgl_isnan(q2.x) && mgl_isnum(q3.x) && mgl_isnan(q4.x))
+	{
+		p1 = AddPairBnd(q3,q1);
+		p2 = AddPairBnd(q3,q4);
+		if(p1>=0 && p2>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p2].x))	// valid trig
+		{
+			long pp1=p1,pp2=p2,pp3=p3;	// valid trig
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	if(p1>=0&&p2>=0&&p3>=0)	{MGL_TRIG_PLOT}	}
+			else	{	MGL_TRIG_PLOT	}
+		}
+	}
+	else if(mgl_isnan(q1.x) && mgl_isnan(q2.x) && mgl_isnan(q3.x) && mgl_isnum(q4.x))
+	{
+		p1 = p4;
+		p2 = AddPairBnd(q4,q2);
+		p3 = AddPairBnd(q4,q3);
+		if(p3>=0 && p2>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p2].x))	// valid trig
+		{
+			long pp1=p1,pp2=p2,pp3=p3;	// valid trig
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	if(p1>=0&&p2>=0&&p3>=0)	{MGL_TRIG_PLOT}	}
+			else	{	MGL_TRIG_PLOT	}
+		}
+	}
+	else if(mgl_isnan(q1.x) && mgl_isnum(q2.x) && mgl_isnum(q3.x) && mgl_isnan(q4.x))
+	{
+		p1 = AddPairBnd(q3,q1);	p4=p2;
+		p2 = AddPairBnd(q2,q1);
+		if(p1>=0 && p2>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p2].x))	// valid quad
+		{
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+		p1 = AddPairBnd(q3,q4);
+		p2 = AddPairBnd(q2,q4);
+		if(p1>=0 && p2>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p2].x))	// valid quad
+		{
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+	}
+	else if(mgl_isnum(q1.x) && mgl_isnan(q2.x) && mgl_isnan(q3.x) && mgl_isnum(q4.x))
+	{
+		p2 = AddPairBnd(q1,q2);	p3=p4;
+		p4 = AddPairBnd(q4,q2);
+		if(p4>=0 && p2>=0 && mgl_isnum(Pnt[p4].x) && mgl_isnum(Pnt[p2].x))	// valid quad
+		{
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+		p2 = AddPairBnd(q1,q3);
+		p4 = AddPairBnd(q4,q3);
+		if(p4>=0 && p2>=0 && mgl_isnum(Pnt[p4].x) && mgl_isnum(Pnt[p2].x))	// valid quad
+		{
+			long pp1=p1,pp2=p2,pp3=p3,pp4=p4;
+			mreal pw = fabs(PenWidth)*sqrt(font_factor/400);
+			if(TernAxis&12) for(int i=0;i<4;i++)
+			{	p1 = ProjScale(i, pp1);	p2 = ProjScale(i, pp2);
+				p3 = ProjScale(i, pp3);	p4 = ProjScale(i, pp4);
+				if(p1>=0&&p2>=0&&p3>=0&&p4>=0)	{MGL_QUAD_PLOT}	}
+			else	{	MGL_QUAD_PLOT	}
+		}
+	}
 }
 //-----------------------------------------------------------------------------
 mreal mglCanvas::text_plot(long p,const wchar_t *text,const char *font,mreal size,mreal sh,mreal col,bool rot)
