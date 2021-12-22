@@ -1,7 +1,7 @@
 include(GenerateExportHeader)
 
 if(MSVC)
-	add_definitions(-DMGL_LIB_MSVC)
+	add_definitions(-DMGL_LIB_MSVC -DMGL_WIDGETS_DLL)
 endif(MSVC)
 
 if(MGL_HAVE_FLTK)

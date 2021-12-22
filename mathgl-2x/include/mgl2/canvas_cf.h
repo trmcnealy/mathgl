@@ -162,8 +162,8 @@ void MGL_EXPORT mgl_labelw(HMGL gr, char dir, const wchar_t *text, double pos, c
  *	 ‘+’ for printing ‘+’ for positive ticks;
  *	 ‘-’ for printing usual ‘-’ in ticks labels;
  *	 ‘0123456789’ for precision at printing ticks labels.*/
-void MGL_EXPORT mgl_colorbar(HMGL gr, const char *sch);
-void MGL_EXPORT mgl_colorbar_(uintptr_t *gr, const char *sch,int);
+void MGL_EXPORT mgl_colorbar(HMGL gr, const char *sch, const char *opt);
+void MGL_EXPORT mgl_colorbar_(uintptr_t *gr, const char *sch, const char *opt,int,int);
 /// Draw colorbar at manual position
 /** Parameter \a sch may contain:
  *	 ‘<>^_’ for positioning at left, at right, at top or at bottom correspondingly;
@@ -177,8 +177,8 @@ void MGL_EXPORT mgl_colorbar_(uintptr_t *gr, const char *sch,int);
  *	 ‘+’ for printing ‘+’ for positive ticks;
  *	 ‘-’ for printing usual ‘-’ in ticks labels;
  *	 ‘0123456789’ for precision at printing ticks labels.*/
-void MGL_EXPORT mgl_colorbar_ext(HMGL gr, const char *sch, double x, double y, double w, double h);
-void MGL_EXPORT mgl_colorbar_ext_(uintptr_t *gr, const char *sch, mreal *x, mreal *y, mreal *w, mreal *h,int);
+void MGL_EXPORT mgl_colorbar_ext(HMGL gr, const char *sch, double x, double y, double w, double h, const char *opt);
+void MGL_EXPORT mgl_colorbar_ext_(uintptr_t *gr, const char *sch, mreal *x, mreal *y, mreal *w, mreal *h, const char *opt, int,int);
 /// Draw colorbar with manual colors at edge of axis
 /** Parameter \a sch may contain:
  *	 ‘<>^_’ for positioning at left, at right, at top or at bottom correspondingly;
@@ -192,8 +192,8 @@ void MGL_EXPORT mgl_colorbar_ext_(uintptr_t *gr, const char *sch, mreal *x, mrea
  *	 ‘+’ for printing ‘+’ for positive ticks;
  *	 ‘-’ for printing usual ‘-’ in ticks labels;
  *	 ‘0123456789’ for precision at printing ticks labels.*/
-void MGL_EXPORT mgl_colorbar_val(HMGL gr, HCDT dat, const char *sch);
-void MGL_EXPORT mgl_colorbar_val_(uintptr_t *gr, uintptr_t *dat, const char *sch,int);
+void MGL_EXPORT mgl_colorbar_val(HMGL gr, HCDT dat, const char *sch, const char *opt);
+void MGL_EXPORT mgl_colorbar_val_(uintptr_t *gr, uintptr_t *dat, const char *sch, const char *opt,int,int);
 /// Draw colorbar with manual colors at manual position
 /** Parameter \a sch may contain:
  *	 ‘<>^_’ for positioning at left, at right, at top or at bottom correspondingly;
@@ -207,8 +207,8 @@ void MGL_EXPORT mgl_colorbar_val_(uintptr_t *gr, uintptr_t *dat, const char *sch
  *	 ‘+’ for printing ‘+’ for positive ticks;
  *	 ‘-’ for printing usual ‘-’ in ticks labels;
  *	 ‘0123456789’ for precision at printing ticks labels.*/
-void MGL_EXPORT mgl_colorbar_val_ext(HMGL gr, HCDT dat, const char *sch,double x, double y, double w, double h);
-void MGL_EXPORT mgl_colorbar_val_ext_(uintptr_t *gr, uintptr_t *dat, const char *sch, mreal *x, mreal *y, mreal *w, mreal *h,int);
+void MGL_EXPORT mgl_colorbar_val_ext(HMGL gr, HCDT dat, const char *sch,double x, double y, double w, double h, const char *opt);
+void MGL_EXPORT mgl_colorbar_val_ext_(uintptr_t *gr, uintptr_t *dat, const char *sch, mreal *x, mreal *y, mreal *w, mreal *h, const char *opt, int,int);
 
 /// Add string to legend
 void MGL_EXPORT mgl_add_legend(HMGL gr, const char *text,const char *style);
@@ -437,7 +437,9 @@ void MGL_EXPORT mgl_clf_nfog(HMGL gr);
 void MGL_EXPORT mgl_clf_nfog_(uintptr_t *gr);
 /// Clear up the frame and fill background by specified color
 void MGL_EXPORT mgl_clf_rgb(HMGL gr, double r, double g, double b);
+void MGL_EXPORT mgl_clf_rgba(HMGL gr, double r, double g, double b, double a);
 void MGL_EXPORT mgl_clf_rgb_(uintptr_t *gr, mreal *r, mreal *g, mreal *b);
+void MGL_EXPORT mgl_clf_rgba_(uintptr_t *gr, mreal *r, mreal *g, mreal *b, mreal *a);
 /// Clear up the frame and fill background by specified color
 void MGL_EXPORT mgl_clf_chr(HMGL gr, char col);
 void MGL_EXPORT mgl_clf_chr_(uintptr_t *gr, const char *col, int);
@@ -456,8 +458,8 @@ void MGL_EXPORT mgl_load_background_(uintptr_t *gr, const char *fname, mreal *al
 void MGL_EXPORT mgl_load_background_ext(HMGL gr, const char *fname, const char *how, double alpha);
 void MGL_EXPORT mgl_load_background_ext_(uintptr_t *gr, const char *fname, const char *how, mreal *alpha, int,int);
 /// Fill background by specified color. Colors r,g,b should be in range [0,1].
-void MGL_EXPORT mgl_fill_background(HMGL gr, double r, double g, double b);
-void MGL_EXPORT mgl_fill_background_(uintptr_t *gr, double *r, double *g, double *b);
+void MGL_EXPORT mgl_fill_background(HMGL gr, double r, double g, double b, double a);
+void MGL_EXPORT mgl_fill_background_(uintptr_t *gr, double *r, double *g, double *b, double *a);
 
 /// Put further plotting in m-th cell of nx*ny grid of the image.
 /** String \a style may contain:

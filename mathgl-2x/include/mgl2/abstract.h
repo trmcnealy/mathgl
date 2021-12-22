@@ -235,7 +235,11 @@ struct MGL_EXPORT mglNum
 };
 //-----------------------------------------------------------------------------
 /// List of user-defined data arrays
+#ifndef MGL_WIDGETS_DLL
 MGL_EXPORT extern std::vector<mglDataA*> mglDataList;
+#else
+__declspec(dllimport) extern std::vector<mglDataA*> mglDataList;
+#endif
 //-----------------------------------------------------------------------------
 /// Abstract class for data array
 class MGL_EXPORT mglDataA

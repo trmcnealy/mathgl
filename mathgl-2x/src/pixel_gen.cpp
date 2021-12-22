@@ -527,6 +527,7 @@ void mglCanvas::Clf(mglColor Back)
 	ClearFrame();
 	if((Flag&3)==2)	Back.Set(0,0,0,0);
 	if(Back!=NC)	FillBackground(Back);
+	else	FillBackground(mglColor(1,1,1,0));
 }
 //-----------------------------------------------------------------------------
 void mglCanvas::Clf(const char *col)
@@ -547,8 +548,8 @@ bool MGL_NO_EXPORT mgl_read_image(unsigned char **g, int &w, int &h, const char 
 void mglCanvas::LoadBackground(const char *fname, double alpha)
 {
 	mgl_read_image(&GB,Width,Height,fname);
-	if(alpha<1 && alpha>0)
-#pragma omp parallel for
+	if(alpha<=1 && alpha>=0)
+#pragma omp parallel for simd
 		for(long i=0;i<Width*Height;i++)	GB[4*i+3] = (unsigned char)(GB[4*i+3]*alpha);
 }
 //-----------------------------------------------------------------------------
@@ -558,8 +559,8 @@ void mglCanvas::LoadBackground(const char *fname, const char *how, double alpha)
 	unsigned char *g=NULL;
 	mgl_read_image(&g,w,h,fname);
 	if(!g)	return;
-	if(alpha<1 && alpha>0)
-#pragma omp parallel for
+	if(alpha<=1 && alpha>=0)
+#pragma omp parallel for simd
 		for(long i=0;i<w*h;i++)	g[4*i+3] = (unsigned char)(g[4*i+3]*alpha);
 	int ww=Width, hh=Height, ii=0, jj=0;	// canvas range
 	if(mglchr(how,'a'))	{	ww=inW;	hh=inH;	ii=inX;	jj=Height-inY-inH;	}
@@ -623,7 +624,7 @@ void mglCanvas::FillBackground(const mglColor &cc)
 {
 	BDef[0] = (unsigned char)(255*cc.r);	BDef[1] = (unsigned char)(255*cc.g);
 	BDef[2] = (unsigned char)(255*cc.b);	BDef[3] = (unsigned char)(255*cc.a);
-#pragma omp parallel for
+#pragma omp parallel for simd
 	for(long i=0;i<Width*Height;i++)
 	{	unsigned char *b=GB+4*i;
 		b[0]=BDef[0];	b[1]=BDef[1];	b[2]=BDef[2];	b[3]=BDef[3];	}

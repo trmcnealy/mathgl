@@ -247,7 +247,7 @@ GifFileType *gif;*/
 	SetPlotFactor(0);	Sub.clear();
 	InPlot(0,1,0,1,false);	clr(MGL_FULL_CURV);
 	SetTickLen(0);	SetCut(true);
-	AdjustTicks("xyzc",true);	Clf('w');
+	AdjustTicks("xyzc",true);	Clf();	//Clf('w');
 
 	for(int i=0;i<10;i++)	{	AddLight(i, mglPoint(0,0,1));	Light(i,false);	}
 	Light(0,true);	Light(false);	SetDifLight(true);

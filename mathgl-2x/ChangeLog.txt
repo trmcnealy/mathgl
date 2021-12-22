@@ -1,6 +1,12 @@
-2.5.1 Released ??? 2022
+8.0 Released 1 January 2022
 
 * Add accurate line segment cutting at axis border crossing.
+* Restore back transparent background by default. You can set background non-transparent by using 'clf' or 'background' functions.
+* Compatibility changes for Qt5.15 and MSVC.
+INCOMPATIBLE:
+* Change colorbar C-functions by adding last argument for options.
+* Add alpha-value in fill_background().
+* Disable Qt4 interface by default.
 
 2.5 Released 8 December 2021
 

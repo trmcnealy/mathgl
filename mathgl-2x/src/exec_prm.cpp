@@ -70,6 +70,7 @@ int static mgls_background(mglGraph *gr, long , mglArg *a, const char *k, const 
 	else if(!strcmp(k,"ss"))	gr->LoadBackground(a[0].s.s,a[1].s.s);
 	else if(!strcmp(k,"ssn"))	gr->LoadBackground(a[0].s.s,a[1].s.s,a[2].v);
 	else if(!strcmp(k,"nnn"))	gr->FillBackground(mglColor(a[0].v,a[1].v,a[2].v));
+	else if(!strcmp(k,"nnnn"))	gr->FillBackground(mglColor(a[0].v,a[1].v,a[2].v,a[3].v));
 	else res = 1;
 	return res;
 }
@@ -108,20 +109,20 @@ int static mgls_circle(mglGraph *gr, long , mglArg *a, const char *k, const char
 //-----------------------------------------------------------------------------
 int static mgls_colorbar(mglGraph *gr, long , mglArg *a, const char *k, const char *opt)
 {
-	int res=0;	gr->Self()->SaveState(opt);
-	if(k[0]==0)	gr->Colorbar("");
-	else if(!strcmp(k,"s"))		gr->Colorbar(a[0].s.s);
-	else if(!strcmp(k,"d"))		gr->Colorbar(*(a[0].d));
-	else if(!strcmp(k,"ds"))	gr->Colorbar(*(a[0].d), a[1].s.s);
-	else if(!strcmp(k,"snn"))	gr->Colorbar(a[0].s.s, a[1].v, a[2].v,1,1);
-	else if(!strcmp(k,"snnn"))	gr->Colorbar(a[0].s.s, a[1].v, a[2].v, a[3].v,1);
-	else if(!strcmp(k,"snnnn"))	gr->Colorbar(a[0].s.s, a[1].v, a[2].v, a[3].v,a[4].v);
-	else if(!strcmp(k,"dsnn"))	gr->Colorbar(*(a[0].d), a[1].s.s, a[2].v, a[3].v,1,1);
-	else if(!strcmp(k,"dsnnn"))	gr->Colorbar(*(a[0].d), a[1].s.s, a[2].v, a[3].v, a[4].v,1);
+	int res=0;	//gr->Self()->SaveState(opt);
+	if(k[0]==0)	gr->Colorbar("",opt);
+	else if(!strcmp(k,"s"))		gr->Colorbar(a[0].s.s,opt);
+	else if(!strcmp(k,"d"))		gr->Colorbar(*(a[0].d),opt);
+	else if(!strcmp(k,"ds"))	gr->Colorbar(*(a[0].d), a[1].s.s,opt);
+	else if(!strcmp(k,"snn"))	gr->Colorbar(a[0].s.s, a[1].v, a[2].v,1,1,opt);
+	else if(!strcmp(k,"snnn"))	gr->Colorbar(a[0].s.s, a[1].v, a[2].v, a[3].v,1,opt);
+	else if(!strcmp(k,"snnnn"))	gr->Colorbar(a[0].s.s, a[1].v, a[2].v, a[3].v,a[4].v,opt);
+	else if(!strcmp(k,"dsnn"))	gr->Colorbar(*(a[0].d), a[1].s.s, a[2].v, a[3].v,1,1,opt);
+	else if(!strcmp(k,"dsnnn"))	gr->Colorbar(*(a[0].d), a[1].s.s, a[2].v, a[3].v, a[4].v,1,opt);
 	else if(!strcmp(k,"dsnnnn"))
-		gr->Colorbar(*(a[0].d), a[1].s.s, a[2].v, a[3].v, a[4].v,a[5].v);
+		gr->Colorbar(*(a[0].d), a[1].s.s, a[2].v, a[3].v, a[4].v,a[5].v,opt);
 	else res = 1;
-	gr->Self()->LoadState();
+//	gr->Self()->LoadState();	
 	return res;
 }
 //-----------------------------------------------------------------------------
@@ -627,7 +628,7 @@ int static mgls_zlabel(mglGraph *gr, long , mglArg *a, const char *k, const char
 mglCommand mgls_prm_cmd[] = {
 	{"arc",_("Draw angle arc"),"arc x0 y0 x1 y1 a ['fmt']|x0 y0 z0 x1 y1 a ['fmt']|x0 y0 z0 xr yr zr x1 y1 z1 a ['fmt']", mgls_arc ,13},
 	{"axis",_("Setup or draw axis"),"axis ['dir' 'fmt']|'fx' 'fy' 'fz' ['fc']|how", mgls_axis ,12},
-	{"background",_("Load image for background"),"background 'fname' [alpha]| 'fname' 'how' [alpha]", mgls_background ,12},
+	{"background",_("Load image for background"),"background 'fname' [alpha]| 'fname' 'how' [alpha]| r g b [a]", mgls_background ,12},
 	{"ball",_("Draw point (ball)"),"ball posx posy ['fmt']|posx posy posz ['fmt']", mgls_ball ,13},
 	{"box",_("Draw bounding box"),"box ['fmt' ticks]", mgls_box ,12},
 	{"circle",_("Draw circle"),"circle x y r ['fmt']|x y z r ['fmt']", mgls_circle ,13},

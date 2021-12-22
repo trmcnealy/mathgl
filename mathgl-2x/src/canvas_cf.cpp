@@ -50,7 +50,7 @@ void MGL_EXPORT MGL_FUNC_INIT mgl_init()	// TODO try to add ld option: "-init mg
 #endif
 		for(long i=0;i<360;i++)	mgl_cos[i] = cos(i*M_PI/180.);
 		if(!mglDefFont)		mglDefFont = new mglFont(MGL_DEF_FONT_NAME);
-		if(!mglDefaultGr)	mglDefaultGr = new mglCanvas(600,400);
+// 		if(!mglDefaultGr)	mglDefaultGr = new mglCanvas(600,400);
 	}
 }
 void MGL_EXPORT MGL_FUNC_FINI mgl_fini()	// TODO try to add ld option: "-fini mgl_fini"
@@ -141,14 +141,16 @@ void MGL_EXPORT mgl_clf_chr(HMGL gr, char ch)
 {	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->Clf(mglColor(ch));	}
 void MGL_EXPORT mgl_clf_rgb(HMGL gr, double r, double g, double b)
 {	mglCanvas *gg = dynamic_cast<mglCanvas *>(gr);	if(gg)	gg->Clf(mglColor(r,g,b));	}
+void MGL_EXPORT mgl_clf_rgba(HMGL gr, double r, double g, double b, double a)
+{	mglCanvas *gg = dynamic_cast<mglCanvas *>(gr);	if(gg)	gg->Clf(mglColor(r,g,b,a));	}
 void MGL_EXPORT mgl_clf_str(HMGL gr, const char *col)
 {	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->Clf(col);	}
 void MGL_EXPORT mgl_load_background(HMGL gr, const char *fn, double alpha)
 {	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->LoadBackground(fn,alpha);	}
 void MGL_EXPORT mgl_load_background_ext(HMGL gr, const char *fn, const char *how, double alpha)
 {	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->LoadBackground(fn,how,alpha);	}
-void MGL_EXPORT mgl_fill_background(HMGL gr, double r, double g, double b)
-{	mglCanvas *gg = dynamic_cast<mglCanvas *>(gr);	if(gg)	gg->FillBackground(mglColor(r,g,b));	}
+void MGL_EXPORT mgl_fill_background(HMGL gr, double r, double g, double b, double a)
+{	mglCanvas *gg = dynamic_cast<mglCanvas *>(gr);	if(gg)	gg->FillBackground(mglColor(r,g,b,a));	}
 //-----------------------------------------------------------------------------
 void MGL_EXPORT mgl_subplot_d(HMGL gr, int nx,int ny,int m,const char *style,double dx,double dy)
 {
@@ -268,8 +270,8 @@ void MGL_EXPORT mgl_load_background_ext_(uintptr_t *gr, const char *fn, const ch
 {	char *s=new char[l+1];	memcpy(s,fn,l);		s[l]=0;
 	char *h=new char[m+1];	memcpy(h,how,l);	h[m]=0;
 	mgl_load_background_ext(_GR_,s,h,*a);	delete []s;	delete []h;	}
-void MGL_EXPORT mgl_fill_background_(uintptr_t *gr, double *r, double *g, double *b)
-{	mgl_fill_background(_GR_,*r,*g,*b);	}
+void MGL_EXPORT mgl_fill_background_(uintptr_t *gr, double *r, double *g, double *b, double *a)
+{	mgl_fill_background(_GR_,*r,*g,*b,*a);	}
 //-----------------------------------------------------------------------------
 void MGL_EXPORT mgl_subplot_d_(uintptr_t *gr, int *nx,int *ny,int *m,const char *st, mreal *dx, mreal *dy,int l)
 {	char *s=new char[l+1];	memcpy(s,st,l);	s[l]=0;
@@ -336,8 +338,7 @@ HMGL MGL_EXPORT mgl_create_graph(int width, int height)
 void MGL_EXPORT mgl_delete_graph(HMGL gr)	{	if(gr)	delete gr;	}
 HMGL MGL_EXPORT mgl_default_graph()
 {
-	if(!mglDefaultGr)
-		mglDefaultGr = new mglCanvas(600,400);
+	if(!mglDefaultGr)	mglDefaultGr = new mglCanvas(600,400);
 	return mglDefaultGr;
 }
 void MGL_EXPORT mgl_set_size_scl(double scl){	if(scl>0)	mgl_size_scl = scl;	}
@@ -409,14 +410,14 @@ void MGL_EXPORT mgl_label(HMGL gr, char dir, const char *text, double pos, const
 void MGL_EXPORT mgl_labelw(HMGL gr, char dir, const wchar_t *text, double pos, const char *opt)
 {	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->Labelw(dir,text,pos,opt);	}
 //-----------------------------------------------------------------------------
-void MGL_EXPORT mgl_colorbar(HMGL gr, const char *sch)
-{	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->Colorbar(sch);	}
-void MGL_EXPORT mgl_colorbar_ext(HMGL gr, const char *sch, double x, double y, double w, double h)
-{	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->Colorbar(sch,x,y,w,h);	}
-void MGL_EXPORT mgl_colorbar_val(HMGL gr, HCDT dat, const char *sch)
-{	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->Colorbar(dat,sch);	}
-void MGL_EXPORT mgl_colorbar_val_ext(HMGL gr, HCDT dat, const char *sch,double x, double y, double w, double h)
-{	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->Colorbar(dat,sch,x,y,w,h);	}
+void MGL_EXPORT mgl_colorbar(HMGL gr, const char *sch, const char *opt)
+{	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->Colorbar(sch,opt);	}
+void MGL_EXPORT mgl_colorbar_ext(HMGL gr, const char *sch, double x, double y, double w, double h, const char *opt)
+{	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->Colorbar(sch,x,y,w,h,opt);	}
+void MGL_EXPORT mgl_colorbar_val(HMGL gr, HCDT dat, const char *sch, const char *opt)
+{	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->Colorbar(dat,sch,opt);	}
+void MGL_EXPORT mgl_colorbar_val_ext(HMGL gr, HCDT dat, const char *sch,double x, double y, double w, double h, const char *opt)
+{	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->Colorbar(dat,sch,x,y,w,h,opt);	}
 //-----------------------------------------------------------------------------
 void MGL_EXPORT mgl_add_legend(HMGL gr, const char *text,const char *style)
 {	mglCanvas *g = dynamic_cast<mglCanvas *>(gr);	if(g)	g->AddLegend(text,style);	}
@@ -434,7 +435,7 @@ void MGL_EXPORT mgl_set_legend_marks(HMGL gr, int num)
 uintptr_t MGL_EXPORT mgl_create_graph_(int *width, int *height)
 {	return uintptr_t(new mglCanvas(*width,*height));	}
 void MGL_EXPORT mgl_delete_graph_(uintptr_t *gr)	{	delete _GR_;	}
-uintptr_t MGL_EXPORT mgl_default_graph_()	{	return uintptr_t(&mglDefaultGr);	}
+uintptr_t MGL_EXPORT mgl_default_graph_()	{	return uintptr_t(mgl_default_graph());	}
 void MGL_EXPORT mgl_set_size_scl_(double *scl)	{	mgl_set_size_scl(*scl);	}
 void MGL_EXPORT mgl_set_size_(uintptr_t *gr, int *width, int *height)
 {	mgl_set_size(_GR_,*width,*height);	}
@@ -502,18 +503,22 @@ void MGL_EXPORT mgl_label_(uintptr_t *gr, const char *dir, const char *text, mre
 	char *o=new char[m+1];	memcpy(o,opt,m);	o[m]=0;
 	_GR_->Label(*dir, s, *pos, o);	delete []s;	delete []o;	}
 //-----------------------------------------------------------------------------
-void MGL_EXPORT mgl_colorbar_(uintptr_t *gr, const char *sch, int l)
+void MGL_EXPORT mgl_colorbar_(uintptr_t *gr, const char *sch, const char *opt,int l,int m)
 {	char *s=new char[l+1];	memcpy(s,sch,l);	s[l]=0;
-	_GR_->Colorbar(s);	delete []s;	}
-void MGL_EXPORT mgl_colorbar_ext_(uintptr_t *gr, const char *sch, mreal *x, mreal *y, mreal *w, mreal *h, int l)
+	char *o=new char[m+1];	memcpy(o,opt,m);	o[m]=0;
+	_GR_->Colorbar(s,o);	delete []s;	delete []o;	}
+void MGL_EXPORT mgl_colorbar_ext_(uintptr_t *gr, const char *sch, mreal *x, mreal *y, mreal *w, mreal *h, const char *opt, int l,int m)
 {	char *s=new char[l+1];	memcpy(s,sch,l);	s[l]=0;
-	_GR_->Colorbar(s,*x,*y,*w,*h);	delete []s;	}
-void MGL_EXPORT mgl_colorbar_val_(uintptr_t *gr, uintptr_t *dat, const char *sch, int l)
+	char *o=new char[m+1];	memcpy(o,opt,m);	o[m]=0;
+	_GR_->Colorbar(s,*x,*y,*w,*h,o);	delete []s;	delete []o;	}
+void MGL_EXPORT mgl_colorbar_val_(uintptr_t *gr, uintptr_t *dat, const char *sch, const char *opt,int l,int m)
 {	char *s=new char[l+1];	memcpy(s,sch,l);	s[l]=0;
-	_GR_->Colorbar(_DA_(dat), s);	delete []s;	}
-void MGL_EXPORT mgl_colorbar_val_ext_(uintptr_t *gr, uintptr_t *dat, const char *sch, mreal *x, mreal *y, mreal *w, mreal *h, int l)
+	char *o=new char[m+1];	memcpy(o,opt,m);	o[m]=0;
+	_GR_->Colorbar(_DA_(dat), s,o);	delete []s;	delete []o;	}
+void MGL_EXPORT mgl_colorbar_val_ext_(uintptr_t *gr, uintptr_t *dat, const char *sch, mreal *x, mreal *y, mreal *w, mreal *h, const char *opt, int l,int m)
 {	char *s=new char[l+1];	memcpy(s,sch,l);	s[l]=0;
-	_GR_->Colorbar(_DA_(dat),s,*x,*y,*w,*h);	delete []s;	}
+	char *o=new char[m+1];	memcpy(o,opt,m);	o[m]=0;
+	_GR_->Colorbar(_DA_(dat),s,*x,*y,*w,*h,o);	delete []s;	delete []o;	}
 //-----------------------------------------------------------------------------
 void MGL_EXPORT mgl_add_legend_(uintptr_t *gr, const char *text,const char *style,int l,int n)
 {	char *s=new char[l+1];	memcpy(s,text,l);	s[l]=0;

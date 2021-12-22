@@ -582,6 +582,10 @@ public:
 
 	/// Clear up the frame and fill background by specified color
 	inline void Clf(double r, double g, double b)	{	mgl_clf_rgb(gr, r, g, b);	}
+	/// Clear up the frame and fill background by specified color
+	inline void Clf(double r, double g, double b, double a)	{	mgl_clf_rgba(gr, r, g, b, a);	}
+	/// Clear up the frame and fill background by specified color
+	inline void Clf(mglColor c)	{	mgl_clf_rgba(gr, c.r, c.g, c.b, c.a);	}
 	/// Clear up the frame and fill background by specified color with manual transparency
 	inline void Clf(const char *col)	{	mgl_clf_str(gr, col);	}
 	/// Clear up the frame and fill background by specified color
@@ -604,7 +608,7 @@ public:
 	{	mgl_load_background_ext(gr,fname,how,alpha);	}
 	/// Fill background image by specified color. Colors r,g,b should be in range [0,1].
 	inline void FillBackground(const mglColor &cc)
-	{	mgl_fill_background(gr, cc.r,cc.g,cc.b);	}
+	{	mgl_fill_background(gr, cc.r,cc.g,cc.b,cc.a);	}
 	/// Force drawing the image and use it as background one
 	inline void Rasterize()			{	mgl_rasterize(gr);	}
 
@@ -807,8 +811,8 @@ public:
 	 *	 ‘+’ for printing ‘+’ for positive ticks;
 	 *	 ‘-’ for printing usual ‘-’ in ticks labels;
 	 *	 ‘0123456789’ for precision at printing ticks labels.*/
-	inline void Colorbar(const char *sch="")
-	{	mgl_colorbar(gr, sch);	}
+	inline void Colorbar(const char *sch="", const char *opt="")
+	{	mgl_colorbar(gr, sch, opt);	}
 	/// Draw colorbar at manual position
 	/** Parameter \a sch may contain:
 	 *	 ‘<>^_’ for positioning at left, at right, at top or at bottom correspondingly;
@@ -822,8 +826,8 @@ public:
 	 *	 ‘+’ for printing ‘+’ for positive ticks;
 	 *	 ‘-’ for printing usual ‘-’ in ticks labels;
 	 *	 ‘0123456789’ for precision at printing ticks labels.*/
-	inline void Colorbar(const char *sch,double x,double y,double w=1,double h=1)
-	{	mgl_colorbar_ext(gr, sch, x,y,w,h);	}
+	inline void Colorbar(const char *sch,double x,double y,double w=1,double h=1, const char *opt="")
+	{	mgl_colorbar_ext(gr, sch, x,y,w,h, opt);	}
 	/// Draw colorbar with manual colors at edge of axis
 	/** Parameter \a sch may contain:
 	 *	 ‘<>^_’ for positioning at left, at right, at top or at bottom correspondingly;
@@ -837,8 +841,8 @@ public:
 	 *	 ‘+’ for printing ‘+’ for positive ticks;
 	 *	 ‘-’ for printing usual ‘-’ in ticks labels;
 	 *	 ‘0123456789’ for precision at printing ticks labels.*/
-	inline void Colorbar(const mglDataA &val, const char *sch="")
-	{	mgl_colorbar_val(gr, &val, sch);	}
+	inline void Colorbar(const mglDataA &val, const char *sch="", const char *opt="")
+	{	mgl_colorbar_val(gr, &val, sch, opt);	}
 	/// Draw colorbar with manual colors at manual position
 	/** Parameter \a sch may contain:
 	 *	 ‘<>^_’ for positioning at left, at right, at top or at bottom correspondingly;
@@ -852,8 +856,8 @@ public:
 	 *	 ‘+’ for printing ‘+’ for positive ticks;
 	 *	 ‘-’ for printing usual ‘-’ in ticks labels;
 	 *	 ‘0123456789’ for precision at printing ticks labels.*/
-	inline void Colorbar(const mglDataA &val, const char *sch,double x,double y,double w=1,double h=1)
-	{	mgl_colorbar_val_ext(gr, &val, sch, x,y,w,h);	}
+	inline void Colorbar(const mglDataA &val, const char *sch,double x,double y,double w=1,double h=1, const char *opt="")
+	{	mgl_colorbar_val_ext(gr, &val, sch, x,y,w,h, opt);	}
 
 	/// Add string to legend
 	inline void AddLegend(const char *text,const char *style)
