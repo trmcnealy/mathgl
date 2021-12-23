@@ -27,7 +27,7 @@ if(MGL_HAVE_WX)
 	target_link_libraries(mgl-wx-static mgl-static ${wxWidgets_LIBRARIES})
 endif(MGL_HAVE_WX)
 
-add_subdirectory( qt4 )
+#add_subdirectory( qt4 )
 add_subdirectory( qt5 )
 
 mgl_po_src(fltk.cpp ../include/mgl2/fltk.h ../include/mgl2/Fl_MathGL.h glut.cpp ../include/mgl2/glut.h wx.cpp ../include/mgl2/wx.h qt.cpp ../include/mgl2/qt.h  ../include/mgl2/qmathgl.h)

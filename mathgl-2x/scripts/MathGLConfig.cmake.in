@@ -10,6 +10,7 @@ set(MathGL2_HAVE_FLTK "@enable-fltk@")
 set(MathGL2_HAVE_GLUT "@enable-glut@")
 set(MathGL2_HAVE_PTHREAD "@CMAKE_USE_PTHREADS_INIT@")
 set(MathGL2_HAVE_OPENMP "@OPENMP_FOUND@")
+set(MathGL2_HAVE_GSL "@GSL_FOUND@")
 
 include(CMakeFindDependencyMacro)
 # Adding dependency for Threads imported target
@@ -20,6 +21,11 @@ endif()
 # Adding dependency for OpenMP imported target
 if (MathGL2_HAVE_OPENMP STRGREATER "")
   find_dependency(OpenMP)
+endif()
+
+# Adding dependency for GSL imported target
+if (MathGL2_HAVE_GSL STRGREATER "")
+  find_dependency(GSL)
 endif()
 
 # Compute paths
