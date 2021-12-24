@@ -75,6 +75,17 @@ void save(mglGraph *gr,const char *name,const char *suf);
 void test(mglGraph *gr)
 {
 //	gr->Box();	gr->WritePNG("1.png");	return;
+
+	gr->Rotate(40,60);
+	mglData x(5),y(5),z(5),id(3);
+	x[1]=-1;	x[3]=1;	y[2]=-1;	y[4]=1;
+	id[0]=2;	id[2]=3;
+	for(int i=0;i<5;i++)	z[i] = 1-(x[i]+y[i]);
+	gr->TriPlot(id,x,y,z);
+	gr->TriPlot(id,x,y,z,"k#");
+	return;
+
+	
 	
 	mglParse par;
 	par.Execute(gr,"plot [0,-1,nan,0.1,0.5,1.1] 'o'");	//fplot 'x'");	//"box:fplot '2*sin(pi*x)' 'ko'");

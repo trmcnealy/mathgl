@@ -355,15 +355,24 @@ long mglCanvas::AddPairBnd(const mglPnt &q1, const mglPnt &q2)
 	p2[0] = x*b[0] + y*b[1] + z*b[2] - p1[0];
 	p2[1] = x*b[3] + y*b[4] + z*b[5] - p1[1];
 	p2[2] = x*b[6] + y*b[7] + z*b[8] - p1[2];
-	mreal s=1,ss;
 	const mreal eps = 1e-5;
-	ss = -(1+p1[0])/p2[0];	if(ss>eps && ss<s)	s=ss;
-	ss = (1-p1[0])/p2[0];	if(ss>eps && ss<s)	s=ss;
-	ss = -(1+p1[1])/p2[1];	if(ss>eps && ss<s)	s=ss;
-	ss = (1-p1[1])/p2[1];	if(ss>eps && ss<s)	s=ss;
-	ss = -(1+p1[2])/p2[2];	if(ss>eps && ss<s)	s=ss;
-	ss = (1-p1[2])/p2[2];	if(ss>eps && ss<s)	s=ss;
-	if(s==1)	return -1;
+	mreal s=1,ss;
+	if(fabs(p2[0])>eps)
+	{
+		ss = -(1+p1[0])/p2[0];	if(ss>eps && ss<s)	s=ss;
+		ss = (1-p1[0])/p2[0];	if(ss>eps && ss<s)	s=ss;
+	}
+	if(fabs(p2[1])>eps)
+	{
+		ss = -(1+p1[1])/p2[1];	if(ss>eps && ss<s)	s=ss;
+		ss = (1-p1[1])/p2[1];	if(ss>eps && ss<s)	s=ss;
+	}
+	if(fabs(p2[2])>eps)
+	{
+		ss = -(1+p1[2])/p2[2];	if(ss>eps && ss<s)	s=ss;
+		ss = (1-p1[2])/p2[2];	if(ss>eps && ss<s)	s=ss;
+	}
+	if(s>1-eps)	return -1;
 	q.x = q.xx = q1.xx + s*(q2.xx-q1.xx);
 	q.y = q.yy = q1.yy + s*(q2.yy-q1.yy);
 	q.z = q.zz = q1.zz + s*(q2.zz-q1.zz);
@@ -469,62 +478,62 @@ void mglCanvas::trig_plot(long p1, long p2, long p3)
 {
 	if(p1<0 || p2<0 || p3<0)	return;	// nothing to do
 	const mglPnt &q1=Pnt[p1], &q2=Pnt[p2], &q3=Pnt[p3];
-	if(mgl_isnum(q1.x) && mgl_isnum(q2.x) && mgl_isnum(q3.x))	// valid trig
-		MGL_ADD_TRIG
-	else if(mgl_isnan(q1.x) && mgl_isnum(q2.x) && mgl_isnum(q3.x))
+	long state = (mgl_isnan(q1.x)?1:0)+(mgl_isnan(q2.x)?2:0)+(mgl_isnan(q3.x)?4:0), st, p4;
+	switch(state)
 	{
+	case 0:	MGL_ADD_TRIG	break;
+	case 1:
 		p1 = AddPairBnd(q2,q1);
-		long p4 = p3;
+		p4 = p3;
 		p3 = AddPairBnd(q3,q1);
-		if(p1>=0 && p3>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p3].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p1>=0 && mgl_isnum(Pnt[p1].x))	// valid trig
-		{	p3 = p4;	MGL_ADD_TRIG	}
-		else if(p3>=0 && mgl_isnum(Pnt[p3].x))	// valid trig
-		{	p1 = p4;	MGL_ADD_TRIG	}
-	}
-	else if(mgl_isnan(q2.x) && mgl_isnum(q1.x) && mgl_isnum(q3.x))
-	{
+		st = ((p1>=0 && mgl_isnum(Pnt[p1].x))?0:1)+((p3>=0 && mgl_isnum(Pnt[p3].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p1 = p4;	MGL_ADD_TRIG	break;
+			case 2:	p3 = p4;	MGL_ADD_TRIG	break;
+		}
+		break;
+	case 2:
 		p2 = AddPairBnd(q1,q2);
-		long p4 = AddPairBnd(q3,q2);
-		if(p2>=0 && p4>=0 && mgl_isnum(Pnt[p2].x) && mgl_isnum(Pnt[p4].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p2>=0 && mgl_isnum(Pnt[p2].x))	// valid trig
-			MGL_ADD_TRIG
-		else if(p4>=0 && mgl_isnum(Pnt[p4].x))	// valid trig
-		{	p2 = p4;	MGL_ADD_TRIG	}
-	}
-	else if(mgl_isnan(q3.x) && mgl_isnum(q2.x) && mgl_isnum(q1.x))
-	{
-		p3 = AddPairBnd(q1,q3);
-		long p4 = AddPairBnd(q2,q3);
-		if(p3>=0 && p4>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p4].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p3>=0 && mgl_isnum(Pnt[p3].x))	// valid trig
-			MGL_ADD_TRIG
-		else if(p4>=0 && mgl_isnum(Pnt[p4].x))	// valid trig
-		{	p3 = p4;	MGL_ADD_TRIG	}
-	}
-	else if(mgl_isnum(q1.x) && mgl_isnan(q2.x) && mgl_isnan(q3.x))	// valid trig
-	{
-		p2 = AddPairBnd(q1,q2);
-		p3 = AddPairBnd(q1,q3);
-		if(p2>=0 && p3>=0 && mgl_isnum(Pnt[p2].x) && mgl_isnum(Pnt[p3].x))	// valid trig
-			MGL_ADD_TRIG
-	}
-	else if(mgl_isnan(q1.x) && mgl_isnum(q2.x) && mgl_isnan(q3.x))	// valid trig
-	{
-		p1 = AddPairBnd(q2,q1);
-		p3 = AddPairBnd(q2,q3);
-		if(p1>=0 && p3>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p3].x))	// valid trig
-			MGL_ADD_TRIG
-	}
-	else if(mgl_isnan(q1.x) && mgl_isnan(q2.x) && mgl_isnum(q3.x))	// valid trig
-	{
+		p4 = AddPairBnd(q3,q2);
+		st = ((p2>=0 && mgl_isnum(Pnt[p2].x))?0:1)+((p4>=0 && mgl_isnum(Pnt[p4].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p2 = p4;	MGL_ADD_TRIG	break;
+			case 2:	MGL_ADD_TRIG	break;
+		}
+		break;
+	case 3:
 		p1 = AddPairBnd(q3,q1);
 		p2 = AddPairBnd(q3,q2);
 		if(p2>=0 && p1>=0 && mgl_isnum(Pnt[p2].x) && mgl_isnum(Pnt[p1].x))	// valid trig
 			MGL_ADD_TRIG
+		break;
+	case 4:
+		p3 = AddPairBnd(q1,q3);
+		p4 = AddPairBnd(q2,q3);
+		st = ((p3>=0 && mgl_isnum(Pnt[p3].x))?0:1)+((p4>=0 && mgl_isnum(Pnt[p4].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p3 = p4;	MGL_ADD_TRIG	break;
+			case 2:	MGL_ADD_TRIG	break;
+		}
+		break;
+	case 5:
+		p1 = AddPairBnd(q2,q1);
+		p3 = AddPairBnd(q2,q3);
+		if(p1>=0 && p3>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p3].x))	// valid trig
+			MGL_ADD_TRIG
+		break;
+	case 6:
+		p2 = AddPairBnd(q1,q2);
+		p3 = AddPairBnd(q1,q3);
+		if(p2>=0 && p3>=0 && mgl_isnum(Pnt[p2].x) && mgl_isnum(Pnt[p3].x))	// valid trig
+			MGL_ADD_TRIG
+		break;
 	}
 }
 //-----------------------------------------------------------------------------
@@ -535,170 +544,172 @@ void mglCanvas::quad_plot(long p1, long p2, long p3, long p4)
 	if(p3<0)	{	trig_plot(p1,p2,p4);	return;	}
 	if(p4<0)	{	trig_plot(p1,p2,p3);	return;	}
 	const mglPnt &q1=Pnt[p1], &q2=Pnt[p2], &q3=Pnt[p3], &q4=Pnt[p4];
-	if(mgl_isnum(q1.x) && mgl_isnum(q2.x) && mgl_isnum(q3.x) && mgl_isnum(q4.x))	// valid quad
-			MGL_ADD_QUAD
-	else if(mgl_isnan(q1.x) && mgl_isnum(q2.x) && mgl_isnum(q3.x) && mgl_isnum(q4.x))
+	int state = (mgl_isnan(q1.x)?1:0)+(mgl_isnan(q2.x)?2:0)+(mgl_isnan(q3.x)?4:0)+(mgl_isnan(q4.x)?8:0), st;
+	switch(state)
 	{
+	case 0:	MGL_ADD_QUAD	break;
+	case 1:
 		p1 = p4;	MGL_ADD_TRIG	// valid trig
 		p1 = AddPairBnd(q2,q1);	p4=p3;	p3=p2;
 		p2 = AddPairBnd(q3,q1);
-		if(p1>=0 && p2>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p2].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p1>=0 && mgl_isnum(Pnt[p1].x))	// valid trig
-		{	p2 = p4;	MGL_ADD_TRIG	}
-		else if(p2>=0 && mgl_isnum(Pnt[p2].x))	// valid trig
-		{	p1 = p4;	MGL_ADD_TRIG	}
-	}
-	else if(mgl_isnum(q1.x) && mgl_isnan(q2.x) && mgl_isnum(q3.x) && mgl_isnum(q4.x))
-	{
+		st = ((p1>=0 && mgl_isnum(Pnt[p1].x))?0:1)+((p2>=0 && mgl_isnum(Pnt[p2].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p1 = p4;	MGL_ADD_TRIG	break;
+			case 2:	p2 = p4;	MGL_ADD_TRIG	break;
+		}
+		break;
+	case 2:
 		p2 = p4;	MGL_ADD_TRIG	// valid trig
 		p3 = AddPairBnd(q1,q2);
 		p4 = AddPairBnd(q4,q2);
-		if(p3>=0 && p4>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p4].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p3>=0 && mgl_isnum(Pnt[p3].x))	// valid trig
-			MGL_ADD_TRIG
-		else if(p4>=0 && mgl_isnum(Pnt[p4].x))	// valid trig
-		{	p3 = p4;	MGL_ADD_TRIG	}
-	}
-	else if(mgl_isnum(q1.x) && mgl_isnum(q2.x) && mgl_isnan(q3.x) && mgl_isnum(q4.x))
-	{
+		st = ((p3>=0 && mgl_isnum(Pnt[p3].x))?0:1)+((p4>=0 && mgl_isnum(Pnt[p4].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p3 = p4;	MGL_ADD_TRIG	break;
+			case 2:	MGL_ADD_TRIG	break;
+		}
+		break;
+	case 3:
+		p1 = AddPairBnd(q3,q1);
+		p2 = AddPairBnd(q4,q2);
+		st = ((p1>=0 && mgl_isnum(Pnt[p1].x))?0:1)+((p2>=0 && mgl_isnum(Pnt[p2].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p1 = p4;	MGL_ADD_TRIG	break;
+			case 2:	p2 = p4;	MGL_ADD_TRIG	break;
+		}
+		break;
+	case 4:
 		p3 = p4;	MGL_ADD_TRIG	// valid trig
 		p2 = AddPairBnd(q1,q3);
 		p4 = AddPairBnd(q4,q3);
-		if(p4>=0 && p2>=0 && mgl_isnum(Pnt[p4].x) && mgl_isnum(Pnt[p2].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p4>=0 && mgl_isnum(Pnt[p4].x))	// valid trig
-		{	p2 = p4;	MGL_ADD_TRIG	}
-		else if(p2>=0 && mgl_isnum(Pnt[p2].x))	// valid trig
-			MGL_ADD_TRIG
-	}
-	else if(mgl_isnum(q1.x) && mgl_isnum(q2.x) && mgl_isnum(q3.x) && mgl_isnan(q4.x))
-	{
-		MGL_ADD_TRIG
-		p1 = AddPairBnd(q2,q4);	p4=p3;	p3=p2;
-		p2 = AddPairBnd(q3,q4);
-		if(p2>=0 && p1>=0 && mgl_isnum(Pnt[p2].x) && mgl_isnum(Pnt[p1].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p1>=0 && mgl_isnum(Pnt[p1].x))	// valid trig
-		{	p2 = p4;	MGL_ADD_TRIG	}
-		else if(p2>=0 && mgl_isnum(Pnt[p2].x))	// valid trig
-		{	p1 = p4;	MGL_ADD_TRIG	}
-	}
-	else if(mgl_isnum(q1.x) && mgl_isnum(q2.x) && mgl_isnan(q3.x) && mgl_isnan(q4.x))
-	{
-		p3 = AddPairBnd(q1,q3);
-		p4 = AddPairBnd(q2,q4);
-		if(p3>=0 && p4>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p4].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p3>=0 && mgl_isnum(Pnt[p3].x))	// valid trig
-			MGL_ADD_TRIG
-		else if(p4>=0 && mgl_isnum(Pnt[p4].x))	// valid trig
-		{	p3 = p4;	MGL_ADD_TRIG	}
-	}
-	else if(mgl_isnum(q1.x) && mgl_isnan(q2.x) && mgl_isnum(q3.x) && mgl_isnan(q4.x))
-	{
-		p2 = AddPairBnd(q1,q2);
-		p4 = AddPairBnd(q3,q4);
-		if(p2>=0 && p4>=0 && mgl_isnum(Pnt[p2].x) && mgl_isnum(Pnt[p4].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p2>=0 && mgl_isnum(Pnt[p2].x))	// valid trig
-			MGL_ADD_TRIG
-		else if(p4>=0 && mgl_isnum(Pnt[p4].x))	// valid trig
-		{	p2 = p4;	MGL_ADD_TRIG	}
-	}
-	else if(mgl_isnan(q1.x) && mgl_isnum(q2.x) && mgl_isnan(q3.x) && mgl_isnum(q4.x))
-	{
+		st = ((p2>=0 && mgl_isnum(Pnt[p2].x))?0:1)+((p4>=0 && mgl_isnum(Pnt[p4].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p2 = p4;	MGL_ADD_TRIG	break;
+			case 2:	MGL_ADD_TRIG	break;
+		}
+		break;
+	case 5:
 		p1 = AddPairBnd(q2,q1);
 		p3 = AddPairBnd(q4,q3);
-		if(p3>=0 && p1>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p1].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p1>=0 && mgl_isnum(Pnt[p1].x))	// valid trig
-		{	p3 = p4;	MGL_ADD_TRIG	}
-		else if(p3>=0 && mgl_isnum(Pnt[p3].x))	// valid trig
-		{	p1 = p4;	MGL_ADD_TRIG	}
-	}
-	else if(mgl_isnan(q1.x) && mgl_isnan(q2.x) && mgl_isnum(q3.x) && mgl_isnum(q4.x))
-	{
-		p1 = AddPairBnd(q3,q1);
-		p2 = AddPairBnd(q4,q2);
-		if(p1>=0 && p2>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p2].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p1>=0 && mgl_isnum(Pnt[p1].x))	// valid trig
-		{	p2 = p4;	MGL_ADD_TRIG	}
-		else if(p2>=0 && mgl_isnum(Pnt[p2].x))	// valid trig
-		{	p1 = p4;	MGL_ADD_TRIG	}
-	}
-	else if(mgl_isnum(q1.x) && mgl_isnan(q2.x) && mgl_isnan(q3.x) && mgl_isnan(q4.x))
-	{
-		p2 = AddPairBnd(q1,q2);
-		p3 = AddPairBnd(q1,q3);
-		if(p3>=0 && p2>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p2].x))	// valid trig
-			MGL_ADD_QUAD
-		else if(p2>=0 && mgl_isnum(Pnt[p2].x))	// valid trig
-		{	p3 = p4;	MGL_ADD_TRIG	}
-		else if(p3>=0 && mgl_isnum(Pnt[p3].x))	// valid trig
-		{	p2 = p4;	MGL_ADD_TRIG	}
-	}
-	else if(mgl_isnan(q1.x) && mgl_isnum(q2.x) && mgl_isnan(q3.x) && mgl_isnan(q4.x))
-	{
-		p1 = AddPairBnd(q2,q1);
-		p3 = AddPairBnd(q2,q4);
-		if(p3>=0 && p1>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p1].x))	// valid trig
-			MGL_ADD_TRIG
-	}
-	else if(mgl_isnan(q1.x) && mgl_isnan(q2.x) && mgl_isnum(q3.x) && mgl_isnan(q4.x))
-	{
-		p1 = AddPairBnd(q3,q1);
-		p2 = AddPairBnd(q3,q4);
-		if(p1>=0 && p2>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p2].x))	// valid trig
-			MGL_ADD_TRIG
-	}
-	else if(mgl_isnan(q1.x) && mgl_isnan(q2.x) && mgl_isnan(q3.x) && mgl_isnum(q4.x))
-	{
+		st = ((p1>=0 && mgl_isnum(Pnt[p1].x))?0:1)+((p3>=0 && mgl_isnum(Pnt[p3].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p1 = p4;	MGL_ADD_TRIG	break;
+			case 2:	p3 = p4;	MGL_ADD_TRIG	break;
+		}
+		break;
+	case 6:
+		p2 = AddPairBnd(q1,q2);	p3=p4;
+		p4 = AddPairBnd(q4,q2);
+		st = ((p4>=0 && mgl_isnum(Pnt[p4].x))?0:1)+((p2>=0 && mgl_isnum(Pnt[p2].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	MGL_ADD_TRIG	break;
+			case 2:	p2 = p4;	MGL_ADD_TRIG	break;
+		}
+		p2 = AddPairBnd(q1,q3);
+		p4 = AddPairBnd(q4,q3);
+		st = ((p4>=0 && mgl_isnum(Pnt[p4].x))?0:1)+((p2>=0 && mgl_isnum(Pnt[p2].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	MGL_ADD_TRIG	break;
+			case 2:	p2 = p4;	MGL_ADD_TRIG	break;
+		}
+		break;
+	case 7:
 		p1 = p4;
 		p2 = AddPairBnd(q4,q2);
 		p3 = AddPairBnd(q4,q3);
 		if(p3>=0 && p2>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p2].x))	// valid trig
 			MGL_ADD_TRIG
-	}
-	else if(mgl_isnan(q1.x) && mgl_isnum(q2.x) && mgl_isnum(q3.x) && mgl_isnan(q4.x))
-	{
+		break;
+	case 8:
+		MGL_ADD_TRIG
+		p1 = AddPairBnd(q2,q4);	p4=p3;	p3=p2;
+		p2 = AddPairBnd(q3,q4);
+		st = ((p1>=0 && mgl_isnum(Pnt[p1].x))?0:1)+((p2>=0 && mgl_isnum(Pnt[p2].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p1 = p4;	MGL_ADD_TRIG	break;
+			case 2:	p2 = p4;	MGL_ADD_TRIG	break;
+		}
+		break;
+	case 9:
 		p1 = AddPairBnd(q3,q1);	p4=p2;
 		p2 = AddPairBnd(q2,q1);
-		if(p1>=0 && p2>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p2].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p1>=0 && mgl_isnum(Pnt[p1].x))	// valid trig
-		{	p2 = p4;	MGL_ADD_TRIG	}
-		else if(p2>=0 && mgl_isnum(Pnt[p2].x))	// valid trig
-		{	p1 = p4;	MGL_ADD_TRIG	}
+		st = ((p1>=0 && mgl_isnum(Pnt[p1].x))?0:1)+((p2>=0 && mgl_isnum(Pnt[p2].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p1 = p4;	MGL_ADD_TRIG	break;
+			case 2:	p2 = p4;	MGL_ADD_TRIG	break;
+		}
 		p1 = AddPairBnd(q3,q4);
 		p2 = AddPairBnd(q2,q4);
-		if(p1>=0 && p2>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p2].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p1>=0 && mgl_isnum(Pnt[p1].x))	// valid trig
-		{	p2 = p4;	MGL_ADD_TRIG	}
-		else if(p2>=0 && mgl_isnum(Pnt[p2].x))	// valid trig
-		{	p1 = p4;	MGL_ADD_TRIG	}
-	}
-	else if(mgl_isnum(q1.x) && mgl_isnan(q2.x) && mgl_isnan(q3.x) && mgl_isnum(q4.x))
-	{
-		p2 = AddPairBnd(q1,q2);	p3=p4;
-		p4 = AddPairBnd(q4,q2);
-		if(p4>=0 && p2>=0 && mgl_isnum(Pnt[p4].x) && mgl_isnum(Pnt[p2].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p2>=0 && mgl_isnum(Pnt[p2].x))	// valid trig
+		st = ((p1>=0 && mgl_isnum(Pnt[p1].x))?0:1)+((p2>=0 && mgl_isnum(Pnt[p2].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p1 = p4;	MGL_ADD_TRIG	break;
+			case 2:	p2 = p4;	MGL_ADD_TRIG	break;
+		}
+		break;
+	case 10:
+		p2 = AddPairBnd(q1,q2);
+		p4 = AddPairBnd(q3,q4);
+		st = ((p2>=0 && mgl_isnum(Pnt[p2].x))?0:1)+((p4>=0 && mgl_isnum(Pnt[p4].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p2 = p4;	MGL_ADD_TRIG	break;
+			case 2:	MGL_ADD_TRIG	break;
+		}
+		break;
+	case 11:
+		p1 = AddPairBnd(q3,q1);
+		p2 = AddPairBnd(q3,q4);
+		if(p1>=0 && p2>=0 && mgl_isnum(Pnt[p1].x) && mgl_isnum(Pnt[p2].x))	// valid trig
 			MGL_ADD_TRIG
-		else if(p4>=0 && mgl_isnum(Pnt[p4].x))	// valid trig
-		{	p2 = p4;	MGL_ADD_TRIG	}
-		p2 = AddPairBnd(q1,q3);
-		p4 = AddPairBnd(q4,q3);
-		if(p4>=0 && p2>=0 && mgl_isnum(Pnt[p4].x) && mgl_isnum(Pnt[p2].x))	// valid quad
-			MGL_ADD_QUAD
-		else if(p2>=0 && mgl_isnum(Pnt[p2].x))	// valid trig
+		break;
+	case 12:
+		p3 = AddPairBnd(q1,q3);
+		p4 = AddPairBnd(q2,q4);
+		st = ((p3>=0 && mgl_isnum(Pnt[p3].x))?0:1)+((p4>=0 && mgl_isnum(Pnt[p4].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p3 = p4;	MGL_ADD_TRIG	break;
+			case 2:	MGL_ADD_TRIG	break;
+		}
+		break;
+	case 13:
+		p1 = AddPairBnd(q2,q1);
+		p3 = AddPairBnd(q2,q4);
+		if(p3>=0 && p1>=0 && mgl_isnum(Pnt[p3].x) && mgl_isnum(Pnt[p1].x))	// valid trig
 			MGL_ADD_TRIG
-		else if(p4>=0 && mgl_isnum(Pnt[p4].x))	// valid trig
-		{	p2 = p4;	MGL_ADD_TRIG	}
+		break;
+	case 14:
+		p2 = AddPairBnd(q1,q2);
+		p3 = AddPairBnd(q1,q3);
+		st = ((p2>=0 && mgl_isnum(Pnt[p2].x))?0:1)+((p3>=0 && mgl_isnum(Pnt[p3].x))?0:2);
+		switch(st)
+		{
+			case 0:	MGL_ADD_QUAD	break;
+			case 1:	p2 = p4;	MGL_ADD_TRIG	break;
+			case 2:	p3 = p4;	MGL_ADD_TRIG	break;
+		}
+		break;
 	}
 }
 //-----------------------------------------------------------------------------

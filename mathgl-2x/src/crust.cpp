@@ -277,27 +277,56 @@ std::vector<mglSegment> MGL_NO_EXPORT mgl_tri_lines(mreal val, HCDT nums, HCDT a
 {
 	long n = x->GetNN(), m = nums->GetNy();
 	std::vector<mglSegment> lines;
+	const mreal l0 = 1e-5, l1=1-l0;
 	for(long i=0;i<m;i++)
 	{
 		long k1 = long(nums->v(0,i)+0.5), k2 = long(nums->v(1,i)+0.5), k3 = long(nums->v(2,i)+0.5);
 		if(k1<0 || k1>=n || k2<0 || k2>=n || k3<0 || k3>=n)	continue;
 		mreal v1 = a->v(k1), v2 = a->v(k2), v3 = a->v(k3);
 		mreal d1 = mgl_d(val,v1,v2), d2 = mgl_d(val,v1,v3), d3 = mgl_d(val,v2,v3);
+		bool ok1=d1>l0 && d1<l1, ok2=d2>l0 && d2<l1, ok3=d3>l0 && d3<l1; 
 		mglSegment line;
-		if(d1>=0 && d1<=1 && d2>=0 && d2<=1)
+		if(ok1)
 		{
 			line.p1.Set(x->v(k1)*(1-d1)+x->v(k2)*d1, y->v(k1)*(1-d1)+y->v(k2)*d1, z->v(k1)*(1-d1)+z->v(k2)*d1);
-			line.p2.Set(x->v(k1)*(1-d2)+x->v(k3)*d2, y->v(k1)*(1-d2)+y->v(k3)*d2, z->v(k1)*(1-d2)+z->v(k3)*d2);
+			if(ok2)
+				line.p2.Set(x->v(k1)*(1-d2)+x->v(k3)*d2, y->v(k1)*(1-d2)+y->v(k3)*d2, z->v(k1)*(1-d2)+z->v(k3)*d2);
+			else if(ok3)
+				line.p2.Set(x->v(k2)*(1-d3)+x->v(k3)*d3, y->v(k2)*(1-d3)+y->v(k3)*d3, z->v(k2)*(1-d3)+z->v(k3)*d3);
+			else
+				line.p2.Set(x->v(k3), y->v(k3), z->v(k3));
+				
 		}
-		else if(d1>=0 && d1<=1 && d3>=0 && d3<=1)
+		else if(ok3)
 		{
-			line.p1.Set(x->v(k1)*(1-d1)+x->v(k2)*d1, y->v(k1)*(1-d1)+y->v(k2)*d1, z->v(k1)*(1-d1)+z->v(k2)*d1);
 			line.p2.Set(x->v(k2)*(1-d3)+x->v(k3)*d3, y->v(k2)*(1-d3)+y->v(k3)*d3, z->v(k2)*(1-d3)+z->v(k3)*d3);
+			if(ok2)
+				line.p1.Set(x->v(k1)*(1-d2)+x->v(k3)*d2, y->v(k1)*(1-d2)+y->v(k3)*d2, z->v(k1)*(1-d2)+z->v(k3)*d2);
+			else
+				line.p1.Set(x->v(k1), y->v(k1), z->v(k1));
 		}
-		else if(d3>=0 && d3<=1 && d2>=0 && d2<=1)
+		else if(ok2)
 		{
 			line.p1.Set(x->v(k1)*(1-d2)+x->v(k3)*d2, y->v(k1)*(1-d2)+y->v(k3)*d2, z->v(k1)*(1-d2)+z->v(k3)*d2);
-			line.p2.Set(x->v(k2)*(1-d3)+x->v(k3)*d3, y->v(k2)*(1-d3)+y->v(k3)*d3, z->v(k2)*(1-d3)+z->v(k3)*d3);
+			if(ok3)
+				line.p2.Set(x->v(k2)*(1-d3)+x->v(k3)*d3, y->v(k2)*(1-d3)+y->v(k3)*d3, z->v(k2)*(1-d3)+z->v(k3)*d3);
+			else
+				line.p2.Set(x->v(k2), y->v(k2), z->v(k2));
+		}
+		else if(fabs(val-v1)<l0 && fabs(val-v2)<l0)
+		{
+			line.p1.Set(x->v(k1), y->v(k1), z->v(k1));
+			line.p2.Set(x->v(k2), y->v(k2), z->v(k2));
+		}
+		else if(fabs(val-v1)<l0 && fabs(val-v3)<l0)
+		{
+			line.p1.Set(x->v(k1), y->v(k1), z->v(k1));
+			line.p2.Set(x->v(k3), y->v(k3), z->v(k3));
+		}
+		else if(fabs(val-v2)<l0 && fabs(val-v3)<l0)
+		{
+			line.p1.Set(x->v(k2), y->v(k2), z->v(k2));
+			line.p2.Set(x->v(k3), y->v(k3), z->v(k3));
 		}
 		if(line.p1!=line.p2)	lines.push_back(line);
 	}
