@@ -30,7 +30,7 @@
 
 #if MGL_HAVE_HDF5
 //#define H5_NO_DEPRECATED_SYMBOLS
-#define H5_USE_16_API
+// #define H5_USE_16_API
 #include <hdf5.h>
 #endif
 #if MGL_HAVE_HDF4
@@ -1210,7 +1210,7 @@ void MGL_EXPORT mgl_dual_save_hdf(mdual val,const char *fname,const char *data,i
 	hid_t hf,hd,hs;
 	hsize_t dims[4]={1,2};
 	long rank = 2, res;
-	H5Eset_auto(0,0);
+	H5Eset_auto(0,0,0);
 	res=H5Fis_hdf5(fname);
 	if(res>0 && !rewrite)	hf = H5Fopen(fname, H5F_ACC_RDWR, H5P_DEFAULT);
 	else	hf = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
@@ -1221,7 +1221,7 @@ void MGL_EXPORT mgl_dual_save_hdf(mdual val,const char *fname,const char *data,i
 #else
 	hid_t mem_type_id = H5T_NATIVE_FLOAT;
 #endif
-	hd = H5Dcreate(hf, data, mem_type_id, hs, H5P_DEFAULT);
+	hd = H5Dcreate(hf, data, mem_type_id, hs, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	H5Dwrite(hd, mem_type_id, hs, hs, H5P_DEFAULT, &val);
 	H5Dclose(hd);	H5Sclose(hs);	H5Fclose(hf);
 }
@@ -1231,14 +1231,14 @@ void MGL_EXPORT mgl_real_save_hdf(double val,const char *fname,const char *data,
 	hid_t hf,hd,hs;
 	hsize_t dims[3]={1,1,1};
 	long rank = 1, res;
-	H5Eset_auto(0,0);
+	H5Eset_auto(0,0,0);
 	res=H5Fis_hdf5(fname);
 	if(res>0 && !rewrite)	hf = H5Fopen(fname, H5F_ACC_RDWR, H5P_DEFAULT);
 	else	hf = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	if(hf<0)	return;
 	hs = H5Screate_simple(rank, dims, 0);
 	hid_t mem_type_id = H5T_NATIVE_DOUBLE;
-	hd = H5Dcreate(hf, data, mem_type_id, hs, H5P_DEFAULT);
+	hd = H5Dcreate(hf, data, mem_type_id, hs, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	H5Dwrite(hd, mem_type_id, hs, hs, H5P_DEFAULT, &val);
 	H5Dclose(hd);	H5Sclose(hs);	H5Fclose(hf);
 }
@@ -1248,14 +1248,14 @@ void MGL_EXPORT mgl_int_save_hdf(long val,const char *fname,const char *data,int
 	hid_t hf,hd,hs;
 	hsize_t dims[3]={1,1,1};
 	long rank = 1, res;
-	H5Eset_auto(0,0);
+	H5Eset_auto(0,0,0);
 	res=H5Fis_hdf5(fname);
 	if(res>0 && !rewrite)	hf = H5Fopen(fname, H5F_ACC_RDWR, H5P_DEFAULT);
 	else	hf = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	if(hf<0)	return;
 	hs = H5Screate_simple(rank, dims, 0);
 	hid_t mem_type_id = H5T_NATIVE_LONG;
-	hd = H5Dcreate(hf, data, mem_type_id, hs, H5P_DEFAULT);
+	hd = H5Dcreate(hf, data, mem_type_id, hs, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	H5Dwrite(hd, mem_type_id, hs, hs, H5P_DEFAULT, &val);
 	H5Dclose(hd);	H5Sclose(hs);	H5Fclose(hf);
 }
@@ -1267,7 +1267,7 @@ void MGL_EXPORT mgl_data_save_hdf(HCDT dat,const char *fname,const char *data,in
 	hid_t hf,hd,hs;
 	hsize_t dims[3];
 	long rank = 3, res;
-	H5Eset_auto(0,0);
+	H5Eset_auto(0,0,0);
 	res=H5Fis_hdf5(fname);
 	if(res>0 && !rewrite)	hf = H5Fopen(fname, H5F_ACC_RDWR, H5P_DEFAULT);
 	else	hf = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
@@ -1281,7 +1281,7 @@ void MGL_EXPORT mgl_data_save_hdf(HCDT dat,const char *fname,const char *data,in
 #else
 	hid_t mem_type_id = H5T_NATIVE_FLOAT;
 #endif
-	hd = H5Dcreate(hf, data, mem_type_id, hs, H5P_DEFAULT);
+	hd = H5Dcreate(hf, data, mem_type_id, hs, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	H5Dwrite(hd, mem_type_id, hs, hs, H5P_DEFAULT, d->a);
 	H5Dclose(hd);	H5Sclose(hs);	H5Fclose(hf);
 }
@@ -1293,7 +1293,7 @@ int MGL_EXPORT mgl_data_read_hdf(HMDT d,const char *fname,const char *data)
 	if(res<=0)	return mgl_data_read_hdf4(d,fname,data);
 	hf = H5Fopen(fname, H5F_ACC_RDONLY, H5P_DEFAULT);
 	if(hf<0)	return 0;
-	hd = H5Dopen(hf,data);
+	hd = H5Dopen(hf,data, H5P_DEFAULT);
 	if(hd<0)	{	H5Fclose(hf);	return 0;	}
 	hs = H5Dget_space(hd);
 	if(hs<0)	{	H5Dclose(hd);	H5Fclose(hf);	return 0;	}
@@ -1322,7 +1322,7 @@ MGL_EXPORT const char * const * mgl_datas_hdf_str(const char *fname)
 	hid_t hf,hg,hd,ht;
 	hf = H5Fopen(fname, H5F_ACC_RDONLY, H5P_DEFAULT);	names.clear();
 	if(!hf)	return 0;
-	hg = H5Gopen(hf,"/");
+	hg = H5Gopen(hf,"/", H5P_DEFAULT);
 	hsize_t num;
 	char name[256];
 	H5Gget_num_objs(hg, &num);	// replace by H5G_info_t t; H5Gget_info(hg,&t); num=t.nlinks;
@@ -1330,7 +1330,7 @@ MGL_EXPORT const char * const * mgl_datas_hdf_str(const char *fname)
 	{
 		if(H5Gget_objtype_by_idx(hg, i)!=H5G_DATASET)	continue;
 		H5Gget_objname_by_idx(hg, i, name, 256);	// replace by H5Lget_name_by_idx(hg,".",i,0,0,name,256,0) ?!
-		hd = H5Dopen(hf,name);
+		hd = H5Dopen(hf,name, H5P_DEFAULT);
 		ht = H5Dget_type(hd);
 		if(H5Tget_class(ht)==H5T_FLOAT || H5Tget_class(ht)==H5T_INTEGER)	names.push_back(name);
 		H5Dclose(hd);	H5Tclose(ht);

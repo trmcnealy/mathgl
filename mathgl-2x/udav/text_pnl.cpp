@@ -285,7 +285,7 @@ void TextPanel::newCmd(int n)
 }
 //-----------------------------------------------------------------------------
 #if MGL_HAVE_HDF5
-#define H5_USE_16_API
+// #define H5_USE_16_API
 #include <hdf5.h>
 void TextPanel::loadHDF5(const QString &fileName)
 {
@@ -295,7 +295,7 @@ void TextPanel::loadHDF5(const QString &fileName)
 	long rank;
 	hf = H5Fopen(fileName.toLocal8Bit().constData(), H5F_ACC_RDONLY, H5P_DEFAULT);
 	if(!hf)	return;
-	hg = H5Gopen(hf, "/");
+	hg = H5Gopen(hf, "/", H5P_DEFAULT);
 	hsize_t num, nx, ny, nz, i;
 	char name[256];
 	H5Gget_num_objs(hg, &num);
@@ -303,7 +303,7 @@ void TextPanel::loadHDF5(const QString &fileName)
 	{
 		if(H5Gget_objtype_by_idx(hg, i)!=H5G_DATASET)	continue;
 		H5Gget_objname_by_idx(hg, i, name, 256);
-		hd = H5Dopen(hg,name);	hs = H5Dget_space(hd);
+		hd = H5Dopen(hg,name, H5P_DEFAULT);	hs = H5Dget_space(hd);
 		ht = H5Dget_type(hd);
 		rank = H5Sget_simple_extent_ndims(hs);
 		if(H5Tget_class(ht)==H5T_STRING)	// load script
@@ -358,7 +358,7 @@ void TextPanel::saveHDF5(const QString &fileName)
 	hsize_t dims[3];
 	long rank = 3;
 
-	H5Eset_auto(0,0);
+	H5Eset_auto(0,0,0);
 	hf = H5Fcreate(fileName.toLocal8Bit().constData(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	if(hf<0)
 	{
@@ -375,7 +375,7 @@ void TextPanel::saveHDF5(const QString &fileName)
 		memcpy(buf, txt.toLocal8Bit().constData(), dims[0]);
 		buf[dims[0]]=0;
 		hs = H5Screate_simple(1, dims, 0);
-		hd = H5Dcreate(hf, "mgl_script", H5T_C_S1, hs, H5P_DEFAULT);
+		hd = H5Dcreate(hf, "mgl_script", H5T_C_S1, hs, H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
 		H5Dwrite(hd, H5T_C_S1, hs, hs, H5P_DEFAULT, buf);
 		H5Dclose(hd);	H5Sclose(hs);
 		delete []buf;
@@ -395,7 +395,7 @@ void TextPanel::saveHDF5(const QString &fileName)
 		else
 		{	rank = 3;	dims[0] = v->nz;	dims[1] = v->ny;	dims[2] = v->nx;	}
 		hs = H5Screate_simple(rank, dims, 0);
-		hd = H5Dcreate(hf, name, H5T_IEEE_F32LE, hs, H5P_DEFAULT);
+		hd = H5Dcreate(hf, name, H5T_IEEE_F32LE, hs, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
 		H5Dwrite(hd, H5T_NATIVE_FLOAT, hs, hs, H5P_DEFAULT, v->a);
 		H5Dclose(hd);	H5Sclose(hs);

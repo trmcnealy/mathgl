@@ -1,7 +1,9 @@
 8.0 Released 1 January 2022
 
-* Add accurate line segment cutting at axis border crossing.
-* Restore back transparent background by default. You can set background non-transparent by using 'clf' or 'background' functions.
+* Change version numbering according Debian rules.
+* Add accurate line segment and quadrangle/triangle face cutting at axis border crossing.
+* Add 'fastcut' for disable accurate but slow line/trig/quad primitives cutting at axis borders.
+* Restore back transparent background by default. You can set non-transparent background by using 'clf' or 'background' functions.
 * Compatibility changes for Qt5.15 and MSVC.
 INCOMPATIBLE:
 * Change colorbar C-functions by adding last argument for options.
