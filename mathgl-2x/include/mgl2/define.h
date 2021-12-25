@@ -293,6 +293,7 @@ extern MGL_EXPORT uint64_t mgl_mask_val[16];
 #define MGL_GRAY_MODE 		0x00200000 	///< Convert all colors to gray ones
 #define MGL_FULL_CURV 		0x00400000 	///< Disable omitting points in straight-line part(s).
 #define MGL_NO_SCALE_REL 	0x00800000 	///< Disable font scaling in relative inplots
+#define MGL_FAST_PRIM		0x01000000	///< Disable accurate primitive cutting at axis borders
 //-----------------------------------------------------------------------------
 #ifdef __cplusplus
 #include <string>

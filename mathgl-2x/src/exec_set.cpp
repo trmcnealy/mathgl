@@ -397,6 +397,14 @@ int static mgls_origintick(mglGraph *gr, long , mglArg *a, const char *k, const 
 	return res;
 }
 //-----------------------------------------------------------------------------
+int static mgls_fastcut(mglGraph *gr, long , mglArg *a, const char *k, const char *)
+{
+	int res=0;
+	if(!strcmp(k,"n"))	gr->SetFastCut(a[0].v);
+	else res = 1;
+	return res;
+}
+//-----------------------------------------------------------------------------
 int static mgls_palette(mglGraph *gr, long , mglArg *a, const char *k, const char *)
 {
 	int res=0;
@@ -819,6 +827,7 @@ mglCommand mgls_set_cmd[] = {
 	{"diffuse",_("Set diffusive light brightness"),"diffuse val", mgls_diffuse ,2},
 	{"drawreg",_("Set draw region for quality&4"),"drawreg|nx ny m", mgls_drawreg ,2},
 	{"facenum",_("Set number of visible faces"),"facenum val", mgls_facenum ,2},
+	{"fastcut",_("Disable accurate primitive cutting at axis borders"),"fastcut val", mgls_fastcut ,2},
 	{"fog",_("Switch on/off fog"),"fog val [dz]", mgls_fog ,2},
 	{"font",_("Setup font"),"font 'fmt' [size]", mgls_font ,15},
 	{"gray",_("Switch on/off gray-scale mode"),"gray [val]", mgls_gray ,2},

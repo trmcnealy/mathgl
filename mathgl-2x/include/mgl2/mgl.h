@@ -298,6 +298,8 @@ public:
 	/// Set to draw tick labels at axis origin
 	inline void SetOriginTick(bool enable=true)
 	{	mgl_set_flag(gr,!enable, MGL_NO_ORIGIN);	}
+	/// Disable accurate but slower primitive cutting at axis borders
+	inline void SetFastCut(bool enable)	{	mgl_set_flag(gr,enable, MGL_FAST_PRIM);	}
 	/// Set bit-value flag of HMGL state (for advanced users only)
 	inline void SetFlagAdv(int val, uint32_t flag)
 	{	mgl_set_flag(gr, val, flag);	}

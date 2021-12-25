@@ -287,6 +287,8 @@ public:
 	/// Set to draw tick labels at axis origin
 	inline void SetOriginTick(bool enable=true)
 	{	mgl_set_flag(gr,!enable, MGL_NO_ORIGIN);	}
+	/// Disable accurate primitive cutting at axis borders
+	inline void SetFastCut(bool enable)	{	mgl_set_flag(gr,enable, MGL_FAST_PRIM);	}
 	/// Set bit-value flag of HMGL state (for advanced users only)
 	inline void SetFlagAdv(int val, uint32_t flag)
 	{	mgl_set_flag(gr, val, flag);	}
@@ -571,6 +573,10 @@ public:
 
 	/// Clear up the frame and fill background by specified color
 	inline void Clf(double r, double g, double b)	{	mgl_clf_rgb(gr, r, g, b);	}
+	/// Clear up the frame and fill background by specified color
+	inline void Clf(double r, double g, double b, double a)	{	mgl_clf_rgba(gr, r, g, b, a);	}
+	/// Clear up the frame and fill background by specified color
+	inline void Clf(mglColor c)	{	mgl_clf_rgba(gr, c.r, c.g, c.b, c.a);	}
 	/// Clear up the frame and fill background by specified color with manual transparency
 	inline void Clf(const char *col)	{	mgl_clf_str(gr, col);	}
 	/// Clear up the frame and fill background by specified color
@@ -709,6 +715,7 @@ public:
 	/// Draw user-defined symbol in position p along direction d
 	inline void Symbol(mglPoint p, mglPoint d, char id, const char *how="", double size=-1)
 	{	mgl_symbol_dir(gr, p.x, p.y, p.z, d.x, d.y, d.z, id, how, size);	}
+
 	/// Print text in position p with specified font
 	inline void Putsw(mglPoint p,const wchar_t *text,const char *font=":C",double size=-1)
 	{	mgl_putsw(gr, p.x, p.y, p.z, text, font, size);	}
@@ -795,8 +802,8 @@ public:
 	 *	 ‘+’ for printing ‘+’ for positive ticks;
 	 *	 ‘-’ for printing usual ‘-’ in ticks labels;
 	 *	 ‘0123456789’ for precision at printing ticks labels.*/
-	inline void Colorbar(const char *sch="")
-	{	mgl_colorbar(gr, sch);	}
+	inline void Colorbar(const char *sch="", const char *opt="")
+	{	mgl_colorbar(gr, sch, opt);	}
 	/// Draw colorbar at manual position
 	/** Parameter \a sch may contain:
 	 *	 ‘<>^_’ for positioning at left, at right, at top or at bottom correspondingly;
@@ -810,8 +817,8 @@ public:
 	 *	 ‘+’ for printing ‘+’ for positive ticks;
 	 *	 ‘-’ for printing usual ‘-’ in ticks labels;
 	 *	 ‘0123456789’ for precision at printing ticks labels.*/
-	inline void Colorbar(const char *sch,double x,double y,double w=1,double h=1)
-	{	mgl_colorbar_ext(gr, sch, x,y,w,h);	}
+	inline void Colorbar(const char *sch,double x,double y,double w=1,double h=1, const char *opt="")
+	{	mgl_colorbar_ext(gr, sch, x,y,w,h, opt);	}
 	/// Draw colorbar with manual colors at edge of axis
 	/** Parameter \a sch may contain:
 	 *	 ‘<>^_’ for positioning at left, at right, at top or at bottom correspondingly;
@@ -825,8 +832,8 @@ public:
 	 *	 ‘+’ for printing ‘+’ for positive ticks;
 	 *	 ‘-’ for printing usual ‘-’ in ticks labels;
 	 *	 ‘0123456789’ for precision at printing ticks labels.*/
-	inline void Colorbar(const mglData &val, const char *sch="")
-	{	mgl_colorbar_val(gr, &val, sch);	}
+	inline void Colorbar(const mglData &val, const char *sch="", const char *opt="")
+	{	mgl_colorbar_val(gr, &val, sch, opt);	}
 	/// Draw colorbar with manual colors at manual position
 	/** Parameter \a sch may contain:
 	 *	 ‘<>^_’ for positioning at left, at right, at top or at bottom correspondingly;
@@ -840,8 +847,8 @@ public:
 	 *	 ‘+’ for printing ‘+’ for positive ticks;
 	 *	 ‘-’ for printing usual ‘-’ in ticks labels;
 	 *	 ‘0123456789’ for precision at printing ticks labels.*/
-	inline void Colorbar(const mglData &val, const char *sch,double x,double y,double w=1,double h=1)
-	{	mgl_colorbar_val_ext(gr, &val, sch, x,y,w,h);	}
+	inline void Colorbar(const mglData &val, const char *sch,double x,double y,double w=1,double h=1, const char *opt="")
+	{	mgl_colorbar_val_ext(gr, &val, sch, x,y,w,h, opt);	}
 
 	/// Add string to legend
 	inline void AddLegend(const char *text,const char *style)

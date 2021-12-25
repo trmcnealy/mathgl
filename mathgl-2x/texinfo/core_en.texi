@@ -822,6 +822,14 @@ Additionally extend axis range for any settings made by @code{SetRange} or @code
 @end deftypefn
 
 
+@anchor{fastcut}
+@deftypefn {MGL command} {} fastcut @code{val}
+@ifclear UDAV
+@deftypefnx {Method on @code{mglGraph}} @code{void} SetFastCut (@code{bool} val=@code{true})
+@end ifclear
+Enable/disable accurate but slower primitive cutting at axis borders. In C/Fortran you can use @code{mgl_set_flag(gr,val, MGL_FAST_PRIM);}. It automatically set on for @ref{ternary} axis now.
+@end deftypefn
+
 @c ------------------------------------------------------------------
 @external{}
 @node Curved coordinates, Ticks, Ranges (bounding box), Axis settings

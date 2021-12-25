@@ -821,6 +821,14 @@ Setsize: размер(ы) равны нулю или отрицательны
 Дополнительно расширяет диапазон осей координат, задаваемый функциями @code{SetRange} или @code{SetRanges}, в соответствии с формулами @math{min += (max-min)*p1} и @math{max += (max-min)*p1} (или @math{min *= (max/min)^p1} и @math{max *= (max/min)^p1} для "логарифмических" диапазонов, когда @math{inf>max/min>100} или @math{0<max/min<0.01}). Начальные значения [0, 1]. Внимание! эти настройки не могут быть переписаны никакими другими функциями, включая  @code{DefaultPlotParam()}.
 @end deftypefn
 
+@anchor{fastcut}
+@deftypefn {Команда MGL} {} fastcut @code{val}
+@ifclear UDAV
+@deftypefnx {Метод класса @code{mglGraph}} @code{void} SetFastCut (@code{bool} val=@code{true})
+@end ifclear
+Разрешает/запрещает аккуратное и более медленное обрезание примитивов на границах осей координат. В C/Fortran следует использовать @code{mgl_set_flag(gr,val, MGL_FAST_PRIM);}. Включено автоматически для @ref{ternary} системы координат.
+@end deftypefn
+
 
 @c ------------------------------------------------------------------
 @external{}

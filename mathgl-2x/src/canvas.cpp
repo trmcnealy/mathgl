@@ -421,13 +421,16 @@ void mglCanvas::mark_plot(long p, char type, mreal size)
 void mglCanvas::line_plot(long p1, long p2)
 {
 	if(PDef==0 || p1<0 || p2<0)	return;	// nothing to do
-	if(p1>p2)	{	long kk=p1;	p1=p2;	p2=kk;	}	// rearrange start/end for proper dashing
-	const mglPnt &q1=Pnt[p1], &q2=Pnt[p2];
-	if(q1.x==q2.x && q1.y==q2.y)	return;	// the same points
-	if(mgl_isnan(q1.x) && mgl_isnum(q2.x))
-		p1 = AddPairBnd(q2,q1);
-	if(mgl_isnum(q1.x) && mgl_isnan(q2.x))
-		p2 = AddPairBnd(q1,q2);
+	if(!(Flag&MGL_FAST_PRIM) && !(TernAxis&3))
+	{
+		if(p1>p2)	{	long kk=p1;	p1=p2;	p2=kk;	}	// rearrange start/end for proper dashing
+		const mglPnt &q1=Pnt[p1], &q2=Pnt[p2];
+		if(q1.x==q2.x && q1.y==q2.y)	return;	// the same points
+		if(mgl_isnan(q1.x) && mgl_isnum(q2.x))
+			p1 = AddPairBnd(q2,q1);
+		if(mgl_isnum(q1.x) && mgl_isnan(q2.x))
+			p2 = AddPairBnd(q1,q2);
+	}
 	if(p1<0 || p2<0 || mgl_isnan(Pnt[p1].x) || mgl_isnan(Pnt[p2].x))	return;
 
 	long pp1=p1,pp2=p2;
@@ -479,7 +482,11 @@ void mglCanvas::trig_plot(long p1, long p2, long p3)
 	if(p1<0 || p2<0 || p3<0)	return;	// nothing to do
 	const mglPnt &q1=Pnt[p1], &q2=Pnt[p2], &q3=Pnt[p3];
 	long state = (mgl_isnan(q1.x)?1:0)+(mgl_isnan(q2.x)?2:0)+(mgl_isnan(q3.x)?4:0), st, p4;
-	switch(state)
+	if((Flag&MGL_FAST_PRIM) || (TernAxis&3))
+	{
+		if(!state)	MGL_ADD_TRIG
+	}
+	else switch(state)
 	{
 	case 0:	MGL_ADD_TRIG	break;
 	case 1:
@@ -545,7 +552,18 @@ void mglCanvas::quad_plot(long p1, long p2, long p3, long p4)
 	if(p4<0)	{	trig_plot(p1,p2,p3);	return;	}
 	const mglPnt &q1=Pnt[p1], &q2=Pnt[p2], &q3=Pnt[p3], &q4=Pnt[p4];
 	int state = (mgl_isnan(q1.x)?1:0)+(mgl_isnan(q2.x)?2:0)+(mgl_isnan(q3.x)?4:0)+(mgl_isnan(q4.x)?8:0), st;
-	switch(state)
+	if((Flag&MGL_FAST_PRIM) || (TernAxis&3))
+	{
+		switch(state)
+		{
+		case 0:	MGL_ADD_QUAD	break;
+		case 1:	p1 = p4;	MGL_ADD_TRIG	break;
+		case 2:	p2 = p4;	MGL_ADD_TRIG	break;
+		case 4:	p3 = p4;	MGL_ADD_TRIG	break;
+		case 8:	MGL_ADD_TRIG	break;
+		}
+	}
+	else switch(state)
 	{
 	case 0:	MGL_ADD_QUAD	break;
 	case 1:
