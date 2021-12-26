@@ -373,11 +373,12 @@ void mglGlyph::Load(wchar_t id, const char *fname)
 					nt = -id;	// TODO optimize and copy points. Q: actual width? Q: cmp with known.
 					FT_BBox boundingBox;
 					FT_Outline_Get_BBox(&outline, &boundingBox);
-					FT_Pos xMin = boundingBox.xMin;
+/*					FT_Pos xMin = boundingBox.xMin;
 					FT_Pos yMin = boundingBox.yMin;
 					FT_Pos xMax = boundingBox.xMax;
 					FT_Pos yMax = boundingBox.yMax;
-/*					m_xMin = xMin;
+					
+					m_xMin = xMin;
 					m_yMin = yMin;
 					m_width = xMax - xMin;
 					m_height = yMax - yMin;*/

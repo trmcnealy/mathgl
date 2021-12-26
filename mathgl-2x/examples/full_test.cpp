@@ -61,6 +61,7 @@ int width  = 800;
 int height = 600;
 int big  = 0;
 int srnd = 0;
+int fastcut = 0;
 int use_mgl = 0;
 int verbose = 0;
 int quality  = MGL_DRAW_NORM;
@@ -198,6 +199,7 @@ static struct option longopts[] =
 	{ "list",	no_argument,	NULL,		'l' },
 	{ "mgl",	no_argument,	&use_mgl,	1 },
 	{ "srnd",	no_argument,	&srnd,		1 },
+	{ "fast",	no_argument,	&fastcut,	1 },
 
 	{ "png",	no_argument,	&type,		0 },
 	{ "eps",	no_argument,	&type,		1 },
@@ -410,6 +412,7 @@ int main(int argc,char **argv)
 		delete gr;	return 0;	}
 	else if(dotest==3)
 	{
+		gr->SetFastCut(fastcut);
 		int qual[7]={0,1,2,4,5,6,8};
 		size_t ll=strlen(mmgl_dat_prepare)+1;
 		mglParse par;
@@ -474,6 +477,7 @@ int main(int argc,char **argv)
 	gr->VertexColor(false);	gr->Compression(false);
 	if(name[0]==0)
 	{
+		gr->SetFastCut(fastcut);
 		while(s->name[0])	// all samples
 		{
 			if(!strcmp(s->name,"icon"))	{	s++;	continue;	}
@@ -498,6 +502,7 @@ int main(int argc,char **argv)
 	}
 	else	// manual sample
 	{
+		gr->SetFastCut(fastcut);
 		mglSample tst;	tst.name=name;
 		int i=0;
 		for(i=0;samp[i].name[0];i++);	// determine the number of samples

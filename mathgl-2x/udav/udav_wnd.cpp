@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 	settings.endGroup();
 
 	mgl_suppress_warn(true);
-	QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
+// 	QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
 #ifdef WIN32
 	QCoreApplication::addLibraryPath("c:/plugins/");
 	QCoreApplication::addLibraryPath(QFileInfo(QString::fromLocal8Bit(argv[0])).absolutePath().append("/plugins/"));

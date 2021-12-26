@@ -166,6 +166,9 @@ struct MGL_EXPORT mglPrim	// NOTE: use float for reducing memory size
 	mglPrim(const mglPrim &aa) : n1(aa.n1),n2(aa.n2),n3(aa.n3),n4(aa.n4),type(aa.type),angl(aa.angl),id(aa.id),z(aa.z),w(aa.w),m(aa.m) 	{}
 	const mglPrim &operator=(const mglPrim &aa)
 	{	n1=aa.n1;	n2=aa.n2;	n3=aa.n3;	n4=aa.n4;	type=aa.type;	angl=aa.angl;	id=aa.id;	z=aa.z;	w=aa.w;	m=aa.m;	return aa;	}
+#if MGL_HAVE_RVAL
+	mglPrim(mglPrim &&aa) : n1(aa.n1),n2(aa.n2),n3(aa.n3),n4(aa.n4),type(aa.type),angl(aa.angl),id(aa.id),z(aa.z),w(aa.w),m(aa.m) 	{}
+#endif
 };
 bool operator<(const mglPrim &a,const mglPrim &b);
 bool operator>(const mglPrim &a,const mglPrim &b);
@@ -250,6 +253,9 @@ struct MGL_EXPORT mglPnt	// NOTE: use float for reducing memory size
 	mglPnt(const mglPnt &aa) : sub(aa.sub)	{	memcpy(dat,aa.dat,15*sizeof(float));	}
 	inline const mglPnt&operator=(const mglPnt &aa)	{ sub=aa.sub;	memcpy(dat,aa.dat,15*sizeof(float));	return aa;	}
 	inline bool same(const mglPnt &p, mreal d)	const {	return fabs(x-p.x)<d && fabs(y-p.y)<d;	}
+#if MGL_HAVE_RVAL
+	mglPnt(mglPnt &&d):x(d.x),y(d.y),z(d.z),u(d.u),v(d.v),w(d.w),r(d.r),g(d.g),b(d.b),a(d.a),xx(d.xx),yy(d.yy),zz(d.zz),c(d.c),ta(d.ta),sub(d.sub)	{}
+#endif
 };
 inline mglPnt operator+(const mglPnt &a, const mglPnt &b)
 //{	mglPnt p;	for(long i=0;i<10;i++)	p.dat[i] = a.dat[i]+b.dat[i];	p.sub=a.sub;	return p;	}

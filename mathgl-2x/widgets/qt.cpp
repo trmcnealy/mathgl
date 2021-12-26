@@ -503,7 +503,7 @@ void QMathGL::mouseMoveEvent(QMouseEvent *ev)
 			if(gg)	emit perChanged(int(per));
 			refresh();
 		}
-		if(ev->buttons()&Qt::MidButton)	// shift
+		if(ev->buttons()&Qt::MiddleButton)	// shift
 		{
 			mreal ff = 1./sqrt(mreal(width()*height()));
 			mreal dx = (x0-xe)*ff*(x2-x1), dy = (y0-ye)*ff*(y2-y1);
@@ -513,7 +513,7 @@ void QMathGL::mouseMoveEvent(QMouseEvent *ev)
 		refresh();
 	}
 	else if(zoom)	refresh();
-	else if(ev->buttons()&Qt::MidButton)	// shift axis
+	else if(ev->buttons()&Qt::MiddleButton)	// shift axis
 	{
 		mreal ff = 1./sqrt(mreal(width()*height()));
 		mreal dx = (x0-xe)*ff*(ax2-ax1), dy = (y0-ye)*ff*(ay2-ay1);
@@ -1018,7 +1018,7 @@ void mglCanvasQT::Window(int argc, char **argv, int (*draw)(mglBase *gr, void *p
 
 	if(!qApp)
 	{
-		QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
+// 		QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
 		if(!argv)	{	argc_ = 0;	argv_=&parg;	}
 		else		{	argc_ = argc;	argv_=argv;	}
 		QApplication *a = new QApplication(argc_, argv_);
