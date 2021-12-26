@@ -45,13 +45,13 @@
 6. Recurrence plot u_{ij} = |a_i-a_j|<epsilon && Cross-reccurence plot u_{ij} = |a_i-b_j|<epsilon. See http://www.recurrence-plot.tk/crps.php
 7. Calendar diagram -- 1D data as dens for 7-row (day) or 12-row (months) + divisions at month or year
 
+10. Add simd instructions for openmp
 11. Use FreeType for getting font/glyph information. This need quick drawing of quadratic and cubic Bezier curves (see example5.cpp). https://www.freetype.org/freetype2/docs/tutorial/step3.html -- add optimization of bezier curves by number of points. Use it as glyph definition or as default source for all/unknown glyphs!?
 
 12. Triangulation in 3d + rewrite crust (test 2d version too). See https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
 
 13. Algorithm of combining primitives with the same color to the larger one.
 
-15. Use new interface for HDF5 (assume v.1.8 was too many years ago :( )
 16. Add mgl_set_font_hscale() to MGL
 22. Add "map res 'eqs' 'vars' ini ['how' A B C [D E]]" -- like "ode" but just simple mapping + progonka.
 
