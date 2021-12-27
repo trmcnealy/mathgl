@@ -337,7 +337,7 @@ void MGL_EXPORT mgl_datac_create(HADT d,long mx,long my,long mz)
 	if(d->a && !d->link)	delete [](d->a);
 	d->a = new dual[d->nx*d->ny*d->nz];
 	d->NewId();	d->link=false;
-	memset(d->a,0,d->nx*d->ny*d->nz*sizeof(dual));
+	memset((void*)(d->a),0,d->nx*d->ny*d->nz*sizeof(dual));
 }
 void MGL_EXPORT mgl_datac_create_(uintptr_t *d, int *nx,int *ny,int *nz)
 {	mgl_datac_create(_DC_,*nx,*ny,*nz);	}

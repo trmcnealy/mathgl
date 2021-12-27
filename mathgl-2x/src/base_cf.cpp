@@ -249,8 +249,10 @@ void MGL_EXPORT mgl_def_font_(const char *name, const char *path,int l,int n)
 	mglDefFont->Load(name,path);	delete []s;		delete []d;	}
 //-----------------------------------------------------------------------------
 int MGL_EXPORT mgl_check_version(const char *ver)
-{	double v=0;	int r = sscanf(ver,"2.%lg",&v);
-	return r<1 || v>MGL_VER2;	}
+{	int m1,m2,res=1, r = sscanf(ver,"%d.%d",&m1,&m2);
+	if(r==1 && m1<=MGL_VER_MAJOR && m1>1)	res=0;
+	if(r==2 && m1<=MGL_VER_MAJOR && m1>1 && (m1<MGL_VER_MAJOR || m2<=MGL_VER_MINOR))	res=0;
+	return res;	}
 int MGL_EXPORT mgl_check_version_(const char *ver, int l)
 {	char *s=new char[l+1];		memcpy(s,ver,l);	s[l]=0;
 	int r=mgl_check_version(s);	delete []s;	return r;	}

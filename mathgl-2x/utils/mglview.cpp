@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 		{	setlocale(LC_ALL, optarg);	setlocale(LC_NUMERIC, "C");	}
 		else if(ch=='h' || (ch==-1 && optind>=argc))
 		{
-			printf(_("mglview show plot from MGL script or MGLD file.\nCurrent version is 2.%g\n"),MGL_VER2);
+			printf(_("mglview show plot from MGL script or MGLD file.\nCurrent version is %s\n"),MGL_VER_STRING);
 			printf(_("Usage:\tmglview [parameter(s)] scriptfile\n"));
 			printf(
 				_("\t-1 str       set str as argument $1 for script\n"

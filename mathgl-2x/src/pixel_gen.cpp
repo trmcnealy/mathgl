@@ -527,7 +527,7 @@ void mglCanvas::Clf(mglColor Back)
 	ClearFrame();
 	if((Flag&3)==2)	Back.Set(0,0,0,0);
 	if(Back!=NC)	FillBackground(Back);
-	else	FillBackground(mglColor(1,1,1,0));
+//	else	FillBackground(mglColor(1,1,1,0));
 }
 //-----------------------------------------------------------------------------
 void mglCanvas::Clf(const char *col)

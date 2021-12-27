@@ -414,7 +414,7 @@ void wxMathGL::Animation(bool st)
 //-----------------------------------------------------------------------------
 void wxMathGL::About()
 {
-	wxString s = wxT("MathGL v. 2.") + wxString::Format(wxT("%g"),MGL_VER2) +
+	wxString s = wxT("MathGL v. ") + wxString::Format(wxT("%s"),MGL_VER_STRING) +
 		wxT("\n(c) Alexey Balakin, 2007\nhttp://mathgl.sourceforge.net/");
 	wxMessageBox(s, wxT("MathGL - about"), wxOK|wxICON_INFORMATION, this);
 }

@@ -218,7 +218,7 @@ mglFormulaC::mglFormulaC(const char *string):Res(0)
 dual mglFormulaC::Calc(dual x,dual y,dual t,dual u) const
 {
 	Error=0;
-	dual a1[MGL_VS];	memset(a1,0,MGL_VS*sizeof(dual));
+	dual a1[MGL_VS];	memset((void*)a1,0,MGL_VS*sizeof(dual));
 	a1['a'-'a'] = a1['u'-'a'] = u;
 	a1['x'-'a'] = a1['r'-'a'] = x;
 	a1['y'-'a'] = a1['n'-'a'] = a1['v'-'a'] = y;
@@ -232,7 +232,7 @@ dual mglFormulaC::Calc(dual x,dual y,dual t,dual u) const
 dual mglFormulaC::Calc(dual x,dual y,dual t,dual u,dual v,dual w) const
 {
 	Error=0;
-	dual a1[MGL_VS];	memset(a1,0,MGL_VS*sizeof(dual));
+	dual a1[MGL_VS];	memset((void*)a1,0,MGL_VS*sizeof(dual));
 	a1['c'-'a'] = a1['w'-'a'] = w;
 	a1['b'-'a'] = a1['v'-'a'] = v;
 	a1['a'-'a'] = a1['u'-'a'] = u;

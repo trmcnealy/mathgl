@@ -58,7 +58,6 @@ uses\n\
 Windows, Graphics,\n\
 {$ENDIF}\n\
 Math;\n\n\
-const MGL_VER2 = 2.2;\n\
 //* This define enables double precision in MathGL */\n\
 MGL_USE_DOUBLE = 1;\n\n\
 const\n\

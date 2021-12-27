@@ -247,7 +247,7 @@ GifFileType *gif;*/
 	SetPlotFactor(0);	Sub.clear();
 	InPlot(0,1,0,1,false);	clr(MGL_FULL_CURV);
 	SetTickLen(0);	SetCut(true);
-	AdjustTicks("xyzc",true);	Clf();	//Clf('w');
+	AdjustTicks("xyzc",true);	Clf(mglColor(1,1,1,0));
 
 	for(int i=0;i<10;i++)	{	AddLight(i, mglPoint(0,0,1));	Light(i,false);	}
 	Light(0,true);	Light(false);	SetDifLight(true);
@@ -261,7 +261,7 @@ mreal mglCanvas::FindOptOrg(char dir, int ind) const
 	static mglMatrix bb;
 	mglPoint nn[8]={mglPoint(0,0,0), mglPoint(0,0,1), mglPoint(0,1,0,0), mglPoint(0,1,1),
 					mglPoint(1,0,0), mglPoint(1,0,1), mglPoint(1,1,0), mglPoint(1,1,1)}, pp[8];
-	memcpy(pp, nn, 8*sizeof(mglPoint));
+	memcpy((void*)pp, nn, 8*sizeof(mglPoint));
 	// do nothing if transformation matrix is the same
 	if(B!=bb)
 	{

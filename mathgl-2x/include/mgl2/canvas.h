@@ -68,7 +68,7 @@ class mglCanvas;
 /// Structure for drawing region
 struct MGL_EXPORT mglDrawReg
 {
-	mglDrawReg() {	memset(this,0,sizeof(mglDrawReg));	}
+	mglDrawReg() : PDef(0),angle(0),ObjId(0),PenWidth(0),pPos(0) ,x1(0),x2(0),y1(0),y2(0) {}
 	mglDrawReg(const mglDrawReg &aa) : PDef(aa.PDef),angle(aa.angle),ObjId(aa.ObjId),PenWidth(aa.PenWidth),pPos(aa.pPos) ,x1(aa.x1),x2(aa.x2),y1(aa.y1),y2(aa.y2)	{}
 #if MGL_HAVE_RVAL
 	mglDrawReg(mglDrawReg &&aa) : PDef(aa.PDef),angle(aa.angle),ObjId(aa.ObjId),PenWidth(aa.PenWidth),pPos(aa.pPos) ,x1(aa.x1),x2(aa.x2),y1(aa.y1),y2(aa.y2)	{}

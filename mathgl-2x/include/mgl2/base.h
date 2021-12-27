@@ -63,7 +63,7 @@ public:
 		dat = new T*[(size_t)1<<MGL_PB];
 		*dat = new T[(size_t)1<<MGL_PB];	reserve(st.n);
 		for(size_t i=0;i<nb;i++)
-			memcpy(dat[i],st.dat[i],((size_t)1<<MGL_PB)*sizeof(T));
+			memcpy((void*)(dat[i]),st.dat[i],((size_t)1<<MGL_PB)*sizeof(T));
 		n=st.n;	}
 	mglStack()
 	{	mutex = 0;	n=0;	nb=1;	MGL_PB = mgl_bsize(0);
@@ -109,7 +109,7 @@ public:
 	{
 		clear();	reserve(st.n);
 		for(size_t i=0;i<nb;i++)
-			memcpy(dat[i],st.dat[i],((size_t)1<<MGL_PB)*sizeof(T));
+			memcpy((void*)(dat[i]),st.dat[i],((size_t)1<<MGL_PB)*sizeof(T));
 		n = st.n;	return st;
 	}
 };
@@ -203,7 +203,7 @@ struct MGL_EXPORT mglBlock
 	int id;		///< object id
 
 	mglBlock():n1(0),n2(0),n3(0),n4(0),AmbBr(0.5),DifBr(0.5),id(0)	{}
-	mglBlock(const mglBlock &aa)	{	memcpy(this, &aa, sizeof(mglBlock));	}
+	mglBlock(const mglBlock &aa)	{	memcpy((void*)this, &aa, sizeof(mglBlock));	}
 	const mglBlock &operator=(const mglBlock &aa)
 	{	n1=aa.n1;	n2=aa.n2;	n3=aa.n3;	n4=aa.n4;	for(int i=0;i<10;i++)	light[i]=aa.light[i];
 		AmbBr=aa.AmbBr;	DifBr=aa.DifBr;	B=aa.B;	id=aa.id;	return aa;	}
@@ -312,8 +312,8 @@ struct MGL_EXPORT mglTexture
 	{	col = new mglColor[MGL_TEXTURE_COLOURS];	Set(cols,smooth,alpha);	}
 	mglTexture(const mglTexture &aa) : n(aa.n),Smooth(aa.Smooth),Alpha(aa.Alpha)
 	{	col = new mglColor[MGL_TEXTURE_COLOURS];	memcpy(Sch,aa.Sch,260);
-		memcpy(col,aa.col,MGL_TEXTURE_COLOURS*sizeof(mglColor));
-		c0 = new mglColor[2*aa.n];	memcpy(c0,aa.c0,2*aa.n*sizeof(mglColor));
+		memcpy((void*)col,aa.col,MGL_TEXTURE_COLOURS*sizeof(mglColor));
+		c0 = new mglColor[2*aa.n];	memcpy((void*)c0,aa.c0,2*aa.n*sizeof(mglColor));
 		val = new float[aa.n];		memcpy(val,aa.val,aa.n*sizeof(float));	}
 #if MGL_HAVE_RVAL
 	mglTexture(mglTexture &&aa) : n(aa.n),c0(aa.c0),val(aa.val),Smooth(aa.Smooth),Alpha(aa.Alpha)
@@ -334,7 +334,7 @@ struct MGL_EXPORT mglTexture
 	void GetRGBAOBJ(unsigned char *f) const;	// Export repeating border colors, since OBJ by default wraps textures and we need an extra boundary to work around implementation quirks
 	inline const mglTexture &operator=(const mglTexture &aa)
 	{	n=aa.n;	Smooth=aa.Smooth;	Alpha=aa.Alpha;
-		memcpy(col,aa.col,MGL_TEXTURE_COLOURS*sizeof(mglColor));
+		memcpy((void*)col,aa.col,MGL_TEXTURE_COLOURS*sizeof(mglColor));
 		memcpy(Sch,aa.Sch,260);	return aa;	}
 };
 //-----------------------------------------------------------------------------

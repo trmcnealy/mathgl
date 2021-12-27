@@ -451,7 +451,7 @@ void MainWindow::properties()	{	propDlg->exec();	}
 //-----------------------------------------------------------------------------
 void MainWindow::about()
 {
-	QString s = "<a href='http://mathgl.sourceforge.net/doc_en/UDAV-overview.html'>UDAV</a> v. 2."+QString::number(MGL_VER2)+
+	QString s = "<a href='http://mathgl.sourceforge.net/doc_en/UDAV-overview.html'>UDAV</a> v. "+QString(MGL_VER_STRING)+
 	_("<br>(c) Alexey Balakin, 2007-present<br><br><a href='http://www.gnu.org/copyleft/gpl.html'>License is GPL v.2 or later.</a>");
 	QMessageBox::about(this, _("UDAV - about"), s);
 }

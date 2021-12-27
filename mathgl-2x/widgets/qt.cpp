@@ -873,7 +873,7 @@ void QMathGL::setSize(int w, int h)
 //-----------------------------------------------------------------------------
 void QMathGL::about()
 {
-	QString s = _("MathGL v. 2.") + QString::number(MGL_VER2) + _("\n(c) Alexey Balakin, 2007\nhttp://mathgl.sourceforge.net/");
+	QString s = _("MathGL v. 2.") + QString(MGL_VER_STRING) + _("\n(c) Alexey Balakin, 2007\nhttp://mathgl.sourceforge.net/");
 	QMessageBox::about(this, _("MathGL - about"), s);
 }
 //-----------------------------------------------------------------------------

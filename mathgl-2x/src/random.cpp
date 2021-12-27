@@ -90,7 +90,7 @@ void MGL_EXPORT mgl_data_rnd_binomial_(uintptr_t *d, double *p)
 //-----------------------------------------------------------------------------
 mreal MGL_EXPORT mgl_rnd_gaussian(mreal mu, mreal sigma)
 {
-	mreal x, y, r=0.0;
+	mreal x=0, y=0, r=0.0;
 	while (r >= 1 || r == 0)
 	{
 		x = 2.0 * mgl_rnd() - 1.0;
@@ -126,18 +126,13 @@ void MGL_EXPORT mgl_data_rnd_exponential_(uintptr_t *d, double *l)
 long MGL_EXPORT mgl_rnd_discrete(HCDT A) // this assumes A to be 1d
 {
 	long n=A->GetNx();
-	mreal amax=0.0, sum_prob=0.0;
+	mreal amax=0.0;
 
 	mreal *sum = new mreal[n];
 	for(long i=0; i<n; i++)
 	{	sum[i] = amax;	amax += A->v(i);	}
 
 	mreal r=amax*mgl_rnd();
-// 	for(i=0; i<n; i++)
-// 	{
-// 		sum_prob += A->v(i);
-// 		if(sum_prob > r)   break;
-// 	}
 	long i1=0,i2=n-1,i=0;
 	while(i2>i1+1)
 	{

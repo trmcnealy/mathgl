@@ -631,7 +631,7 @@ int static mgls_variant(mglGraph *gr, long , mglArg *a, const char *k, const cha
 int static mgls_version(mglGraph *gr, long , mglArg *a, const char *k, const char *)
 {
 	int res=0;
-	char buf[32];	sprintf(buf,"MathGL version is 2.%g",MGL_VER2);
+	char buf[32];	sprintf(buf,"MathGL version is %s",MGL_VER_STRING);
 	if(k[0]==0)	gr->SetWarn(-1,buf);
 	else if(!strcmp(k,"s"))	res = mgl_check_version(a[0].s.s)?1:0;
 	else res = 1;

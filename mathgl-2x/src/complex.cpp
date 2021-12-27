@@ -212,18 +212,18 @@ void MGL_EXPORT mgl_datac_smooth(HADT d, const char *dirs, mreal )
 //	if(Type == SMOOTH_NONE)	return;
 	long p[3]={nx,ny,Type};
 	dual *b = new dual[nx*ny*nz];
-	memset(b,0,nx*ny*nz*sizeof(dual));
+	memset((void*)b,0,nx*ny*nz*sizeof(dual));
 	if(nx>4 && xdir)
 	{
 		mglStartThreadC(mgl_csmth_x,0,nx*ny*nz,b,d->a,0,p);
 		memcpy(d->a,b,nx*ny*nz*sizeof(dual));
-		memset(b,0,nx*ny*nz*sizeof(dual));
+		memset((void*)b,0,nx*ny*nz*sizeof(dual));
 	}
 	if(ny>4 && ydir)
 	{
 		mglStartThreadC(mgl_csmth_y,0,nx*ny*nz,b,d->a,0,p);
 		memcpy(d->a,b,nx*ny*nz*sizeof(dual));
-		memset(b,0,nx*ny*nz*sizeof(dual));
+		memset((void*)b,0,nx*ny*nz*sizeof(dual));
 	}
 	if(nz>4 && zdir)
 	{
@@ -1515,7 +1515,7 @@ void MGL_EXPORT mgl_datac_diff_par(HADT d, HCDT x, HCDT y, HCDT z)
 {
 	long nx=d->GetNx(),ny=d->GetNy(),nz=d->GetNz(), nn=nx*ny*nz;
 	if(nx<2 || ny<2)	return;
-	dual *b = new dual[nn];	memset(b,0,nn*sizeof(dual));
+	dual *b = new dual[nn];	memset((void*)b,0,nn*sizeof(dual));
 	long p[3]={nx,ny,nz};
 
 	if(x&&y&&z && x->GetNN()==nn && y->GetNN()==nn && z->GetNN()==nn)

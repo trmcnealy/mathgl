@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 		else if(ch=='o')	fname = optarg;
 		else if(ch=='h' || (ch==-1 && optind>=argc))
 		{
-			printf("make_bin convert mgl font to binary file.\nCurrent version is 2.%g\n",MGL_VER2);
+			printf("make_bin convert mgl font to binary file.\nCurrent version is %s\n",MGL_VER_STRING);
 			printf("Usage:\tmake_bin [parameter(s)] base\n");
 			printf(
 				"\t-p path      set specific path for base font files\n"

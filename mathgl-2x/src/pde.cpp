@@ -31,7 +31,7 @@ const double GAMMA=0.1;	///< value for damping
 //-----------------------------------------------------------------------------
 void static mgl_operator_exp(long n, const dual *h, dual *a, dual *f)
 {
-	memset(f,0,2*n*sizeof(dual));
+	memset((void*)f,0,2*n*sizeof(dual));
 	const long i1=n/2, i2=3*n/2-1;
 #pragma omp parallel for
 	for(long j=0;j<n;j++)
@@ -57,7 +57,7 @@ void static mgl_operator_exp(long n, const dual *h, dual *a, dual *f)
 			f[2*j+1] += a[i]*exp(g2+dual(0,i*k2));
 		}
 	}
-	memset(a,0,2*n*sizeof(dual));
+	memset((void*)a,0,2*n*sizeof(dual));
 #pragma omp parallel for
 	for(long i=0;i<2*n;i++)
 	{
@@ -76,8 +76,8 @@ void static mgl_operator_exp(long n, const dual *h, dual *a, dual *f)
 //-----------------------------------------------------------------------------
 void static mgl_operator_lin(long n, mreal *h, dual *a, dual *f, dual *g, dual *o, const dual *iexp)
 {
-	memset(f,0,2*n*sizeof(dual));
-	memset(g,0,2*n*sizeof(dual));
+	memset((void*)f,0,2*n*sizeof(dual));
+	memset((void*)g,0,2*n*sizeof(dual));
 	const long i1=n/2, i2=3*n/2-1;
 #pragma omp parallel for
 	for(long j=0;j<n;j++)
@@ -107,7 +107,7 @@ void static mgl_operator_lin(long n, mreal *h, dual *a, dual *f, dual *g, dual *
 			g[2*j] += a[i]*e1;		g[2*j+1] += a[i]*e2;
 		}
 	}
-	memset(o,0,2*n*sizeof(dual));
+	memset((void*)o,0,2*n*sizeof(dual));
 #pragma omp parallel for
 	for(long i=0;i<2*n;i++)
 	{
@@ -189,7 +189,7 @@ HADT MGL_EXPORT mgl_pde_adv_c(HMGL gr, const char *func, HCDT ini_re, HCDT ini_i
 	std::vector<mglDataA*> list;
 	list.push_back(&x);	list.push_back(&y);	list.push_back(&p);	list.push_back(&r);	list.push_back(&u);
 
-	dual *a = new dual[2*nx];	memset(a,0,2*nx*sizeof(dual));	// Add "damping" area
+	dual *a = new dual[2*nx];	memset((void*)a,0,2*nx*sizeof(dual));	// Add "damping" area
 	dual *f = new dual[6*nx], *g=f+2*nx, *s=f+4*nx;
 #pragma omp parallel for
 	for(long i=0;i<nx;i++)	// Initial conditions
@@ -202,7 +202,7 @@ HADT MGL_EXPORT mgl_pde_adv_c(HMGL gr, const char *func, HCDT ini_re, HCDT ini_i
 		if(i>3*nx/2)	dmp[i] += gamma*mgl_ipow((i-3*nx/2-1)/mreal(nx/2),2);
 	}
 	bool have_y = mglchr(func,'y');
-	HADT ham;
+	HADT ham=0;
 	if(!have_y)		ham = mgl_apde_calc_ham(&hIm, old, func, list, dd);
 	dual *iexp = new dual[4*nx*nx];
 #pragma omp parallel for collapse(2)
@@ -320,7 +320,7 @@ HADT MGL_EXPORT mgl_pde_solve_c(HMGL gr, const char *ham, HCDT ini_re, HCDT ini_
 	ddual *hx = new ddual[2*nx], *hv = new ddual[2*ny];
 	ddual *hy = new ddual[2*ny], *hu = new ddual[2*nx];
 	double *dmp = new double[4*nx*ny];
-	memset(a,0,4*nx*ny*sizeof(ddual));
+	memset((void*)a,0,4*nx*ny*sizeof(ddual));
 	memset(dmp,0,4*nx*ny*sizeof(double));
 #pragma omp parallel for collapse(2)
 	for(long j=0;j<ny;j++)	for(long i=0;i<nx;i++)	// Initial conditions
@@ -356,8 +356,8 @@ HADT MGL_EXPORT mgl_pde_solve_c(HMGL gr, const char *ham, HCDT ini_re, HCDT ini_
 	{
 		if(gr->NeedStop())	break;
 		tmp.zz = Min.z+dz*k;
-		memset(hxy,0,4*nx*ny*sizeof(ddual));	memset(hxv,0,4*nx*ny*sizeof(ddual));
-		memset(huv,0,4*nx*ny*sizeof(ddual));	memset(huy,0,4*nx*ny*sizeof(ddual));
+		memset((void*)hxy,0,4*nx*ny*sizeof(ddual));	memset((void*)hxv,0,4*nx*ny*sizeof(ddual));
+		memset((void*)huv,0,4*nx*ny*sizeof(ddual));	memset((void*)huy,0,4*nx*ny*sizeof(ddual));
 		mgl_pde_hprep(&tmp);
 		for(long i=0;i<2*nx;i++)	{	hx[i] = hxv[i];			hu[i] = huv[i];		}
 		for(long j=0;j<2*ny;j++)	{	hy[j] = huy[2*nx*j];	hv[j] = huv[2*nx*j];}
@@ -526,7 +526,7 @@ void MGL_NO_EXPORT mgl_set_funcC(const mreal *x, mreal *dx, void *par)
 	for(long i=0;i<p->m;i++)
 	{
 		HADT d = static_cast<HADT>(p->head[i]);
-		memcpy(d->a, x+2*i*n, 2*n*sizeof(mreal));
+		memcpy((void*)d->a, x+2*i*n, 2*n*sizeof(mreal));
 	}
 	p->t->a[0] = x[2*p->n];
 //#pragma omp parallel for collapse(2)

@@ -747,7 +747,7 @@ void mglCanvas::DrawGrid(mglAxis &aa, bool at_tick)
 	pp[1].x=Max.x;	pp[2].y=Max.y;	pp[3].z=Max.z;
 	pp[4].x=Min.x;	pp[5].y=Min.y;	pp[6].z=Min.z;
 	mreal zm=INFINITY;
-	memcpy(oo,pp,8*sizeof(mglPoint));
+	memcpy((void*)oo,pp,8*sizeof(mglPoint));
 	for(int i=0;i<8;i++)	// find deepest point
 	{
 		ScalePoint(&B,pp[i],nan,false);
@@ -932,7 +932,7 @@ void mglCanvas::Box(const char *col, bool ticks)
 			p[1].x=Max.x;	p[2].y=Max.y;	p[3].z=Max.z;
 			p[4].x=Min.x;	p[5].y=Min.y;	p[6].z=Min.z;
 			mreal zm=INFINITY;	int im=0;
-			memcpy(oo,p,8*sizeof(mglPoint));
+			memcpy((void*)oo,p,8*sizeof(mglPoint));
 			for(int i=0;i<8;i++)	// find deepest point
 			{
 				ScalePoint(&B,p[i],nan,false);

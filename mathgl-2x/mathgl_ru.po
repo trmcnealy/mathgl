@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MathGL2 2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-26 23:21+0300\n"
+"POT-Creation-Date: 2021-12-27 05:03+0300\n"
 "PO-Revision-Date: 2017-04-19 01:17+0300\n"
 "Last-Translator: Alexey Balakin <mathgl.abalakin@gmail.com>\n"
 "Language-Team: Russian\n"
@@ -2253,41 +2253,41 @@ msgstr "Заполнить в диапазоне"
 msgid "Fill x-,k-samples for transforms"
 msgstr "Заполнить как x-,k-координаты для трансформации"
 
-#: src/random.cpp:350
+#: src/random.cpp:345
 msgid "Fills by fractional brownian motion"
 msgstr "Заполнить броуновским движением"
 
-#: src/random.cpp:356
+#: src/random.cpp:351
 msgid "Fills by random integers uniformly chosen in [lo, hi)"
 msgstr "Заполнить случайными целыми числами в интервале [lo, hi)"
 
-#: src/random.cpp:348
+#: src/random.cpp:343
 msgid ""
 "Fills by random numbers according to Bernoulli distribution with probability "
 "p"
 msgstr "Заполнить случайными числами с распределением Бернулли"
 
-#: src/random.cpp:353
+#: src/random.cpp:348
 msgid "Fills by random numbers according to Gaussian distribution"
 msgstr "Заполнить случайными числами с гауссовым распределением"
 
-#: src/random.cpp:349
+#: src/random.cpp:344
 msgid ""
 "Fills by random numbers according to binomial distribution in n coin flips "
 "with probability p"
 msgstr "Заполнить случайными числами с биномиальным распределением"
 
-#: src/random.cpp:351
+#: src/random.cpp:346
 msgid "Fills by random numbers according to discrete distribution"
 msgstr "Заполнить случайными числами с дискретным распределением"
 
-#: src/random.cpp:352
+#: src/random.cpp:347
 msgid ""
 "Fills by random numbers according to exponential distribution with "
 "probability p"
 msgstr "Заполнить случайными числами с экспоненциальным распределением"
 
-#: src/random.cpp:355
+#: src/random.cpp:350
 msgid "Fills by random numbers uniformly chosen in [lo,hi)"
 msgstr "Заполнить случайными числами в интервале [lo, hi)"
 
@@ -4803,7 +4803,7 @@ msgstr "Показать предыдущий кадр (Ctrl+,)."
 msgid "Show window for primitives"
 msgstr "Показать диалог настроек UDAV"
 
-#: src/random.cpp:354
+#: src/random.cpp:349
 msgid "Shuffle data cells (for dir='a') or slices (for dir='xyz')"
 msgstr "Перемешать ячейки (для dir='a') или срезы (для dir='xyz') данных"
 
@@ -5179,7 +5179,7 @@ msgstr "Симметричный диапазон"
 msgid "Symmetrical?"
 msgstr "Симметрично?"
 
-#: src/addon.cpp:122 src/base_cf.cpp:281
+#: src/addon.cpp:122 src/base_cf.cpp:283
 #, c-format
 msgid "TEST: %s\n"
 msgstr "ТЕСТ: %s\n"
@@ -6373,27 +6373,27 @@ msgid "mgl_en"
 msgstr "mgl_ru"
 
 #: utils/mglconv.cpp:83
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "mglconv convert mgl script to image file (default PNG).\n"
-"Current version is 2.%g\n"
+"Current version is %s\n"
 msgstr ""
 "mglconv конвертирует mgl скрипт в рисунок (по умолчанию PNG).\n"
 "Текущая версия 2.%g\n"
 
 #: mgllab/mgllab.cpp:422
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "mgllab draw mgl script interactively.\n"
-"Current version is 2.%g\n"
+"Current version is %s\n"
 msgstr ""
 "mgllab рисует mgl скрипт интерактивно.\n"
 "Текущая версия 2.%g\n"
 
 #: mgllab/help.cpp:78
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"mgllab v. 2.%g\n"
+"mgllab v. %s\n"
 "(c) Alexey Balakin, 2017\n"
 "http://mathgl.sf.net/"
 msgstr ""
@@ -6402,10 +6402,10 @@ msgstr ""
 "http://mathgl.sf.net/"
 
 #: utils/mglview.cpp:82
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "mglview show plot from MGL script or MGLD file.\n"
-"Current version is 2.%g\n"
+"Current version is %s\n"
 msgstr ""
 "mglview показывает график MGL скрипта или MGLD файла.\n"
 "Текущая версия 2.%g\n"
