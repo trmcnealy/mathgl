@@ -6409,42 +6409,42 @@ msgid "mgl_en"
 msgstr "mgl_en"
 
 #: utils/mglconv.cpp:83
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "mglconv convert mgl script to image file (default PNG).\n"
 "Current version is %s\n"
 msgstr ""
 "mglconv convierte scripts MGL a archivos de imagen (PNG por defecto).\n"
-"La version actual es 2.%g\n"
+"La version actual es %s\n"
 
 #: mgllab/mgllab.cpp:422
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "mgllab draw mgl script interactively.\n"
 "Current version is %s\n"
 msgstr ""
 "mgllab gráfica scripts MGL de manera interactiva.\n"
-"La version actual es 2.%g\n"
+"La version actual es %s\n"
 
 #: mgllab/help.cpp:78
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "mgllab v. %s\n"
 "(c) Alexey Balakin, 2017\n"
 "http://mathgl.sf.net/"
 msgstr ""
-"mgllab v. 2.%g\n"
+"mgllab v. %s\n"
 "(c) Alexey Balakin, 2017\n"
 "http://mathgl.sf.net/"
 
 #: utils/mglview.cpp:82
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "mglview show plot from MGL script or MGLD file.\n"
 "Current version is %s\n"
 msgstr ""
 "mglview muestra la gráfica de un script MGL o de un archivo MGLD.\n"
-"La version actual es 2.%g\n"
+"La version actual es %s\n"
 
 #: udav/data_dlg.cpp:68
 msgid "min"

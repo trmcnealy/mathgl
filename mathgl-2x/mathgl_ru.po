@@ -1636,9 +1636,8 @@ msgid "Draw curve by tube"
 msgstr "Нарисовать трубу около кривой"
 
 #: src/exec_gr.cpp:1234
-#, fuzzy
 msgid "Draw curves of cross-section of isosurfaces a,b for 3D data"
-msgstr "Нарисовать поверхность постоянного уровня"
+msgstr "Нарисовать линии пересечения поверхностей постоянного уровня"
 
 #: src/exec_gr.cpp:1235
 msgid "Draw density plot"
@@ -1793,9 +1792,8 @@ msgid "Draw line"
 msgstr "Нарисовать прямую линию"
 
 #: src/exec_gr.cpp:1253
-#, fuzzy
 msgid "Draw lines with arrows for 1D data"
-msgstr "Нарисовать график из вертикальных полос"
+msgstr "Нарисовать график из стрелок"
 
 #: src/exec_gr.cpp:1254
 msgid "Draw mapping plot"
@@ -2308,18 +2306,16 @@ msgid "Find envelope along direction(s)"
 msgstr "Найти огибающую в направлении"
 
 #: src/exec_dat.cpp:1759
-#, fuzzy
 msgid "Find first indexes of values larger val over direction"
-msgstr "Найти минимум по направлению"
+msgstr "Найти первый индекс значения большего val по направлению"
 
 #: udav/dat_pnl.cpp:804
 msgid "Find histogram of data."
 msgstr "Найти гистограмму данных"
 
 #: src/exec_dat.cpp:1773
-#, fuzzy
 msgid "Find last indexes of values larger val over direction"
-msgstr "Найти максимум по направлению"
+msgstr "Найти последний индекс значения большего val по направлению"
 
 #: src/exec_dat.cpp:1776
 msgid "Find maximal value over direction"
@@ -3956,9 +3952,8 @@ msgid "Read and join data from several files"
 msgstr "Загрузить и объединить данные из нескольких файлов"
 
 #: src/exec_dat.cpp:1798
-#, fuzzy
 msgid "Read data from binary file of specified type"
-msgstr "Загрузить данные из файла с размерами из первой строки"
+msgstr "Загрузить данные из бинарного файла заданного типа"
 
 #: src/exec_dat.cpp:1796
 msgid "Read data from file"
@@ -4799,9 +4794,8 @@ msgid "Show previous slide (Ctrl+,)."
 msgstr "Показать предыдущий кадр (Ctrl+,)."
 
 #: mgllab/editor.cpp:532
-#, fuzzy
 msgid "Show window for primitives"
-msgstr "Показать диалог настроек UDAV"
+msgstr "Показать окно для примитивов"
 
 #: src/random.cpp:349
 msgid "Shuffle data cells (for dir='a') or slices (for dir='xyz')"
@@ -5107,9 +5101,8 @@ msgid "Swap parts"
 msgstr "Поменять местами"
 
 #: src/exec_set.cpp:865
-#, fuzzy
 msgid "Switch on/off TeX parsing at text output"
-msgstr "Вкл/выкл прозрачность рисунка"
+msgstr "Вкл/выкл разбор TeX команд"
 
 #: src/exec_set.cpp:831
 msgid "Switch on/off fog"
@@ -5667,9 +5660,8 @@ msgid "Use color scheme"
 msgstr "Использовать цветовую схему"
 
 #: mgllab/mgllab.cpp:485
-#, fuzzy
 msgid "Use dark color scheme"
-msgstr "Использовать цветовую схему"
+msgstr "Использовать темную цветовую схему"
 
 #: udav/prop_dlg.cpp:175
 msgid "Use dots plot for preview"
@@ -6373,42 +6365,42 @@ msgid "mgl_en"
 msgstr "mgl_ru"
 
 #: utils/mglconv.cpp:83
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "mglconv convert mgl script to image file (default PNG).\n"
 "Current version is %s\n"
 msgstr ""
 "mglconv конвертирует mgl скрипт в рисунок (по умолчанию PNG).\n"
-"Текущая версия 2.%g\n"
+"Текущая версия %s\n"
 
 #: mgllab/mgllab.cpp:422
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "mgllab draw mgl script interactively.\n"
 "Current version is %s\n"
 msgstr ""
 "mgllab рисует mgl скрипт интерактивно.\n"
-"Текущая версия 2.%g\n"
+"Текущая версия %s\n"
 
 #: mgllab/help.cpp:78
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "mgllab v. %s\n"
 "(c) Alexey Balakin, 2017\n"
 "http://mathgl.sf.net/"
 msgstr ""
-"mgllab v. 2.%g\n"
+"mgllab v. %s\n"
 "(c) Алексей Балакин, 2017\n"
 "http://mathgl.sf.net/"
 
 #: utils/mglview.cpp:82
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "mglview show plot from MGL script or MGLD file.\n"
 "Current version is %s\n"
 msgstr ""
 "mglview показывает график MGL скрипта или MGLD файла.\n"
-"Текущая версия 2.%g\n"
+"Текущая версия %s\n"
 
 #: udav/data_dlg.cpp:68
 msgid "min"

@@ -53,6 +53,9 @@ Generally, MathGL is GPL library. However, you can use LGPL license for MathGL c
 @strong{Latest news}
 @itemize
 
+@item @strong{1 January 2022.}
+New version (v.8.0) of @uref{http://sourceforge.net/projects/mathgl, MathGL} is released. There are change version numbering according Debian rules, and add accurate line segment and quadrangle/triangle face cutting at axis border crossing.
+
 @item @strong{8 December 2021.}
 New version (v.2.5) of @uref{http://sourceforge.net/projects/mathgl, MathGL} is released. There are big improve in formula evaluation (user-defined function, summation and product, new functions for data interpolation), new plot kind @ref{dcont} and @ref{lines}, set of functions for random distributions, new data handling functions (like, @ref{keep}), extend @ref{ode} to solve PDE/cascade/etc, add mask for most of plotting functions and bugfixes, which denoted @ref{News, here}.
 
@@ -79,6 +82,24 @@ Javascript interface was developed with support of @url{http://www.datadvance.ne
 @nav{}
 
 @itemize
+
+@item @strong{1 January 2022}
+New version (v.8.0) of @uref{http://sourceforge.net/projects/mathgl, MathGL} is released.
+@itemize @bullet
+
+@item  Change version numbering according Debian rules.
+@item  Add accurate line segment and quadrangle/triangle face cutting at axis border crossing.
+@item  Add @ref{fastcut} for disable accurate but slow line/trig/quad primitives cutting at axis borders.
+@item  Restore back transparent background by default. You can set non-transparent background by using @ref{clf} or @ref{background} functions.
+@item  Compatibility changes for Qt5.15 and MSVC.
+
+@strong{INCOMPATIBLE:}
+@item  Change @ref{colorbar} C-functions by adding last argument for options.
+@item Add alpha-value in @ref{background}.
+@item  Disable Qt4 interface by default.
+
+@end itemize
+
 
 @item @strong{8 December 2021}
 New version (v.2.5) of @uref{http://sourceforge.net/projects/mathgl, MathGL} is released.
