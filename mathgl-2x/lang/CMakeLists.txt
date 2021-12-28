@@ -49,17 +49,17 @@ if(enable-python)
 		SWIG_ADD_LIBRARY(mathgl LANGUAGE python SOURCES mathgl.i)
 	endif(${CMAKE_VERSION} VERSION_LESS "3.8.0")
 	SWIG_LINK_LIBRARIES(mathgl mgl ${PYTHON_LIBRARIES})
-	set_target_properties(_mathgl PROPERTIES BUILD_WITH_INSTALL_RPATH ON)
+	set_target_properties(mathgl PROPERTIES BUILD_WITH_INSTALL_RPATH ON)
 	add_custom_command(OUTPUT mathgl.pyc
 		COMMAND ${PYTHON_EXECUTABLE}
 		ARGS -c \"from py_compile import compile\; compile('mathgl.py') \"
 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/lang
-		DEPENDS _mathgl
+		DEPENDS mathgl
 	)
-	add_custom_target(mgl_python_module ALL DEPENDS _mathgl mathgl.pyc)
+	add_custom_target(mgl_python_module ALL DEPENDS mathgl mathgl.pyc)
 
-	install(FILES ${MathGL2_BINARY_DIR}/lang/mathgl.py ${MathGL2_BINARY_DIR}/lang/__pycache__/mathgl.cpython-${PY3VERSION_NODOT}.pyc DESTINATION ${MGL_PYTHON_SITE_PACKAGES}/mathgl/__pycache__)
-	install (TARGETS _mathgl LIBRARY DESTINATION ${MGL_PYTHON_SITE_PACKAGES}/mathgl)
+	install(FILES ${MathGL2_BINARY_DIR}/lang/mathgl.py ${MathGL2_BINARY_DIR}/lang/__pycache__/mathgl.cpython-${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}.pyc DESTINATION ${MGL_PYTHON_SITE_PACKAGES}/mathgl/__pycache__)
+	install (TARGETS mathgl LIBRARY DESTINATION ${MGL_PYTHON_SITE_PACKAGES}/mathgl)
 	set(mgl_clean_files ${mgl_clean_files} mathgl.py)
 endif(enable-python)
 
