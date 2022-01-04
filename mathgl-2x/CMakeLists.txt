@@ -29,7 +29,7 @@ set(MathGL_VERSION_MAJOR 8)
 set(MathGL_VERSION_MINOR 0)
 set(MathGL_PATCH_VERSION 0)
 set(MathGL_VERSION ${MathGL_VERSION_MAJOR}.${MathGL_VERSION_MINOR}.${MathGL_PATCH_VERSION})
-set(MathGL_SOVERSION 8.0)
+set(MathGL_SOVERSION ${MathGL_VERSION_MAJOR}.${MathGL_VERSION_MINOR})
 string(TIMESTAMP MathGL_DATE UTC)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -222,7 +222,7 @@ CMAKE_DEPENDENT_OPTION(enable-qt "Enable Qt5 widget" OFF "NOT enable-all-widgets
 #option(enable-qt5 "Enable Qt5 widget" OFF)
 CMAKE_DEPENDENT_OPTION(enable-qt5asqt "Set Qt5 as default libmgl-qt" OFF "enable-qt5" OFF)
 CMAKE_DEPENDENT_OPTION(enable-freetype "Enable freetype support" OFF "NOT enable-all" ON)
-set(PY3VERSION_DOTTED "3.8" CACHE STRING "Used python version")
+set(PY3VERSION_DOTTED "3.9" CACHE STRING "Used python version")
 string(REPLACE "." "" PY3VERSION_NODOT ${PY3VERSION_DOTTED})
 
 # msvc fwprintf print char* for the specifier of "%s" format

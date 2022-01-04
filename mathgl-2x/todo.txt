@@ -51,6 +51,7 @@
 12. Triangulation in 3d + rewrite crust (test 2d version too). See https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
 
 13. Algorithm of combining primitives with the same color to the larger one.
+14. Add mgl_setup_paths(MGL_FONT_PATH, MGL_INSTALL_DIR) for replacing default paths
 
 16. Add mgl_set_font_hscale() to MGL
 22. Add "map res 'eqs' 'vars' ini ['how' A B C [D E]]" -- like "ode" but just simple mapping + progonka.

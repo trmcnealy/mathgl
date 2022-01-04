@@ -1804,7 +1804,7 @@ void mglBase::curve_plot(size_t num, size_t k0, size_t step)
 		for(k=i+1;k<num;k++)
 		{
 			const mglPoint p2(GetPntP(k0+k*step)-p1);
-			float dd=1/sqrt(p2.x*p2.x+p2.y*p2.y), t = atan2(p2.y,p2.x);
+			float dd=0.3/sqrt(p2.x*p2.x+p2.y*p2.y), t = atan2(p2.y,p2.x);
 			if(t>t1 && t<t2)
 			{	t1 = t1<t-dd?t-dd:t1;	t2 = t2>t+dd?t+dd:t2;	}	// new range
 			else	break;
