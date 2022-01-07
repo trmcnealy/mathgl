@@ -1001,7 +1001,7 @@ Gets array which is @var{id}-th section (range of slices separated by value @var
 @deftypefnx {Method on @code{mglData}} @code{mglData} Solve (@code{mreal} val, @code{char} dir, @code{const mglDataA &}idat, @code{bool} norm=@code{true}) @code{const}
 @deftypefnx {C function} @code{HMDT} mgl_data_solve (@code{HCDT} dat, @code{mreal} val, @code{char} dir, @code{HCDT} idat, @code{int} norm)
 @end ifclear
-Gets array which values is indexes (roots) along given direction @var{dir}, where interpolated values of data @var{dat} are equal to @var{val}. Output data will have the sizes of @var{dat} in directions transverse to @var{dir}. If data @var{idat} is provided then its values are used as starting points. This allows to find several branches by consequentive calls. Indexes are supposed to be normalized in range [0,1] (if @var{norm}=@code{true}) or in ranges [0,nx], [0,ny], [0,nz] correspondingly. Function return NULL or create empty data if data cannot be created for given arguments. @sref{Solve sample}
+Gets array which values is indexes (roots) along given direction @var{dir}, where interpolated values of data @var{dat} are equal to @var{val}. Output data will have the sizes of @var{dat} in directions transverse to @var{dir}. If data @var{idat} is provided then its values are used as starting points. This allows one to find several branches by consequentive calls. Indexes are supposed to be normalized in range [0,1] (if @var{norm}=@code{true}) or in ranges [0,nx], [0,ny], [0,nz] correspondingly. Function return NULL or create empty data if data cannot be created for given arguments. @sref{Solve sample}
 @end deftypefn
 
 @anchor{roots}

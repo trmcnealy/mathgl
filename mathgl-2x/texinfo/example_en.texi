@@ -495,7 +495,7 @@ int main(int argc,char **argv)
   QMainWindow *Wnd = new QMainWindow;
   Wnd->resize(810,610);  // for fill up the QMGL, menu and toolbars
   Wnd->setWindowTitle("QMathGL sample");
-  // here I allow to scroll QMathGL -- the case
+  // here I allow one to scroll QMathGL -- the case
   // then user want to prepare huge picture
   QScrollArea *scroll = new QScrollArea(Wnd);
 
@@ -2334,7 +2334,7 @@ int sample(mglGraph *gr)
 @subsection Drawing phase plain
 @nav{}
 
-Here I want say a few words of plotting phase plains. Phase plain is name for system of coordinates @math{x}, @math{x'}, i.e. a variable and its time derivative. Plot in phase plain is very useful for qualitative analysis of an ODE, because such plot is rude (it topologically the same for a range of ODE parameters). Most often the phase plain @{@math{x}, @math{x'}@} is used (due to its simplicity), that allows to analyze up to the 2nd order ODE (i.e. @math{x''+f(x,x')=0}).
+Here I want say a few words of plotting phase plains. Phase plain is name for system of coordinates @math{x}, @math{x'}, i.e. a variable and its time derivative. Plot in phase plain is very useful for qualitative analysis of an ODE, because such plot is rude (it topologically the same for a range of ODE parameters). Most often the phase plain @{@math{x}, @math{x'}@} is used (due to its simplicity), that allows one to analyze up to the 2nd order ODE (i.e. @math{x''+f(x,x')=0}).
 
 The simplest way to draw phase plain in MathGL is using @ref{flow} function(s), which automatically select several points and draw flow threads. If the ODE have an integral of motion (like Hamiltonian @math{H(x,x')=const} for dissipation-free case) then you can use @ref{cont} function for plotting isolines (contours). In fact. isolines are the same as flow threads, but without arrows on it. Finally, you can directly solve ODE using @ref{ode} function and plot its numerical solution.
 

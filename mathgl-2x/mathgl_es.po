@@ -2497,7 +2497,7 @@ msgid "Get data column filled by formula on column ids"
 msgstr "Llenar columna de datos por fórmula en ids de columnas"
 
 #: src/exec_dat.cpp:1809
-msgid "Get formated data from file"
+msgid "Get formatted data from file"
 msgstr "Obtener datos con formato de archivo"
 
 #: src/exec_dat.cpp:1734
@@ -3638,7 +3638,7 @@ msgstr "Cargar todos los arreglos del archivo HDF"
 #: udav/udav_wnd.cpp:198
 msgid ""
 "Open and execute/show script or data from file (Ctrl+O).\n"
-"You may switch off automatic exection in UDAV properties."
+"You may switch off automatic execution in UDAV properties."
 msgstr ""
 "Abrir y ejecutar/mostrar script o datos de archivo (Ctrl+O).\n"
 "Puede desactivar ejecucion automatica en propiedades de UDAV."

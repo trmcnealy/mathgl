@@ -204,7 +204,7 @@ void MGL_EXPORT mgl_write_eps(HMGL gr, const char *fname,const char *descr)
 
 	bool gz = fname[strlen(fname)-1]=='z';
 	void *fp;
-	if(!strcmp(fname,"-"))	fp = stdout;		// allow to write in stdout
+	if(!strcmp(fname,"-"))	fp = stdout;		// allow one to write in stdout
 	else		fp = gz ? (void*)gzopen(fname,"wt") : (void*)fopen(fname,"wt");
 	if(!fp)		{	gr->SetWarn(mglWarnOpen,fname);	return;	}
 	int w = _Gr_->GetWidth(), h = _Gr_->GetHeight();
@@ -455,7 +455,7 @@ void MGL_EXPORT mgl_write_svg(HMGL gr, const char *fname,const char *descr)
 
 	bool gz = fname[strlen(fname)-1]=='z';
 	long hh = _Gr_->GetHeight(), ww = _Gr_->GetWidth();
-	void *fp = stdout;		// allow to write in stdout
+	void *fp = stdout;		// allow one to write in stdout
 	bool head = true;
 	if(strcmp(fname,"-"))	fp = gz ? (void*)gzopen(fname,"wt") : (void*)fopen(fname,"wt");
 	else	head = false;

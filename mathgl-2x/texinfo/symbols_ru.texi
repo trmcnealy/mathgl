@@ -624,7 +624,7 @@ style of @ref{tape}.
 @tab Create new window with empty script. Note, all scripts share variables. So, second window can be used to see some additional information of existed variables.
 
 @item @key{Ctrl-O}
-@tab Open and execute/show script or data from file. You may switch off automatic exection in UDAV properties
+@tab Open and execute/show script or data from file. You may switch off automatic execution in UDAV properties
 
 @item @key{Ctrl-S}
 @tab Save script to a file.

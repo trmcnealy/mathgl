@@ -27,7 +27,7 @@ MathGL library supports the simplest scripts for data handling and plotting. The
 
 MGL script language is rather simple. Each string is a command. First word of string is the name of command. Other words are command arguments. Words are separated from each other by space or tabulation symbol. The upper or lower case of words is important, i.e. variables @var{a} and @var{A} are different variables. Symbol @samp{#} starts the comment (all characters after # will be ignored). The exception is situation when @samp{#} is a part of some string. Also options can be specified after symbol @samp{;} (@pxref{Command options}). Symbol @samp{:} starts new command (like new line character) if it is not placed inside a string or inside brackets.
 
-If string contain references to external parameters (substrings @samp{$0}, @samp{$1} ... @samp{$9}) or definitions (substrings @samp{$a}, @samp{$b} ... @samp{$z}) then before execution the values of parameter/definition will be substituted instead of reference. It allows to use the same MGL script for different parameters (filenames, paths, condition and so on).
+If string contain references to external parameters (substrings @samp{$0}, @samp{$1} ... @samp{$9}) or definitions (substrings @samp{$a}, @samp{$b} ... @samp{$z}) then before execution the values of parameter/definition will be substituted instead of reference. It allows one to use the same MGL script for different parameters (filenames, paths, condition and so on).
 
 Argument can be a string, a variable (data arrays) or a number (scalars).
 @itemize @bullet
@@ -449,7 +449,7 @@ The same as previous but read script from the file @var{fp}. If @var{print}=@cod
 @deftypefnx {Method on @code{mglParse}} @code{int} Parse (@code{mglGraph *}gr, @code{const wchar_t *}str, @code{long} pos=@code{0})
 @deftypefnx {C function} @code{int} mgl_parse_line (@code{HMGL} gr, @code{HMPR} p, @code{const char *}str, @code{int} pos)
 @deftypefnx {C function} @code{int} mgl_parse_linew (@code{HMGL} gr, @code{HMPR} p, @code{const wchar_t *}str, @code{int} pos)
-Function parses the string @var{str} and executes it by  using @var{gr} as a graphics plotter. Returns the value depending on an error presence in the string @var{str}: 0 -- no error, 1 -- wrong command argument(s), 2 -- unknown command, 3 -- string is too long, 4 -- strings is not closed. Optional argument @var{pos} allows to save the string position in the document (or file) for using @code{for|next} command.
+Function parses the string @var{str} and executes it by  using @var{gr} as a graphics plotter. Returns the value depending on an error presence in the string @var{str}: 0 -- no error, 1 -- wrong command argument(s), 2 -- unknown command, 3 -- string is too long, 4 -- strings is not closed. Optional argument @var{pos} allows one to save the string position in the document (or file) for using @code{for|next} command.
 @end deftypefn
 
 @deftypefn {Method on @code{mglParse}} @code{mglData} Calc (@code{const char *}formula)
@@ -510,7 +510,7 @@ Restore Once flag.
 
 @deftypefn {Method on @code{mglParse}} @code{void} AllowSetSize (@code{bool} a)
 @deftypefnx {C function} @code{void} mgl_parser_allow_setsize (@code{HMPR} p, @code{int} a)
-Allow to parse @ref{setsize} command or not.
+allow one to parse @ref{setsize} command or not.
 @end deftypefn
 
 @deftypefn {Method on @code{mglParse}} @code{void} AllowFileIO (@code{bool} a)
@@ -520,7 +520,7 @@ Allow reading/saving files or not.
 
 @deftypefn {Method on @code{mglParse}} @code{void} AllowDllCall (@code{bool} a)
 @deftypefnx {C function} @code{void} mgl_parser_allow_dll_call (@code{HMPR} p, @code{int} a)
-Allow to parse @ref{load} command or not.
+allow one to parse @ref{load} command or not.
 @end deftypefn
 
 @deftypefn {Method on @code{mglParse}} @code{void} Stop ()

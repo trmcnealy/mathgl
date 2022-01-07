@@ -229,7 +229,7 @@ INCOMPATIBLE:
 2.3.4 Released 13 February 2016
 
 * Add mglData::Pulse() for determining pulse parameters.
-* Add mglData::ScanFile() for getting formated data from textual file.
+* Add mglData::ScanFile() for getting formatted data from textual file.
 * Add mglData::SetList() for setting data from variable argument list of double values.
 * Add mglIFS2d() and mglIFS3d() for fractal generation using iterated function system (thanks to Diego Sejas Viscarra).
 * Add option to SetSize() for scaling only primitives but don't erase it.
@@ -372,8 +372,8 @@ INCOMPATIBLE:
   - Add new primitives (arc,polygon,rotated text) as mouse handled ones;
   - Add close button to data tabs;
   - Add button to stop script drawing  and stop() slot for QMathGL;
-  - Allow to delete/hide/unhide selected plot;
-  - Allow to move selected plot between inplots;
+  - allow one to delete/hide/unhide selected plot;
+  - allow one to move selected plot between inplots;
   - Improve NewCommand dialog -- now it replace the script command if user change arguments only;
   - MGL commands 'perspective' and 'fog' now work correctly in UDAV;
   - Update UDAV icons to use Oxygen ones.

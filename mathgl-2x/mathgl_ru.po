@@ -2477,7 +2477,7 @@ msgid "Get data column filled by formula on column ids"
 msgstr "Вычислить данные по формуле из имен колонок"
 
 #: src/exec_dat.cpp:1809
-msgid "Get formated data from file"
+msgid "Get formatted data from file"
 msgstr "Загрузить форматированные данные из файла"
 
 #: src/exec_dat.cpp:1734
@@ -3619,7 +3619,7 @@ msgstr "Загрузить все данные из HDF файла"
 #: udav/udav_wnd.cpp:198
 msgid ""
 "Open and execute/show script or data from file (Ctrl+O).\n"
-"You may switch off automatic exection in UDAV properties."
+"You may switch off automatic execution in UDAV properties."
 msgstr ""
 "Открыть и выполнить скрипт или данные (Ctrl+O).\n"
 "Вы можете отключить автоматическое выполнение в настройках."

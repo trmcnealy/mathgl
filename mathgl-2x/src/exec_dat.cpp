@@ -1806,7 +1806,7 @@ mglCommand mgls_dat_cmd[] = {
 	{"roots",_("Find roots using data as initial values"), "roots Res 'func' Ini ['var']|Res 'func' ini ['var']|Res 'func' 'vars' Ini", mgls_roots ,4},
 	{"save",_("Save data to file"),"save Dat 'file'|val 'file'|'str' 'file' ['how']", mgls_save ,3},
 	{"savehdf",_("Save data to HDF5 file"),"savehdf Dat 'file' 'id' [rewrite]|val 'file' 'id' [rewrite]", mgls_savehdf ,3},
-	{"scanfile",_("Get formated data from file"),"scanfile Dat 'fname 'templ'", mgls_scanfile ,4},
+	{"scanfile",_("Get formatted data from file"),"scanfile Dat 'fname 'templ'", mgls_scanfile ,4},
 	{"section",_("Extract sub-array between values"),"section Res Dat id ['dir' val]|Res Dat Ids ['dir' val]", mgls_section ,4},
 	{"sew",_("Remove jump into the data, like phase jumps"),"sew Dat ['dir' da]", mgls_sew ,16},
 	{"sinfft",_("Sin-Fourier transform at some direction"),"sinfft Dat 'dir'", mgls_sinfft ,16},

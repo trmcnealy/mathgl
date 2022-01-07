@@ -195,7 +195,7 @@ MainWindow::MainWindow(QWidget *wp) : QMainWindow(wp)
 
 	aload = a = new QAction(QPixmap(":/png/document-open.png"), _("Open file"), this);
 	connect(a, SIGNAL(triggered()), this, SLOT(choose()));
-	a->setToolTip(_("Open and execute/show script or data from file (Ctrl+O).\nYou may switch off automatic exection in UDAV properties."));
+	a->setToolTip(_("Open and execute/show script or data from file (Ctrl+O).\nYou may switch off automatic execution in UDAV properties."));
 	a->setShortcut(Qt::CTRL+Qt::Key_O);
 
 	asave = a = new QAction(QPixmap(":/png/document-save.png"), _("Save script"), this);

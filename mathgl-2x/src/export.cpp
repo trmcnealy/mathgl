@@ -222,7 +222,7 @@ int MGL_NO_EXPORT mgl_bps_save(const char *fname, int w, int h, unsigned char **
 	bool gz = fname[strlen(fname)-1]=='z';
 
 	void *fp;
-	if(!strcmp(fname,"-"))	fp = stdout;		// allow to write in stdout
+	if(!strcmp(fname,"-"))	fp = stdout;		// allow one to write in stdout
 	else
 	{
 		fp = gz ? (void*)gzopen(fname,"wt") : (void*)fopen(fname,"wt");
