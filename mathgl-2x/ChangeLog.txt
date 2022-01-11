@@ -1,3 +1,9 @@
+8.0.1 Released 12 January 2022
+
+* Increase accuracy at line segment skipping.
+* Changes in SOVERSION numbering.
+* Minor spelling fix (thanks to Rafael Laboissière)
+
 8.0 Released 1 January 2022
 
 * Change version numbering according Debian rules.

@@ -53,6 +53,9 @@ Generally, MathGL is GPL library. However, you can use LGPL license for MathGL c
 @strong{Latest news}
 @itemize
 
+@item @strong{12 January 2022}
+New version (v.8.0.1) of @uref{http://sourceforge.net/projects/mathgl, MathGL} is released. There are increase accuracy at line segment skipping, changes in SOVERSION numbering, minor spelling fix (thanks to Rafael Laboissière).
+
 @item @strong{1 January 2022.}
 New version (v.8.0) of @uref{http://sourceforge.net/projects/mathgl, MathGL} is released. There are change version numbering according Debian rules, and add accurate line segment and quadrangle/triangle face cutting at axis border crossing.
 
@@ -82,6 +85,14 @@ Javascript interface was developed with support of @url{http://www.datadvance.ne
 @nav{}
 
 @itemize
+
+@item @strong{12 January 2022}
+New version (v.8.0.1) of @uref{http://sourceforge.net/projects/mathgl, MathGL} is released.
+@itemize @bullet
+@item Increase accuracy at line segment skipping.
+@item Changes in SOVERSION numbering.
+@item Minor spelling fix (thanks to Rafael Laboissière).
+@end itemize
 
 @item @strong{1 January 2022}
 New version (v.8.0) of @uref{http://sourceforge.net/projects/mathgl, MathGL} is released.
