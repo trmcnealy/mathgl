@@ -33,12 +33,34 @@ int mglFitPnts=100;		///< Number of output points in fitting
 char mglFitRes[1024];	///< Last fitted formula
 mreal mglFitChi=NAN;	///< Chi value for last fitted formula
 mglData mglFitCovar;	///< Covar matrix for lat fitted formula
+#ifndef M_SQRT3
+#define M_SQRT3 1.7320508075688772935
+#endif
+#ifndef M_SQRT5
+#define M_SQRT5 2.2360679774997896964
+#endif
+#ifndef M_SQRT7
+#define M_SQRT7 2.6457513110645905905
+#endif
 //-----------------------------------------------------------------------------
 mreal MGL_EXPORT_PURE mgl_get_fit_chi()		{	return mglFitChi;	}
 mreal MGL_EXPORT_PURE mgl_get_fit_chi_()	{	return mglFitChi;	}
 //-----------------------------------------------------------------------------
 HCDT MGL_EXPORT_CONST mgl_get_fit_covar()	{	return &mglFitCovar;	}
 uintptr_t MGL_EXPORT_CONST mgl_get_fit_covar_()	{	return (uintptr_t)&mglFitCovar;	}
+//-----------------------------------------------------------------------------
+typedef double (*func)(double);
+// norm |u|^2
+double MGL_NO_EXPORT norm_f0(double u)	{	return u;	}
+// norm sqrt(1+|u|^2)-1
+double MGL_NO_EXPORT norm_f1(double u)	{	return u/sqrt(1+u*u);	}
+// norm |u|^8
+double MGL_NO_EXPORT norm_f2(double u)	{	return u*u*u;	}
+// norm 1-cos(u)
+double MGL_NO_EXPORT norm_f3(double u)	{	return fabs(u)<2.1*M_PI?sin(u/2.1):0;	}
+// norm |u|^2*(2-|u|^2/6^2)
+double MGL_NO_EXPORT norm_f4(double u)	{	return fabs(u)<6?u*(1-u*u/36):0;	}
+MGL_NO_EXPORT func normF[5]={norm_f0,norm_f1,norm_f2,norm_f3,norm_f4};
 //-----------------------------------------------------------------------------
 void MGL_EXPORT mgl_puts_fit(HMGL gr, double x, double y, double z, const char *pre, const char *font, double size)
 {
@@ -67,6 +89,7 @@ struct mglFitData
 	const char *eq;		///< approximation formula
 	int m;				///< number of variables
 	const char *var;	///< variables for fitting
+	func nrmF;			///< norm for f
 };
 //-----------------------------------------------------------------------------
 #if MGL_HAVE_GSL
@@ -86,7 +109,7 @@ int	mgl_fit__f (const gsl_vector *x, void *data, gsl_vector *f)
 	{
 		mreal aa = fd->a[i], ss = fd->s[i];
 		if(mgl_isnum(aa) && ss==ss && ss!=0)
-			gsl_vector_set (f, i, (res->a[i] - aa)/ss);
+			gsl_vector_set (f, i, fd->nrmF((res->a[i] - aa)/ss));
 		else	gsl_vector_set (f, i, 0);
 	}
 	delete []var;	mgl_delete_data(res);
@@ -140,7 +163,7 @@ int static mgl_fit__fdf (const gsl_vector * x, void *data, gsl_vector * f, gsl_m
 	{
 		mreal aa = fd->a[i], ss = fd->s[i];
 		if(mgl_isnum(aa) && ss==ss && ss!=0)
-			gsl_vector_set (f, i, (res->a[i] - aa)/ss);
+			gsl_vector_set (f, i, fd->nrmF((res->a[i] - aa)/ss));
 		else	gsl_vector_set (f, i, 0);
 	}
 	const mreal eps = 1e-5;
@@ -165,7 +188,7 @@ int static mgl_fit__fdf (const gsl_vector * x, void *data, gsl_vector * f, gsl_m
 #endif
 //-----------------------------------------------------------------------------
 /// GSL based fitting procedure for formula/arguments specified by string
-mreal static mgl_fit_base(mglFitData &fd, mreal *ini)
+mreal static mgl_fit_base(mglFitData &fd, mreal *ini, const char *var, mreal *err)
 {
 #if MGL_HAVE_GSL
 	long m=fd.m,n=fd.n,iter=0;
@@ -181,6 +204,14 @@ mreal static mgl_fit_base(mglFitData &fd, mreal *ini)
 	f.f = mgl_fit__f;		f.df = mgl_fit__df;
 	f.fdf = mgl_fit__fdf;	f.n = n;	f.p = m;
 	f.params = &fd;
+
+	int nrm=0;
+	if(var && strchr(var,'1'))	nrm=1;
+	if(var && strchr(var,'2'))	nrm=2;
+	if(var && strchr(var,'3'))	nrm=3;
+	if(var && strchr(var,'4'))	nrm=4;
+	fd.nrmF = normF[nrm];
+
 	gsl_multifit_fdfsolver_set(s, &f, &vx.vector);
 	int status;	// start fitting
 	do
@@ -201,6 +232,8 @@ mreal static mgl_fit_base(mglFitData &fd, mreal *ini)
 #else
 	gsl_multifit_covar(s->J, 0.0, covar);
 #endif
+	if(err)
+		for(long i=0;i<m;i++)	err[i] = sqrt(gsl_matrix_get(covar,i,i));
 	mglFitCovar.Set(covar);
 	gsl_matrix_free(covar);
 
@@ -215,15 +248,15 @@ mreal static mgl_fit_base(mglFitData &fd, mreal *ini)
 #endif
 }
 //-----------------------------------------------------------------------------
-void mglPrepareFitEq(mglBase *gr,mreal chi, const char *eq, const char *var, mreal *par)
+void mglPrepareFitEq(mglBase *gr,mreal chi, const char *eq, const char *var, mreal *par, mreal *err)
 {
 	char buf[32]="";
 	mglFitChi = chi;
 	snprintf(mglFitRes,1024,"chi=%g",chi);	mglFitRes[1023]=0;
 	size_t i,k,len=strlen(var);
-	for(i=0;i<len;i++)
+	for(i=0;i<len;i++)	if(!isdigit(var[i]))
 	{
-		snprintf(buf,32,", %c=%g",var[i],par[i]);
+		snprintf(buf,32,", %c=%g(%g)",var[i],par[i],err[i]);
 		buf[31]=0;	strcat(mglFitRes,buf);
 	}
 	gr->SetWarn(-1,mglFitRes);
@@ -300,7 +333,8 @@ void static mgl_fill_fit(HMGL gr, mglData &fit, mglData &in, mglFitData &fd, con
 	mglDataV *vv = new mglDataV[fd.m];
 	std::vector<mglDataA*> list;
 	for(long i=0;i<fd.m;i++)
-	{	vv[i].s = var[i];	vv[i].Fill(in.a[i]);	list.push_back(vv+i);	}
+		if(!isdigit(var[i]))
+		{	vv[i].s = var[i];	vv[i].Fill(in.a[i]);	list.push_back(vv+i);	}
 	mglDataV x(nx,ny,nz, gr->Min.x,gr->Max.x,'x');	x.Name(L"x");	list.push_back(&x);
 	mglDataV y(nx,ny,nz, gr->Min.y,gr->Max.y,'y');	y.Name(L"y");	list.push_back(&y);
 	mglDataV z(nx,ny,nz, gr->Min.z,gr->Max.z,'z');	z.Name(L"z");	list.push_back(&z);
@@ -333,7 +367,7 @@ HMDT MGL_EXPORT mgl_fit_xys(HMGL gr, HCDT xx, HCDT yy, HCDT ss, const char *eq, 
 	fd.n = m;	fd.x = &x;		fd.y = 0;
 	fd.z = 0;	fd.a = y.a;		fd.s = s.a;
 	fd.eq = eq;	fd.var = var;	fd.m = strlen(var);
-	mglData in(fd.m), *fit=new mglData(nn, yy->GetNy(), yy->GetNz());
+	mglData in(fd.m), err(fd.m), *fit=new mglData(nn, yy->GetNy(), yy->GetNz());
 	mreal res=-1;
 	mglDataR xc(x);
 	for(long i=0;i<yy->GetNy()*yy->GetNz();i++)
@@ -343,11 +377,11 @@ HMDT MGL_EXPORT mgl_fit_xys(HMGL gr, HCDT xx, HCDT yy, HCDT ss, const char *eq, 
 		xc.SetInd(i%x.ny, L"x");
 		fd.a = y.a+i*m;		fd.x = &xc;	//x.a+(i%x.ny)*m;
 		fd.s = s.a+i*m;
-		res = mgl_fit_base(fd,in.a);
+		res = mgl_fit_base(fd,in.a,var,err.a);
 		mgl_fill_fit(gr,*fit,in,fd,var,nn,1,1,i);
 		if(ini && ini->nx>=fd.m)	memcpy(ini->a,in.a,fd.m*sizeof(mreal));
 	}
-	mglPrepareFitEq(gr,res,eq,var,in.a);
+	mglPrepareFitEq(gr,res,eq,var,in.a,err.a);
 	gr->LoadState();	return fit;
 }
 //-----------------------------------------------------------------------------
@@ -383,18 +417,18 @@ HMDT MGL_EXPORT mgl_fit_xyzs(HMGL gr, HCDT xx, HCDT yy, HCDT zz, HCDT ss, const 
 	fd.z = 0;	fd.a = z.a;	fd.s = s.a;
 	fd.eq = eq;	fd.var=var;	fd.m = strlen(var);
 
-	mglData in(fd.m), *fit=new mglData(nn, nn, zz->GetNz());
+	mglData in(fd.m), err(fd.m), *fit=new mglData(nn, nn, zz->GetNz());
 	mreal res = -1;
 	for(long i=0;i<nz;i++)
 	{
 		if(ini && ini->nx>=fd.m)	in.Set(ini->a,fd.m);
 		else in.Fill(0.,0);
 		fd.a = z.a+i*m*n;		fd.s = s.a+i*m*n;
-		res = mgl_fit_base(fd,in.a);
+		res = mgl_fit_base(fd,in.a,var,err.a);
 		mgl_fill_fit(gr,*fit,in,fd,var,nn,nn,1,i);
 		if(ini && ini->nx>=fd.m)	memcpy(ini->a,in.a,fd.m*sizeof(mreal));
 	}
-	mglPrepareFitEq(gr,res, eq,var,in.a);
+	mglPrepareFitEq(gr,res, eq,var,in.a,err.a);
 	gr->LoadState();	return fit;
 }
 //-----------------------------------------------------------------------------
@@ -428,16 +462,16 @@ HMDT MGL_EXPORT mgl_fit_xyzas(HMGL gr, HCDT xx, HCDT yy, HCDT zz, HCDT aa, HCDT 
 	fd.n = m*n*l;	fd.x = &x;	fd.y = &y;
 	fd.z = &z;		fd.a = a.a;	fd.s = s.a;
 	fd.eq = eq;		fd.var=var;	fd.m = strlen(var);
-	mglData in(fd.m), *fit=new mglData(nn, nn, nn);
+	mglData in(fd.m), err(fd.m), *fit=new mglData(nn, nn, nn);
 	mreal res = -1;
 
 	if(ini && ini->nx>=fd.m)	in.Set(ini->a,fd.m);
 	else in.Fill(0.,0);
-	res = mgl_fit_base(fd,in.a);
+	res = mgl_fit_base(fd,in.a,var,err.a);
 	mgl_fill_fit(gr,*fit,in,fd,var,nn,nn,nn,0);
 	if(ini && ini->nx>=fd.m)	memcpy(ini->a,in.a,fd.m*sizeof(mreal));
 
-	mglPrepareFitEq(gr,res, eq,var,in.a);
+	mglPrepareFitEq(gr,res, eq,var,in.a,err.a);
 	gr->LoadState();	return fit;
 }
 //-----------------------------------------------------------------------------

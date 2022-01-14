@@ -45,6 +45,8 @@
 6. Recurrence plot u_{ij} = |a_i-a_j|<epsilon && Cross-reccurence plot u_{ij} = |a_i-b_j|<epsilon. See http://www.recurrence-plot.tk/crps.php
 7. Calendar diagram -- 1D data as dens for 7-row (day) or 12-row (months) + divisions at month or year
 
+8. Add robustness function (i.e. norm) for fitting (like u^2 -- default, abs(u), exp(abs(u)), exp(u^2), u^4, log(1+u^2) and so on).
+
 10. Add simd instructions for openmp
 11. Use FreeType for getting font/glyph information. This need quick drawing of quadratic and cubic Bezier curves (see example5.cpp). https://www.freetype.org/freetype2/docs/tutorial/step3.html -- add optimization of bezier curves by number of points. Use it as glyph definition or as default source for all/unknown glyphs!?
 

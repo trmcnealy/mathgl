@@ -312,7 +312,7 @@ inline bool mgl_isnum(double a)	{	return a==a;	}
 inline bool mgl_isnum(dual a)	{	return a==a;	}
 inline bool mgl_isnan(double a)	{	return a!=a;	}
 inline bool mgl_isnan(dual a)	{	return a!=a;	}
-inline int mgl_sign(double a)	{	return a<0?-1:1;	}
+inline int mgl_sign(double a)	{	return a<0?-1:(a>0?1:0);	}
 inline long mgl_int(double a)	{	return long(a+(a>=0?0.5:-0.5));	}
 inline double mgl_min(double a, double b)	{	return a>b?b:a;	}
 inline double mgl_max(double a, double b)	{	return a>b?a:b;	}
