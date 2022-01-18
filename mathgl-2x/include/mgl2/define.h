@@ -180,6 +180,18 @@ const unsigned long long mgl_inf[2] = {0x7ff0000000000000, 0x7f800000};
 #ifndef M_PI
 #define M_PI	3.14159265358979323846  /* pi */
 #endif
+#ifndef M_SQRT2
+#define M_SQRT2 1.4142135623730950488
+#endif
+#ifndef M_SQRT3
+#define M_SQRT3 1.7320508075688772935
+#endif
+#ifndef M_SQRT5
+#define M_SQRT5 2.2360679774997896964
+#endif
+#ifndef M_SQRT7
+#define M_SQRT7 2.6457513110645905905
+#endif
 //-----------------------------------------------------------------------------
 #ifdef WIN32
 #define mglprintf    _snwprintf

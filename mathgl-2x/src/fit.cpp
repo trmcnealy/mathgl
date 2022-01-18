@@ -33,15 +33,6 @@ int mglFitPnts=100;		///< Number of output points in fitting
 char mglFitRes[1024];	///< Last fitted formula
 mreal mglFitChi=NAN;	///< Chi value for last fitted formula
 mglData mglFitCovar;	///< Covar matrix for lat fitted formula
-#ifndef M_SQRT3
-#define M_SQRT3 1.7320508075688772935
-#endif
-#ifndef M_SQRT5
-#define M_SQRT5 2.2360679774997896964
-#endif
-#ifndef M_SQRT7
-#define M_SQRT7 2.6457513110645905905
-#endif
 //-----------------------------------------------------------------------------
 mreal MGL_EXPORT_PURE mgl_get_fit_chi()		{	return mglFitChi;	}
 mreal MGL_EXPORT_PURE mgl_get_fit_chi_()	{	return mglFitChi;	}
