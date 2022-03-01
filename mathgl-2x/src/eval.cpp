@@ -34,7 +34,8 @@
 enum{
 EQ_NUM=0,	// a variable substitution
 EQ_RND,		// random number
-EQ_A,		// numeric constant
+EQ_A,		// numeric variable
+EQ_S,		// subdata for given variable
 // normal functions of 2 arguments
 EQ_LT,		// comparison x<y			!!! MUST BE FIRST 2-PLACE FUNCTION
 EQ_GT,		// comparison x>y
@@ -299,123 +300,128 @@ mglFormula::mglFormula(const char *string)
 		mgl_strncpy(name,str,128);	name[127]=name[n]=0;
 		memmove(str,str+n+1,len-n);
 		len=strlen(str);		str[--len]=0;
-		if(!strncmp(name,"jacobi_",7))
-			memmove(name,name+7,(strlen(name+7)+1)*sizeof(char));
-		if(name[0]=='a')
+		if(len==1)
+		{	Kod=EQ_S;	Res = str[0]-'a';	}
+		else
 		{
-			if(!strcmp(name+1,"sin"))		Kod=EQ_ASIN;
-			else if(!strcmp(name+1,"cos"))	Kod=EQ_ACOS;
-			else if(!strcmp(name+1,"tan"))	Kod=EQ_ATAN;
-			else if(!strcmp(name+1,"sinh"))	Kod=EQ_ASINH;
-			else if(!strcmp(name+1,"cosh"))	Kod=EQ_ACOSH;
-			else if(!strcmp(name+1,"tanh"))	Kod=EQ_ATANH;
-			else if(!strcmp(name+1,"rg"))	Kod=EQ_ARG;
-			else if(!strcmp(name+1,"bs"))	Kod=EQ_ABS;
-			else if(!strcmp(name+1,"i"))	Kod=EQ_AI;
-			else if(!strcmp(name+1,"iry_ai"))	Kod=EQ_AI;
-			else if(!strcmp(name+1,"iry_bi"))	Kod=EQ_BI;
-			else if(!strcmp(name+1,"iry_dai"))	Kod=EQ_AID;
-			else if(!strcmp(name+1,"iry_dbi"))	Kod=EQ_BID;
+			if(!strncmp(name,"jacobi_",7))
+				memmove(name,name+7,(strlen(name+7)+1)*sizeof(char));
+			if(name[0]=='a')
+			{
+				if(!strcmp(name+1,"sin"))		Kod=EQ_ASIN;
+				else if(!strcmp(name+1,"cos"))	Kod=EQ_ACOS;
+				else if(!strcmp(name+1,"tan"))	Kod=EQ_ATAN;
+				else if(!strcmp(name+1,"sinh"))	Kod=EQ_ASINH;
+				else if(!strcmp(name+1,"cosh"))	Kod=EQ_ACOSH;
+				else if(!strcmp(name+1,"tanh"))	Kod=EQ_ATANH;
+				else if(!strcmp(name+1,"rg"))	Kod=EQ_ARG;
+				else if(!strcmp(name+1,"bs"))	Kod=EQ_ABS;
+				else if(!strcmp(name+1,"i"))	Kod=EQ_AI;
+				else if(!strcmp(name+1,"iry_ai"))	Kod=EQ_AI;
+				else if(!strcmp(name+1,"iry_bi"))	Kod=EQ_BI;
+				else if(!strcmp(name+1,"iry_dai"))	Kod=EQ_AID;
+				else if(!strcmp(name+1,"iry_dbi"))	Kod=EQ_BID;
+			}
+			else if(name[0]=='b')
+			{
+				if(!strcmp(name+1,"i"))		Kod=EQ_BI;
+				else if(!strcmp(name+1,"essel_j"))	Kod=EQ_BESJ;
+				else if(!strcmp(name+1,"essel_i"))	Kod=EQ_BESI;
+				else if(!strcmp(name+1,"essel_k"))	Kod=EQ_BESK;
+				else if(!strcmp(name+1,"essel_y"))	Kod=EQ_BESY;
+				else if(!strcmp(name+1,"eta"))	Kod=EQ_BETA;
+			}
+			else if(name[0]=='c')
+			{
+				if(!strcmp(name+1,"os"))		Kod=EQ_COS;
+				else if(!strcmp(name+1,"osh"))	Kod=EQ_COSH;
+				else if(!strcmp(name+1,"h"))	Kod=EQ_COSH;
+				else if(!strcmp(name+1,"i"))	Kod=EQ_CI;
+				else if(!strcmp(name+1,"n"))	Kod=EQ_CN;
+				else if(!strcmp(name+1,"s"))	Kod=EQ_CS;
+				else if(!strcmp(name+1,"d"))	Kod=EQ_CD;
+				else if(!strcmp(name+1,"l"))	Kod=EQ_CL;
+			}
+			else if(name[0]=='d')
+			{
+				if(!strcmp(name+1,"n"))			Kod=EQ_DN;
+				else if(!strcmp(name+1,"s"))	Kod=EQ_DS;
+				else if(!strcmp(name+1,"c"))	Kod=EQ_DC;
+				else if(!strcmp(name+1,"ilog"))	Kod=EQ_LI2;
+			}
+			else if(name[0]=='e')
+			{
+				if(!strcmp(name+1,"xp"))		Kod=EQ_EXP;
+				else if(!strcmp(name+1,"rf"))	Kod=EQ_ERF;
+				else if(!strcmp(name+1,"n"))	Kod=EQ_EN;
+				else if(!strcmp(name+1,"e"))	Kod=EQ_ELLE;
+				else if(!strcmp(name+1,"k"))	Kod=EQ_ELLK;
+				else if(name[0]==0)				Kod=EQ_ELE;
+				else if(!strcmp(name+1,"i"))	Kod=EQ_EI;
+				else if(!strcmp(name+1,"1"))	Kod=EQ_E1;
+				else if(!strcmp(name+1,"2"))	Kod=EQ_E2;
+				else if(!strcmp(name+1,"ta"))	Kod=EQ_ETA;
+				else if(!strcmp(name+1,"i3"))	Kod=EQ_EI3;
+				else if(!strcmp(name+1,"lliptic_e"))	Kod=EQ_ELE;
+				else if(!strcmp(name+1,"lliptic_f"))	Kod=EQ_ELF;
+				else if(!strcmp(name+1,"lliptic_ec"))	Kod=EQ_ELLE;
+				else if(!strcmp(name+1,"lliptic_kc"))	Kod=EQ_ELLK;
+			}
+			else if(name[0]=='l')
+			{
+				if(!strcmp(name+1,"og"))		Kod=EQ_LOG;
+				else if(!strcmp(name+1,"g"))	Kod=EQ_LG;
+				else if(!strcmp(name+1,"n"))	Kod=EQ_LN;
+				else if(!strcmp(name+1,"i2"))	Kod=EQ_LI2;
+				else if(!strcmp(name+1,"egendre"))	Kod=EQ_LP;
+			}
+			else if(name[0]=='s')
+			{
+				if(!strcmp(name+1,"qrt"))		Kod=EQ_SQRT;
+				else if(!strcmp(name+1,"in"))	Kod=EQ_SIN;
+				else if(!strcmp(name+1,"tep"))	Kod=EQ_STEP;
+				else if(!strcmp(name+1,"ign"))	Kod=EQ_SIGN;
+				else if(!strcmp(name+1,"inh"))	Kod=EQ_SINH;
+				else if(!strcmp(name+1,"h"))	Kod=EQ_SINH;
+				else if(!strcmp(name+1,"i"))	Kod=EQ_SI;
+				else if(!strcmp(name+1,"n"))	Kod=EQ_SN;
+				else if(!strcmp(name+1,"c"))	Kod=EQ_SC;
+				else if(!strcmp(name+1,"d"))	Kod=EQ_SD;
+				else if(!strcmp(name+1,"inc"))	Kod=EQ_SINC;
+			}
+			else if(name[0]=='t')
+			{
+				if(!strcmp(name+1,"g"))			Kod=EQ_TAN;
+				else if(!strcmp(name+1,"an"))	Kod=EQ_TAN;
+				else if(!strcmp(name+1,"anh"))	Kod=EQ_TANH;
+				else if(!strcmp(name+1,"h"))	Kod=EQ_TANH;
+			}
+			else if(name[0]=='m')
+			{
+				if(!strcmp(name+1,"od"))		Kod=EQ_MOD;
+				else if(!strcmp(name+1,"ax"))	Kod=EQ_MAX;
+				else if(!strcmp(name+1,"in"))	Kod=EQ_MIN;
+			}
+			else if(!strcmp(name,"hypot"))	Kod=EQ_HYPOT;
+			else if(!strcmp(name,"pow"))	Kod=EQ_POW;
+//			else if(!strcmp(name,"i"))		Kod=EQ_BESI;	// INCOMPATIBLE !!!
+			else if(!strcmp(name,"int"))	Kod=EQ_INT;
+//			else if(!strcmp(name,"j"))		Kod=EQ_BESJ;	// INCOMPATIBLE !!!
+//			else if(!strcmp(name,"k"))		Kod=EQ_BESK;	// INCOMPATIBLE !!!
+//			else if(!strcmp(name,"y"))		Kod=EQ_BESY;	// INCOMPATIBLE !!!
+//			else if(!strcmp(name,"f"))		Kod=EQ_ELF;		// INCOMPATIBLE !!!
+			else if(!strcmp(name,"gamma"))	Kod=EQ_GAMMA;
+			else if(!strcmp(name,"gamma_inc"))	Kod=EQ_GAMMA_INC;
+			else if(!strcmp(name,"ns"))		Kod=EQ_NS;
+			else if(!strcmp(name,"nc"))		Kod=EQ_NC;
+			else if(!strcmp(name,"nd"))		Kod=EQ_ND;
+			else if(!strcmp(name,"w0"))		Kod=EQ_W0;
+			else if(!strcmp(name,"w1"))		Kod=EQ_W1;
+			else if(!strcmp(name,"psi"))	Kod=EQ_PSI;
+			else if(!strcmp(name,"zeta"))	Kod=EQ_ZETA;
+			else if(!strcmp(name,"zd"))		Kod=EQ_Z;		// INCOMPATIBLE !!!
+			else {	delete []str;	return;	}	// unknown function
 		}
-		else if(name[0]=='b')
-		{
-			if(!strcmp(name+1,"i"))		Kod=EQ_BI;
-			else if(!strcmp(name+1,"essel_j"))	Kod=EQ_BESJ;
-			else if(!strcmp(name+1,"essel_i"))	Kod=EQ_BESI;
-			else if(!strcmp(name+1,"essel_k"))	Kod=EQ_BESK;
-			else if(!strcmp(name+1,"essel_y"))	Kod=EQ_BESY;
-			else if(!strcmp(name+1,"eta"))	Kod=EQ_BETA;
-		}
-		else if(name[0]=='c')
-		{
-			if(!strcmp(name+1,"os"))		Kod=EQ_COS;
-			else if(!strcmp(name+1,"osh"))	Kod=EQ_COSH;
-			else if(!strcmp(name+1,"h"))	Kod=EQ_COSH;
-			else if(!strcmp(name+1,"i"))	Kod=EQ_CI;
-			else if(!strcmp(name+1,"n"))	Kod=EQ_CN;
-			else if(!strcmp(name+1,"s"))	Kod=EQ_CS;
-			else if(!strcmp(name+1,"d"))	Kod=EQ_CD;
-			else if(!strcmp(name+1,"l"))	Kod=EQ_CL;
-		}
-		else if(name[0]=='d')
-		{
-			if(!strcmp(name+1,"n"))			Kod=EQ_DN;
-			else if(!strcmp(name+1,"s"))	Kod=EQ_DS;
-			else if(!strcmp(name+1,"c"))	Kod=EQ_DC;
-			else if(!strcmp(name+1,"ilog"))	Kod=EQ_LI2;
-		}
-		else if(name[0]=='e')
-		{
-			if(!strcmp(name+1,"xp"))		Kod=EQ_EXP;
-			else if(!strcmp(name+1,"rf"))	Kod=EQ_ERF;
-			else if(!strcmp(name+1,"n"))	Kod=EQ_EN;
-			else if(!strcmp(name+1,"e"))	Kod=EQ_ELLE;
-			else if(!strcmp(name+1,"k"))	Kod=EQ_ELLK;
-			else if(name[0]==0)				Kod=EQ_ELE;
-			else if(!strcmp(name+1,"i"))	Kod=EQ_EI;
-			else if(!strcmp(name+1,"1"))	Kod=EQ_E1;
-			else if(!strcmp(name+1,"2"))	Kod=EQ_E2;
-			else if(!strcmp(name+1,"ta"))	Kod=EQ_ETA;
-			else if(!strcmp(name+1,"i3"))	Kod=EQ_EI3;
-			else if(!strcmp(name+1,"lliptic_e"))	Kod=EQ_ELE;
-			else if(!strcmp(name+1,"lliptic_f"))	Kod=EQ_ELF;
-			else if(!strcmp(name+1,"lliptic_ec"))	Kod=EQ_ELLE;
-			else if(!strcmp(name+1,"lliptic_kc"))	Kod=EQ_ELLK;
-		}
-		else if(name[0]=='l')
-		{
-			if(!strcmp(name+1,"og"))		Kod=EQ_LOG;
-			else if(!strcmp(name+1,"g"))	Kod=EQ_LG;
-			else if(!strcmp(name+1,"n"))	Kod=EQ_LN;
-			else if(!strcmp(name+1,"i2"))	Kod=EQ_LI2;
-			else if(!strcmp(name+1,"egendre"))	Kod=EQ_LP;
-		}
-		else if(name[0]=='s')
-		{
-			if(!strcmp(name+1,"qrt"))		Kod=EQ_SQRT;
-			else if(!strcmp(name+1,"in"))	Kod=EQ_SIN;
-			else if(!strcmp(name+1,"tep"))	Kod=EQ_STEP;
-			else if(!strcmp(name+1,"ign"))	Kod=EQ_SIGN;
-			else if(!strcmp(name+1,"inh"))	Kod=EQ_SINH;
-			else if(!strcmp(name+1,"h"))	Kod=EQ_SINH;
-			else if(!strcmp(name+1,"i"))	Kod=EQ_SI;
-			else if(!strcmp(name+1,"n"))	Kod=EQ_SN;
-			else if(!strcmp(name+1,"c"))	Kod=EQ_SC;
-			else if(!strcmp(name+1,"d"))	Kod=EQ_SD;
-			else if(!strcmp(name+1,"inc"))	Kod=EQ_SINC;
-		}
-		else if(name[0]=='t')
-		{
-			if(!strcmp(name+1,"g"))			Kod=EQ_TAN;
-			else if(!strcmp(name+1,"an"))	Kod=EQ_TAN;
-			else if(!strcmp(name+1,"anh"))	Kod=EQ_TANH;
-			else if(!strcmp(name+1,"h"))	Kod=EQ_TANH;
-		}
-		else if(name[0]=='m')
-		{
-			if(!strcmp(name+1,"od"))		Kod=EQ_MOD;
-			else if(!strcmp(name+1,"ax"))	Kod=EQ_MAX;
-			else if(!strcmp(name+1,"in"))	Kod=EQ_MIN;
-		}
-		else if(!strcmp(name,"hypot"))	Kod=EQ_HYPOT;
-		else if(!strcmp(name,"pow"))	Kod=EQ_POW;
-		else if(!strcmp(name,"i"))		Kod=EQ_BESI;
-		else if(!strcmp(name,"int"))	Kod=EQ_INT;
-		else if(!strcmp(name,"j"))		Kod=EQ_BESJ;
-		else if(!strcmp(name,"k"))		Kod=EQ_BESK;
-		else if(!strcmp(name,"y"))		Kod=EQ_BESY;
-		else if(!strcmp(name,"f"))		Kod=EQ_ELF;
-		else if(!strcmp(name,"gamma"))	Kod=EQ_GAMMA;
-		else if(!strcmp(name,"gamma_inc"))	Kod=EQ_GAMMA_INC;
-		else if(!strcmp(name,"ns"))		Kod=EQ_NS;
-		else if(!strcmp(name,"nc"))		Kod=EQ_NC;
-		else if(!strcmp(name,"nd"))		Kod=EQ_ND;
-		else if(!strcmp(name,"w0"))		Kod=EQ_W0;
-		else if(!strcmp(name,"w1"))		Kod=EQ_W1;
-		else if(!strcmp(name,"psi"))	Kod=EQ_PSI;
-		else if(!strcmp(name,"zeta"))	Kod=EQ_ZETA;
-		else if(!strcmp(name,"z"))		Kod=EQ_Z;
-		else {	delete []str;	return;	}	// unknown function
 		n=mglFindInText(str,",");
 		if(n>=0)
 		{
@@ -566,6 +572,347 @@ static const func_1 f1[EQ_SN-EQ_SIN] = {sin,cos,tan,asin,acos,atan,sinh,cosh,tan
 	mgz1,mgz1,mgz1,mgz1,mgz1,mgz1,mgz1,mgz1,mgz1,mgz1,mgz1
 #endif
 };
+//-----------------------------------------------------------------------------
+void mglFormula::CalcV(HMDT res, HCDT var[MGL_VS]) const
+{
+	long nn = res->GetNN();
+	if(dat)
+	{
+		HCDT X = var['x'-'a'], Y = var['y'-'a'], Z = var['z'-'a'];
+		long nx = X?X->GetNN():0, ny = Y?Y->GetNN():0, nz = Z?Z->GetNN():0;
+		if(nx==nn && ny==nn && nz==nn)
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,X->vthr(i),Y->vthr(i),Z->vthr(i));
+		else if(nx==nn && ny==nn)
+		{
+			double a = Z?Z->v(0):0;
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,X->vthr(i),Y->vthr(i),a);
+		}
+		else if(nx==nn && nz==nn)
+		{
+			double a = Y?Y->v(0):0;
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,X->vthr(i),a,Z->vthr(i));
+		}
+		else if(nz==nn && ny==nn)
+		{
+			double a = X?X->v(0):0;
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,a,Y->vthr(i),Z->vthr(i));
+		}
+		else if(nx==nn)
+		{
+			double a = Y?Y->v(0):0, b = Z?Z->v(0):0;
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,X->vthr(i),a,b);
+		}
+		else if(ny==nn)
+		{
+			double a = X?X->v(0):0, b = Z?Z->v(0):0;
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,a,Y->vthr(i),b);
+		}
+		else if(nz==nn)
+		{
+			double a = X?X->v(0):0, b = Y?Y->v(0):0;
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,a,b,Z->vthr(i));
+		}
+		else
+		{
+			double a = X?X->v(0):0, b = Y?Y->v(0):0, c = Z?Z->v(0):0;
+			double v = mgl_data_spline(dat,a,b,c);
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = v;
+		}
+		return;
+	}
+	if(Kod<EQ_LT)
+	{
+		int k = int(Res);
+		if(Kod==EQ_NUM)
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = Res;
+		else if(Kod==EQ_RND)	
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_rnd();
+		else if(Kod==EQ_A)	res->Set(var[k]);
+		else if(Kod==EQ_S)
+		{
+			Left->CalcV(res,var);
+			HCDT a = var[k];
+			long na = a->GetNN();
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)
+			{
+				long kk = long(res->a[i]+0.5);
+				if(kk>=0 && kk<na)	res->a[i] = a->vthr(kk);
+				else	res->a[i] = 0.;
+			}
+		}
+		return;
+	}
+	Left->CalcV(res,var);
+	if(Kod<EQ_SIN)
+	{
+		if(Right->Kod==EQ_NUM)
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], Right->Res);
+		else if(Right->Kod==EQ_RND)
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], mgl_rnd());
+		else
+		{
+			mglData tmp(res);
+			Right->CalcV(&tmp, var);
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], tmp.a[i]);
+		}
+	}
+	else if(Kod<EQ_SN)
+#pragma omp parallel for
+		for(long i=0;i<nn;i++)
+			res->a[i] = f1[Kod-EQ_SIN](res->a[i]);
+	else if(Kod<=EQ_DC)
+	{
+#if MGL_HAVE_GSL
+		if(Right->Kod==EQ_NUM)
+		{
+			switch(Kod)
+			{
+			case EQ_SN:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = sn;
+				}
+				return;
+			case EQ_SC:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = sn/cn;
+				}
+				return;
+			case EQ_SD:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = sn/dn;
+				}
+				return;
+			case EQ_CN:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = cn;
+				}
+				return;
+			case EQ_CS:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = cn/sn;
+				}
+				return;
+			case EQ_CD:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = cn/dn;
+				}
+				return;
+			case EQ_DN:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = dn;
+				}
+				return;
+			case EQ_DS:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = dn/sn;
+				}
+				return;
+			case EQ_DC:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = dn/cn;
+				}
+				return;
+			case EQ_NS:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = 1./sn;
+				}
+				return;
+			case EQ_NC:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = 1./cn;
+				}
+				return;
+			case EQ_ND:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = 1./dn;
+				}
+				return;
+			}
+		}
+		else
+		{
+			mglData tmp(res);
+			Right->CalcV(&tmp, var);
+			switch(Kod)
+			{
+			case EQ_SN:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = sn;
+				}
+				return;
+			case EQ_SC:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = sn/cn;
+				}
+				return;
+			case EQ_SD:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = sn/dn;
+				}
+				return;
+			case EQ_CN:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = cn;
+				}
+				return;
+			case EQ_CS:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = cn/sn;
+				}
+				return;
+			case EQ_CD:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = cn/dn;
+				}
+				return;
+			case EQ_DN:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = dn;
+				}
+				return;
+			case EQ_DS:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = dn/sn;
+				}
+				return;
+			case EQ_DC:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = dn/cn;
+				}
+				return;
+			case EQ_NS:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = 1./sn;
+				}
+				return;
+			case EQ_NC:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = 1./cn;
+				}
+				return;
+			case EQ_ND:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = 1./dn;
+				}
+				return;
+			}
+		}
+#endif
+	}
+	else
+#pragma omp parallel for
+		for(long i=0;i<nn;i++)	res->a[i] = NAN;
+}
 //-----------------------------------------------------------------------------
 // evaluation of embedded (included) expressions
 mreal mglFormula::CalcIn(const mreal *a1) const
@@ -793,4 +1140,13 @@ double MGL_EXPORT_PURE mgl_expr_eval_(uintptr_t *ex, mreal *x, mreal *y, mreal *
 {	return mgl_expr_eval((HMEX) ex, *x,*y,*z);		}
 double MGL_EXPORT_PURE mgl_expr_diff_(uintptr_t *ex, const char *dir, mreal *x, mreal *y, mreal *z, int)
 {	return mgl_expr_diff((HMEX) ex, *dir,*x,*y,*z);	}
+//-----------------------------------------------------------------------------
+void MGL_EXPORT mgl_expr_eval_dat(HMEX ex, HMDT res, HCDT vars[MGL_VS])
+{	ex->CalcV(res,vars);	}
+void MGL_EXPORT mgl_expr_eval_dat_(uintptr_t *ex, uintptr_t *res, uintptr_t vars[MGL_VS])
+{
+	HCDT vs[MGL_VS];
+	for(int i=0;i<MGL_VS;i++)	vs[i] = (HCDT)(vars[i]);
+	mgl_expr_eval_dat((HMEX) *ex, (HMDT) *res, vs);
+}
 //-----------------------------------------------------------------------------

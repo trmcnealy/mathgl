@@ -37,6 +37,8 @@ public:
 	mreal Calc(mreal x,mreal y,mreal z,mreal u,mreal v,mreal w) const MGL_FUNC_PURE;
 	/// Evaluates the formula for variables var
 	mreal Calc(const mreal var[MGL_VS]) const MGL_FUNC_PURE;
+	/// Evaluates the formula for variables var
+	void CalcV(HMDT res, HCDT var[MGL_VS]) const;
 	/// Evaluates the formula for 'x','r'=\a x, 'y','n'=\a y, 'z','t'=\a z, 'u'=\a u
 	mreal CalcD(char diff, mreal x,mreal y=0,mreal z=0,mreal u=0) const MGL_FUNC_PURE;
 	/// Evaluates the formula for 'x, y, z, u, v, w'

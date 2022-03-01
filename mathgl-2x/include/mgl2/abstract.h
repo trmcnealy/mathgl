@@ -194,6 +194,9 @@ double MGL_EXPORT_PURE mgl_expr_diff(HMEX ex, char dir, double x, double y,doubl
 double MGL_EXPORT_PURE mgl_expr_diff_(uintptr_t *ex, const char *dir, mreal *x, mreal *y, mreal *z, int);
 /// Return value of expression differentiation over variable dir for given variables
 double MGL_EXPORT_PURE mgl_expr_diff_v(HMEX ex, char dir, mreal *vars);
+/// Return value of expression for given variables
+void MGL_EXPORT mgl_expr_eval_dat(HMEX ex, HMDT res, HCDT vars[MGL_VS]);
+void MGL_EXPORT mgl_expr_eval_dat_(uintptr_t *ex, uintptr_t *res, uintptr_t vars[MGL_VS]);
 //-----------------------------------------------------------------------------
 /// Create HAEX object for expression evaluating
 HAEX MGL_EXPORT mgl_create_cexpr(const char *expr);
@@ -206,7 +209,9 @@ cmdual MGL_EXPORT mgl_cexpr_eval(HAEX ex, mdual x, mdual y, mdual z);
 cmdual MGL_EXPORT mgl_cexpr_eval_(uintptr_t *ex, mdual *x, mdual *y, mdual *z);
 /// Return value of expression for given variables
 cmdual MGL_EXPORT mgl_cexpr_eval_v(HAEX ex, mdual *vars);
-
+/// Return value of expression for given variables
+void MGL_EXPORT mgl_cexpr_eval_dat(HAEX ex, HADT res, HCDT vars[MGL_VS]);
+void MGL_EXPORT mgl_cexpr_eval_dat_(uintptr_t *ex, uintptr_t *res, uintptr_t vars[MGL_VS]);
 //-----------------------------------------------------------------------------
 /// Callback function for asking user a question. Result shouldn't exceed 1024.
 extern MGL_EXPORT void (*mgl_ask_func)(const wchar_t *quest, wchar_t *res);

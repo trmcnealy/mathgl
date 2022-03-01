@@ -840,6 +840,7 @@ void mglConvertFromGraph(QPixmap &pic, mglCanvas *gr, uchar **buf, QImage *out)
 	long w=mgl_get_width(gr), h=mgl_get_height(gr);
 	if(*buf)	delete [](*buf);
 	*buf = new uchar[4*w*h];
+#pragma omp parallel for
 	for(long i=0;i<w*h;i++)
 	{
 		(*buf)[4*i]   = bb[3*i+2];

@@ -613,13 +613,16 @@ public:
 	/// Return value of expression for given x,y,z,u,v,w variables
 	inline dual Eval(dual x, dual y, dual z, dual u, dual v, dual w)
 	{
-		mdual var[26];
+		mdual var[MGL_VS];
 		var['x'-'a']=x;	var['y'-'a']=y;	var['z'-'a']=z;
 		var['u'-'a']=u;	var['v'-'a']=v;	var['w'-'a']=w;
 		return mgl_cexpr_eval_v(ex,var);	}
 	/// Return value of expression for given variables
-	inline dual Eval(dual var[26])
+	inline dual Eval(dual var[MGL_VS])
 	{	return mgl_cexpr_eval_v(ex,reinterpret_cast<mdual*>(var));	}
+	/// Return value of expression for given variables
+	void CalcV(HADT res, HCDT vars[MGL_VS])
+	{	mgl_cexpr_eval_dat(ex, res, vars);	}
 };
 #endif
 //-----------------------------------------------------------------------------

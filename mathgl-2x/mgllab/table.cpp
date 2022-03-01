@@ -497,24 +497,25 @@ void imp_dat_cb(Fl_Widget*, void*v)
 void list_dat_cb(Fl_Widget*, void*v)
 {
 	TableWindow* e = (TableWindow*)v;
-	HMDT d = dynamic_cast<HMDT>(e->var);
 	HADT c = dynamic_cast<HADT>(e->var);
-	if(!d && !c)
-	{	fl_message(_("Incorrect type of base data"));	return;	}
+//	if(!d && !c)
+//	{	fl_message(_("Incorrect type of base data"));	return;	}
 	if(e->var->GetNz()>1)	fl_message(_("Only current slice will be inserted"));
 
 	std::string list = "list " + wcstombs(e->var->Name());
 	long k=e->get_slice(), nx=e->var->GetNx(), ny=e->var->GetNy();
-	for(long j=0;j<ny;j++)
+	if(c)	for(long j=0;j<ny;j++)
 	{
 		for(long i=0;i<nx;i++)
-		{
-			if(d)	list += '\t'+mgl_str_num(d->a[i+nx*(j+k*ny)]);
-			if(c)	list += '\t'+mgl_str_num(c->a[i+nx*(j+k*ny)]);
-		}
+			list += '\t'+mgl_str_num(c->a[i+nx*(j+k*ny)]);
 		if(j<ny-1)	list += "\t|";
 	}
-	textbuf->insert(0,list.c_str());
+	else	for(long j=0;j<ny;j++)
+	{
+		for(long i=0;i<nx;i++)
+			list += '\t'+mgl_str_num(e->var->vthr(i+nx*(j+k*ny)));
+		if(j<ny-1)	list += "\t|";
+	}	textbuf->insert(0,list.c_str());
 }
 //-----------------------------------------------------------------------------
 void modify_cb(Fl_Widget*, void*v)

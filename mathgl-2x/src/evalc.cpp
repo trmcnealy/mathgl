@@ -29,6 +29,7 @@ enum{
 EQ_NUM=0,	// a variable substitution
 EQ_RND,		// random number
 EQ_A,		// numeric constant
+EQ_S,		// subdata for given variable
 // normal functions of 2 arguments
 EQ_LT,		// comparison x<y			!!! MUST BE FIRST 2-PLACE FUNCTION
 EQ_GT,		// comparison x>y
@@ -323,6 +324,122 @@ dual mglFormulaC::CalcIn(const dual *a1) const
 	return NAN;
 }
 //-----------------------------------------------------------------------------
+void mglFormulaC::CalcV(HADT res, HCDT var[MGL_VS]) const
+{
+	long nn = res->GetNN();
+	if(dat)
+	{
+		HCDT X = var['x'-'a'], Y = var['y'-'a'], Z = var['z'-'a'];
+		long nx = X?X->GetNN():0, ny = Y?Y->GetNN():0, nz = Z?Z->GetNN():0;
+		if(nx==nn && ny==nn && nz==nn)
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,X->vthr(i),Y->vthr(i),Z->vthr(i));
+		else if(nx==nn && ny==nn)
+		{
+			double a = Z?Z->v(0):0;
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,X->vthr(i),Y->vthr(i),a);
+		}
+		else if(nx==nn && nz==nn)
+		{
+			double a = Y?Y->v(0):0;
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,X->vthr(i),a,Z->vthr(i));
+		}
+		else if(nz==nn && ny==nn)
+		{
+			double a = X?X->v(0):0;
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,a,Y->vthr(i),Z->vthr(i));
+		}
+		else if(nx==nn)
+		{
+			double a = Y?Y->v(0):0, b = Z?Z->v(0):0;
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,X->vthr(i),a,b);
+		}
+		else if(ny==nn)
+		{
+			double a = X?X->v(0):0, b = Z?Z->v(0):0;
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,a,Y->vthr(i),b);
+		}
+		else if(nz==nn)
+		{
+			double a = X?X->v(0):0, b = Y?Y->v(0):0;
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,a,b,Z->vthr(i));
+		}
+		else
+		{
+			double a = X?X->v(0):0, b = Y?Y->v(0):0, c = Z?Z->v(0):0;
+			double v = mgl_data_spline(dat,a,b,c);
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = v;
+		}
+		return;
+	}
+	if(Kod<EQ_LT)
+	{
+		int k = int(Res.real());
+		if(Kod==EQ_NUM)
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = Res;
+		else if(Kod==EQ_RND)	
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_rnd();
+		else if(Kod==EQ_A)	res->Set(var[k]);
+		else if(Kod==EQ_S)
+		{
+			Left->CalcV(res,var);
+			HCDT a = var[k];
+			const mglDataC *c = dynamic_cast<const mglDataC *>(a);
+			long na = a->GetNN();
+			if(c)
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)
+			{
+				long kk = long(res->a[i].real()+0.5);
+				if(kk>=0 && kk<na)	res->a[i] = c->a[kk];
+				else	res->a[i] = 0.;
+			}
+			else
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)
+			{
+				long kk = long(res->a[i].real()+0.5);
+				if(kk>=0 && kk<na)	res->a[i] = a->vthr(kk);
+				else	res->a[i] = NAN;
+			}
+		}
+		return;
+	}
+	Left->CalcV(res,var);
+	if(Kod<EQ_SIN)
+	{
+		if(Right->Kod==EQ_NUM)
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], Right->Res);
+		else if(Right->Kod==EQ_RND)
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], mgl_rnd());
+		else
+		{
+			mglDataC tmp(res);
+			Right->CalcV(&tmp, var);
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], tmp.a[i]);
+		}
+	}
+	else if(Kod<EQ_LAST)
+#pragma omp parallel for
+		for(long i=0;i<nn;i++)
+			res->a[i] = f1[Kod-EQ_SIN](res->a[i]);
+	else
+#pragma omp parallel for
+		for(long i=0;i<nn;i++)	res->a[i] = NAN;
+}
+//-----------------------------------------------------------------------------
 dual MGL_LOCAL_CONST mgl_ipowc_c(dual x,int n)
 {
 	dual t;
@@ -354,4 +471,13 @@ cmdual MGL_EXPORT mgl_cexpr_eval_(uintptr_t *ex, mdual *x, mdual *y, mdual *z)
 {	return mgl_cexpr_eval((HAEX) ex, *x,*y,*z);		}
 cmdual MGL_EXPORT mgl_cexpr_eval_v(HAEX ex, mdual *var)
 {	return mdual(ex->Calc(reinterpret_cast<dual*>(var)));	}
+//-----------------------------------------------------------------------------
+void MGL_EXPORT mgl_cexpr_eval_dat(HAEX ex, HADT res, HCDT vars[MGL_VS])
+{	ex->CalcV(res,vars);	}
+void MGL_EXPORT mgl_cexpr_eval_dat_(uintptr_t *ex, uintptr_t *res, uintptr_t vars[MGL_VS])
+{
+	HCDT vs[MGL_VS];
+	for(int i=0;i<MGL_VS;i++)	vs[i] = (HCDT)(vars[i]);
+	mgl_cexpr_eval_dat((HAEX) *ex, (HADT) *res, vs);
+}
 //-----------------------------------------------------------------------------

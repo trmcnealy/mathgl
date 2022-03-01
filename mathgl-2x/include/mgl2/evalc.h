@@ -23,8 +23,8 @@
 #include "mgl2/eval.h"
 class mglDataC;
 //-----------------------------------------------------------------------------
-/// Class for evaluating formula specified by the string
-class MGL_EXPORT mglFormulaC					// ������ ��� ����� � ���������� ������
+/// Class for evaluating complex-valued formula specified by the string
+class MGL_EXPORT mglFormulaC
 {
 public:
 	/// Evaluates the formula for 'x','r'=\a x, 'y','n'=\a y, 'z','t'=\a z, 'u'=\a u
@@ -33,6 +33,8 @@ public:
 	dual Calc(dual x,dual y,dual z,dual u,dual v,dual w) const MGL_FUNC_PURE;
 	/// Evaluates the formula for variables var
 	dual Calc(const dual var[MGL_VS]) const MGL_FUNC_PURE;
+	/// Evaluates the formula for variables var
+	void CalcV(HADT res, HCDT var[MGL_VS]) const;
 	/// Return error code
 	inline int GetError() const	{	return Error;	}
 	/// Parse the formula str and create formula-tree

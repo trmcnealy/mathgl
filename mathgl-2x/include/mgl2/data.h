@@ -708,14 +708,15 @@ public:
 	/// Return value of expression differentiation over variable dir for given x,y,z variables
 	inline double Diff(char dir, double x, double y=0, double z=0)
 	{	return mgl_expr_diff(ex,dir, x,y,z);	}
-#ifndef SWIG
 	/// Return value of expression for given variables
-	inline double Eval(mreal var[26])
+	inline double Eval(mreal var[MGL_VS])
 	{	return mgl_expr_eval_v(ex,var);	}
 	/// Return value of expression differentiation over variable dir for given variables
-	inline double Diff(char dir, mreal var[26])
+	inline double Diff(char dir, mreal var[MGL_VS])
 	{	return mgl_expr_diff_v(ex,dir, var);	}
-#endif
+	/// Return value of expression for given variables
+	void CalcV(HMDT res, HCDT vars[MGL_VS])
+	{	mgl_expr_eval_dat(ex, res, vars);	}
 };
 //-----------------------------------------------------------------------------
 /// Class which present equidistantly distributed data
