@@ -717,6 +717,9 @@ public:
 	/// Return value of expression for given variables
 	void CalcV(HMDT res, HCDT vars[MGL_VS])
 	{	mgl_expr_eval_dat(ex, res, vars);	}
+	/// Return value of expression for given variables (OpenMP-based -- for large data arrays)
+	void CalcVomp(HMDT res, HCDT vars[MGL_VS])
+	{	mgl_expr_eval_omp(ex, res, vars);	}
 };
 //-----------------------------------------------------------------------------
 /// Class which present equidistantly distributed data

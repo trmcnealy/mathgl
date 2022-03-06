@@ -35,6 +35,8 @@ public:
 	dual Calc(const dual var[MGL_VS]) const MGL_FUNC_PURE;
 	/// Evaluates the formula for variables var
 	void CalcV(HADT res, HCDT var[MGL_VS]) const;
+	/// Evaluates the formula for variables var (OpenMP-based)
+	void CalcVomp(HADT res, HCDT var[MGL_VS]) const;
 	/// Return error code
 	inline int GetError() const	{	return Error;	}
 	/// Parse the formula str and create formula-tree

@@ -623,6 +623,9 @@ public:
 	/// Return value of expression for given variables
 	void CalcV(HADT res, HCDT vars[MGL_VS])
 	{	mgl_cexpr_eval_dat(ex, res, vars);	}
+	/// Return value of expression for given variables (OpenMP-based -- for large data arrays)
+	void CalcVomp(HADT res, HCDT vars[MGL_VS])
+	{	mgl_cexpr_eval_omp(ex, res, vars);	}
 };
 #endif
 //-----------------------------------------------------------------------------

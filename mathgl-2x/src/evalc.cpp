@@ -174,34 +174,39 @@ mglFormulaC::mglFormulaC(const char *string):Res(0)
 		mgl_strncpy(name,str,128);	name[127]=name[n]=0;
 		memmove(str,str+n+1,len-n);
 		len=strlen(str);		str[--len]=0;
-		if(!strcmp(name,"sin")) Kod=EQ_SIN;
-		else if(!strcmp(name,"cos")) Kod=EQ_COS;
-		else if(!strcmp(name,"tg")) Kod=EQ_TAN;
-		else if(!strcmp(name,"tan")) Kod=EQ_TAN;
-		else if(!strcmp(name,"asin")) Kod=EQ_ASIN;
-		else if(!strcmp(name,"acos")) Kod=EQ_ACOS;
-		else if(!strcmp(name,"atan")) Kod=EQ_ATAN;
-		else if(!strcmp(name,"sinh")) Kod=EQ_SINH;
-		else if(!strcmp(name,"cosh")) Kod=EQ_COSH;
-		else if(!strcmp(name,"tanh")) Kod=EQ_TANH;
-		else if(!strcmp(name,"sh")) Kod=EQ_SINH;
-		else if(!strcmp(name,"ch")) Kod=EQ_COSH;
-		else if(!strcmp(name,"th")) Kod=EQ_TANH;
-		else if(!strcmp(name,"sqrt")) Kod=EQ_SQRT;
-		else if(!strcmp(name,"log")) Kod=EQ_LOG;
-		else if(!strcmp(name,"pow")) Kod=EQ_POW;
-		else if(!strcmp(name,"exp")) Kod=EQ_EXP;
-		else if(!strcmp(name,"lg")) Kod=EQ_LG;
-		else if(!strcmp(name,"ln")) Kod=EQ_LN;
-		else if(!strcmp(name,"abs")) Kod=EQ_ABS;
-		else if(!strcmp(name,"arg")) Kod=EQ_ARG;
-		else if(!strcmp(name,"conj")) Kod=EQ_CONJ;
-		else if(!strcmp(name,"real")) Kod=EQ_REAL;
-		else if(!strcmp(name,"imag")) Kod=EQ_IMAG;
-		else if(!strcmp(name,"norm")) Kod=EQ_NORM;
-		else if(!strcmp(name,"cmplx")) Kod=EQ_CMPLX;
-		else if(!strcmp(name,"hypot")) Kod=EQ_HYPOT;
-		else {	delete []str;	return;	}	// unknown function
+		if(strlen(name)==1)
+		{	Kod=EQ_S;	Res = name[0]-'a';	}
+		else
+		{
+			if(!strcmp(name,"sin")) Kod=EQ_SIN;
+			else if(!strcmp(name,"cos")) Kod=EQ_COS;
+			else if(!strcmp(name,"tg")) Kod=EQ_TAN;
+			else if(!strcmp(name,"tan")) Kod=EQ_TAN;
+			else if(!strcmp(name,"asin")) Kod=EQ_ASIN;
+			else if(!strcmp(name,"acos")) Kod=EQ_ACOS;
+			else if(!strcmp(name,"atan")) Kod=EQ_ATAN;
+			else if(!strcmp(name,"sinh")) Kod=EQ_SINH;
+			else if(!strcmp(name,"cosh")) Kod=EQ_COSH;
+			else if(!strcmp(name,"tanh")) Kod=EQ_TANH;
+			else if(!strcmp(name,"sh")) Kod=EQ_SINH;
+			else if(!strcmp(name,"ch")) Kod=EQ_COSH;
+			else if(!strcmp(name,"th")) Kod=EQ_TANH;
+			else if(!strcmp(name,"sqrt")) Kod=EQ_SQRT;
+			else if(!strcmp(name,"log")) Kod=EQ_LOG;
+			else if(!strcmp(name,"pow")) Kod=EQ_POW;
+			else if(!strcmp(name,"exp")) Kod=EQ_EXP;
+			else if(!strcmp(name,"lg")) Kod=EQ_LG;
+			else if(!strcmp(name,"ln")) Kod=EQ_LN;
+			else if(!strcmp(name,"abs")) Kod=EQ_ABS;
+			else if(!strcmp(name,"arg")) Kod=EQ_ARG;
+			else if(!strcmp(name,"conj")) Kod=EQ_CONJ;
+			else if(!strcmp(name,"real")) Kod=EQ_REAL;
+			else if(!strcmp(name,"imag")) Kod=EQ_IMAG;
+			else if(!strcmp(name,"norm")) Kod=EQ_NORM;
+			else if(!strcmp(name,"cmplx")) Kod=EQ_CMPLX;
+			else if(!strcmp(name,"hypot")) Kod=EQ_HYPOT;
+			else {	delete []str;	return;	}	// unknown function
+		}
 		n=mglFindInText(str,",");
 		if(n>=0)
 		{
@@ -326,7 +331,123 @@ dual mglFormulaC::CalcIn(const dual *a1) const
 //-----------------------------------------------------------------------------
 void mglFormulaC::CalcV(HADT res, HCDT var[MGL_VS]) const
 {
-	long nn = res->GetNN();
+	const long nn = res->GetNN();
+	if(dat)
+	{
+		HCDT X = var['x'-'a'], Y = var['y'-'a'], Z = var['z'-'a'];
+		long nx = X?X->GetNN():0, ny = Y?Y->GetNN():0, nz = Z?Z->GetNN():0;
+		if(nx==nn && ny==nn && nz==nn)
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,X->vthr(i),Y->vthr(i),Z->vthr(i));
+		else if(nx==nn && ny==nn)
+		{
+			double a = Z?Z->v(0):0;
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,X->vthr(i),Y->vthr(i),a);
+		}
+		else if(nx==nn && nz==nn)
+		{
+			double a = Y?Y->v(0):0;
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,X->vthr(i),a,Z->vthr(i));
+		}
+		else if(nz==nn && ny==nn)
+		{
+			double a = X?X->v(0):0;
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,a,Y->vthr(i),Z->vthr(i));
+		}
+		else if(nx==nn)
+		{
+			double a = Y?Y->v(0):0, b = Z?Z->v(0):0;
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,X->vthr(i),a,b);
+		}
+		else if(ny==nn)
+		{
+			double a = X?X->v(0):0, b = Z?Z->v(0):0;
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,a,Y->vthr(i),b);
+		}
+		else if(nz==nn)
+		{
+			double a = X?X->v(0):0, b = Y?Y->v(0):0;
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_datac_spline(dat,a,b,Z->vthr(i));
+		}
+		else
+		{
+			double a = X?X->v(0):0, b = Y?Y->v(0):0, c = Z?Z->v(0):0;
+			double v = mgl_data_spline(dat,a,b,c);
+			for(long i=0;i<nn;i++)	res->a[i] = v;
+		}
+		return;
+	}
+	if(Kod<EQ_LT)
+	{
+		int k = int(Res.real()+0.5);
+		if(Kod==EQ_NUM)
+			for(long i=0;i<nn;i++)	res->a[i] = Res;
+		else if(Kod==EQ_RND)	
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_rnd();
+		else if(Kod==EQ_A)
+		{
+			HCDT a = var[k];
+			const mglDataC *c = dynamic_cast<const mglDataC *>(a);
+			if(a)
+			{
+				if(a->GetNN() < nn)
+				{
+					const dual val = c?c->a[0]:a->v(0);
+					for(long i=0;i<nn;i++)	res->a[i] = val;
+				}
+				else
+				{
+					if(c)	for(long i=0;i<nn;i++)	res->a[i] = c->a[i];
+					else	for(long i=0;i<nn;i++)	res->a[i] = a->vthr(i);
+				}
+			}
+		}
+		else if(Kod==EQ_S)
+		{
+			Left->CalcV(res,var);
+			HCDT a = var[k];
+			const mglDataC *c = dynamic_cast<const mglDataC *>(a);
+			const long na = a->GetNN();
+			if(c)
+				for(long i=0;i<nn;i++)
+				{
+					const long kk = long(res->a[i].real()+0.5);
+					if(kk>=0 && kk<na)	res->a[i] = c->a[kk];
+					else	res->a[i] = 0.;
+				}
+			else if(a)
+				for(long i=0;i<nn;i++)
+				{
+					const long kk = long(res->a[i].real()+0.5);
+					if(kk>=0 && kk<na)	res->a[i] = a->vthr(kk);
+					else	res->a[i] = NAN;
+				}
+		}
+		return;
+	}
+	Left->CalcV(res,var);
+	if(Kod<EQ_SIN)
+	{
+		if(Right->Kod==EQ_NUM)
+			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], Right->Res);
+		else if(Right->Kod==EQ_RND)
+			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], mgl_rnd());
+		else
+		{
+			mglDataC tmp(res);
+			Right->CalcV(&tmp, var);
+			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], tmp.a[i]);
+		}
+	}
+	else if(Kod<EQ_LAST)
+		for(long i=0;i<nn;i++)
+			res->a[i] = f1[Kod-EQ_SIN](res->a[i]);
+	else
+		for(long i=0;i<nn;i++)	res->a[i] = NAN;
+}
+//-----------------------------------------------------------------------------
+void mglFormulaC::CalcVomp(HADT res, HCDT var[MGL_VS]) const
+{
+	const long nn = res->GetNN();
 	if(dat)
 	{
 		HCDT X = var['x'-'a'], Y = var['y'-'a'], Z = var['z'-'a'];
@@ -381,40 +502,57 @@ void mglFormulaC::CalcV(HADT res, HCDT var[MGL_VS]) const
 	}
 	if(Kod<EQ_LT)
 	{
-		int k = int(Res.real());
+		int k = int(Res.real()+0.5);
 		if(Kod==EQ_NUM)
 #pragma omp parallel for
 			for(long i=0;i<nn;i++)	res->a[i] = Res;
 		else if(Kod==EQ_RND)	
 #pragma omp parallel for
 			for(long i=0;i<nn;i++)	res->a[i] = mgl_rnd();
-		else if(Kod==EQ_A)	res->Set(var[k]);
-		else if(Kod==EQ_S)
+		else if(Kod==EQ_A)
 		{
-			Left->CalcV(res,var);
 			HCDT a = var[k];
 			const mglDataC *c = dynamic_cast<const mglDataC *>(a);
-			long na = a->GetNN();
+			if(a)
+			{
+				if(a->GetNN() < nn)
+				{
+					const dual val = c?c->a[0]:a->v(0);
+					for(long i=0;i<nn;i++)	res->a[i] = val;
+				}
+				else
+				{
+					if(c)	for(long i=0;i<nn;i++)	res->a[i] = c->a[i];
+					else	for(long i=0;i<nn;i++)	res->a[i] = a->vthr(i);
+				}
+			}
+		}
+		else if(Kod==EQ_S)
+		{
+			Left->CalcVomp(res,var);
+			HCDT a = var[k];
+			const mglDataC *c = dynamic_cast<const mglDataC *>(a);
+			const long na = a?a->GetNN():0;
 			if(c)
 #pragma omp parallel for
-			for(long i=0;i<nn;i++)
-			{
-				long kk = long(res->a[i].real()+0.5);
-				if(kk>=0 && kk<na)	res->a[i] = c->a[kk];
-				else	res->a[i] = 0.;
-			}
-			else
+				for(long i=0;i<nn;i++)
+				{
+					const long kk = long(res->a[i].real()+0.5);
+					if(kk>=0 && kk<na)	res->a[i] = c->a[kk];
+					else	res->a[i] = 0.;
+				}
+			else if(a)
 #pragma omp parallel for
-			for(long i=0;i<nn;i++)
-			{
-				long kk = long(res->a[i].real()+0.5);
-				if(kk>=0 && kk<na)	res->a[i] = a->vthr(kk);
-				else	res->a[i] = NAN;
-			}
+				for(long i=0;i<nn;i++)
+				{
+					const long kk = long(res->a[i].real()+0.5);
+					if(kk>=0 && kk<na)	res->a[i] = a->vthr(kk);
+					else	res->a[i] = NAN;
+				}
 		}
 		return;
 	}
-	Left->CalcV(res,var);
+	Left->CalcVomp(res,var);
 	if(Kod<EQ_SIN)
 	{
 		if(Right->Kod==EQ_NUM)
@@ -426,7 +564,7 @@ void mglFormulaC::CalcV(HADT res, HCDT var[MGL_VS]) const
 		else
 		{
 			mglDataC tmp(res);
-			Right->CalcV(&tmp, var);
+			Right->CalcVomp(&tmp, var);
 #pragma omp parallel for
 			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], tmp.a[i]);
 		}
@@ -479,5 +617,14 @@ void MGL_EXPORT mgl_cexpr_eval_dat_(uintptr_t *ex, uintptr_t *res, uintptr_t var
 	HCDT vs[MGL_VS];
 	for(int i=0;i<MGL_VS;i++)	vs[i] = (HCDT)(vars[i]);
 	mgl_cexpr_eval_dat((HAEX) *ex, (HADT) *res, vs);
+}
+//-----------------------------------------------------------------------------
+void MGL_EXPORT mgl_cexpr_eval_omp(HAEX ex, HADT res, HCDT vars[MGL_VS])
+{	ex->CalcVomp(res,vars);	}
+void MGL_EXPORT mgl_cexpr_eval_omp_(uintptr_t *ex, uintptr_t *res, uintptr_t vars[MGL_VS])
+{
+	HCDT vs[MGL_VS];
+	for(int i=0;i<MGL_VS;i++)	vs[i] = (HCDT)(vars[i]);
+	mgl_cexpr_eval_omp((HAEX) *ex, (HADT) *res, vs);
 }
 //-----------------------------------------------------------------------------

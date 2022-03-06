@@ -300,8 +300,8 @@ mglFormula::mglFormula(const char *string)
 		mgl_strncpy(name,str,128);	name[127]=name[n]=0;
 		memmove(str,str+n+1,len-n);
 		len=strlen(str);		str[--len]=0;
-		if(len==1)
-		{	Kod=EQ_S;	Res = str[0]-'a';	}
+		if(strlen(name)==1)
+		{	Kod=EQ_S;	Res = name[0]-'a';	}
 		else
 		{
 			if(!strncmp(name,"jacobi_",7))
@@ -575,7 +575,324 @@ static const func_1 f1[EQ_SN-EQ_SIN] = {sin,cos,tan,asin,acos,atan,sinh,cosh,tan
 //-----------------------------------------------------------------------------
 void mglFormula::CalcV(HMDT res, HCDT var[MGL_VS]) const
 {
-	long nn = res->GetNN();
+	const long nn = res->GetNN();
+	if(dat)
+	{
+		HCDT X = var['x'-'a'], Y = var['y'-'a'], Z = var['z'-'a'];
+		long nx = X?X->GetNN():0, ny = Y?Y->GetNN():0, nz = Z?Z->GetNN():0;
+		if(nx==nn && ny==nn && nz==nn)
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,X->vthr(i),Y->vthr(i),Z->vthr(i));
+		else if(nx==nn && ny==nn)
+		{
+			double a = Z?Z->v(0):0;
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,X->vthr(i),Y->vthr(i),a);
+		}
+		else if(nx==nn && nz==nn)
+		{
+			double a = Y?Y->v(0):0;
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,X->vthr(i),a,Z->vthr(i));
+		}
+		else if(nz==nn && ny==nn)
+		{
+			double a = X?X->v(0):0;
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,a,Y->vthr(i),Z->vthr(i));
+		}
+		else if(nx==nn)
+		{
+			double a = Y?Y->v(0):0, b = Z?Z->v(0):0;
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,X->vthr(i),a,b);
+		}
+		else if(ny==nn)
+		{
+			double a = X?X->v(0):0, b = Z?Z->v(0):0;
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,a,Y->vthr(i),b);
+		}
+		else if(nz==nn)
+		{
+			double a = X?X->v(0):0, b = Y?Y->v(0):0;
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_data_spline(dat,a,b,Z->vthr(i));
+		}
+		else
+		{
+			double a = X?X->v(0):0, b = Y?Y->v(0):0, c = Z?Z->v(0):0;
+			double v = mgl_data_spline(dat,a,b,c);
+			for(long i=0;i<nn;i++)	res->a[i] = v;
+		}
+		return;
+	}
+	if(Kod<EQ_LT)
+	{
+		int k = int(Res+0.5);
+		if(Kod==EQ_NUM)
+			for(long i=0;i<nn;i++)	res->a[i] = Res;
+		else if(Kod==EQ_RND)	
+			for(long i=0;i<nn;i++)	res->a[i] = mgl_rnd();
+		else if(Kod==EQ_A)
+		{
+			HCDT a = var[k];
+			if(a)
+			{
+				if(a->GetNN() < nn)
+				{
+					const mreal val = a->v(0);
+					for(long i=0;i<nn;i++)	res->a[i] = val;
+				}
+				else	for(long i=0;i<nn;i++)	res->a[i] = a->vthr(i);
+			}
+		}
+		else if(Kod==EQ_S)
+		{
+			Left->CalcV(res,var);
+			HCDT a = var[k];
+			if(a)
+			{
+				const long na = a->GetNN();
+				for(long i=0;i<nn;i++)
+				{
+					const long kk = long(res->a[i]+0.5);
+					if(kk>=0 && kk<na)	res->a[i] = a->vthr(kk);
+					else	res->a[i] = 0.;
+				}
+			}
+		}
+		return;
+	}
+	Left->CalcV(res,var);
+	if(Kod<EQ_SIN)
+	{
+		if(Right->Kod==EQ_NUM)
+			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], Right->Res);
+		else if(Right->Kod==EQ_RND)
+			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], mgl_rnd());
+		else
+		{
+			mglData tmp(res);
+			Right->CalcV(&tmp, var);
+			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], tmp.a[i]);
+		}
+	}
+	else if(Kod<EQ_SN)
+		for(long i=0;i<nn;i++)
+			res->a[i] = f1[Kod-EQ_SIN](res->a[i]);
+	else if(Kod<=EQ_DC)
+	{
+#if MGL_HAVE_GSL
+		if(Right->Kod==EQ_NUM)
+		{
+			switch(Kod)
+			{
+			case EQ_SN:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = sn;
+				}
+				return;
+			case EQ_SC:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = sn/cn;
+				}
+				return;
+			case EQ_SD:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = sn/dn;
+				}
+				return;
+			case EQ_CN:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = cn;
+				}
+				return;
+			case EQ_CS:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = cn/sn;
+				}
+				return;
+			case EQ_CD:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = cn/dn;
+				}
+				return;
+			case EQ_DN:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = dn;
+				}
+				return;
+			case EQ_DS:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = dn/sn;
+				}
+				return;
+			case EQ_DC:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = dn/cn;
+				}
+				return;
+			case EQ_NS:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = 1./sn;
+				}
+				return;
+			case EQ_NC:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = 1./cn;
+				}
+				return;
+			case EQ_ND:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], Right->Res, &sn, &cn, &dn);
+					res->a[i] = 1./dn;
+				}
+				return;
+			}
+		}
+		else
+		{
+			mglData tmp(res);
+			Right->CalcV(&tmp, var);
+			switch(Kod)
+			{
+			case EQ_SN:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = sn;
+				}
+				return;
+			case EQ_SC:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = sn/cn;
+				}
+				return;
+			case EQ_SD:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = sn/dn;
+				}
+				return;
+			case EQ_CN:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = cn;
+				}
+				return;
+			case EQ_CS:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = cn/sn;
+				}
+				return;
+			case EQ_CD:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = cn/dn;
+				}
+				return;
+			case EQ_DN:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = dn;
+				}
+				return;
+			case EQ_DS:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = dn/sn;
+				}
+				return;
+			case EQ_DC:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = dn/cn;
+				}
+				return;
+			case EQ_NS:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = 1./sn;
+				}
+				return;
+			case EQ_NC:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = 1./cn;
+				}
+				return;
+			case EQ_ND:
+				for(long i=0;i<nn;i++)
+				{
+					double sn=0, cn=0, dn=0;
+					gsl_sf_elljac_e(res->a[i], tmp.a[i], &sn, &cn, &dn);
+					res->a[i] = 1./dn;
+				}
+				return;
+			}
+		}
+#endif
+	}
+	else
+#pragma omp parallel for
+		for(long i=0;i<nn;i++)	res->a[i] = NAN;
+}
+//-----------------------------------------------------------------------------
+void mglFormula::CalcVomp(HMDT res, HCDT var[MGL_VS]) const
+{
+	const long nn = res->GetNN();
 	if(dat)
 	{
 		HCDT X = var['x'-'a'], Y = var['y'-'a'], Z = var['z'-'a'];
@@ -630,7 +947,7 @@ void mglFormula::CalcV(HMDT res, HCDT var[MGL_VS]) const
 	}
 	if(Kod<EQ_LT)
 	{
-		int k = int(Res);
+		int k = int(Res+0.5);
 		if(Kod==EQ_NUM)
 #pragma omp parallel for
 			for(long i=0;i<nn;i++)	res->a[i] = Res;
@@ -640,20 +957,23 @@ void mglFormula::CalcV(HMDT res, HCDT var[MGL_VS]) const
 		else if(Kod==EQ_A)	res->Set(var[k]);
 		else if(Kod==EQ_S)
 		{
-			Left->CalcV(res,var);
+			Left->CalcVomp(res,var);
 			HCDT a = var[k];
-			long na = a->GetNN();
-#pragma omp parallel for
-			for(long i=0;i<nn;i++)
+			if(a)
 			{
-				long kk = long(res->a[i]+0.5);
-				if(kk>=0 && kk<na)	res->a[i] = a->vthr(kk);
-				else	res->a[i] = 0.;
+				const long na = a->GetNN();
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)
+				{
+					const long kk = long(res->a[i]+0.5);
+					if(kk>=0 && kk<na)	res->a[i] = a->vthr(kk);
+					else	res->a[i] = 0.;
+				}
 			}
 		}
 		return;
 	}
-	Left->CalcV(res,var);
+	Left->CalcVomp(res,var);
 	if(Kod<EQ_SIN)
 	{
 		if(Right->Kod==EQ_NUM)
@@ -665,7 +985,7 @@ void mglFormula::CalcV(HMDT res, HCDT var[MGL_VS]) const
 		else
 		{
 			mglData tmp(res);
-			Right->CalcV(&tmp, var);
+			Right->CalcVomp(&tmp, var);
 #pragma omp parallel for
 			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], tmp.a[i]);
 		}
@@ -794,7 +1114,7 @@ void mglFormula::CalcV(HMDT res, HCDT var[MGL_VS]) const
 		else
 		{
 			mglData tmp(res);
-			Right->CalcV(&tmp, var);
+			Right->CalcVomp(&tmp, var);
 			switch(Kod)
 			{
 			case EQ_SN:
@@ -1148,5 +1468,14 @@ void MGL_EXPORT mgl_expr_eval_dat_(uintptr_t *ex, uintptr_t *res, uintptr_t vars
 	HCDT vs[MGL_VS];
 	for(int i=0;i<MGL_VS;i++)	vs[i] = (HCDT)(vars[i]);
 	mgl_expr_eval_dat((HMEX) *ex, (HMDT) *res, vs);
+}
+//-----------------------------------------------------------------------------
+void MGL_EXPORT mgl_expr_eval_omp(HMEX ex, HMDT res, HCDT vars[MGL_VS])
+{	ex->CalcVomp(res,vars);	}
+void MGL_EXPORT mgl_expr_eval_omp_(uintptr_t *ex, uintptr_t *res, uintptr_t vars[MGL_VS])
+{
+	HCDT vs[MGL_VS];
+	for(int i=0;i<MGL_VS;i++)	vs[i] = (HCDT)(vars[i]);
+	mgl_expr_eval_omp((HMEX) *ex, (HMDT) *res, vs);
 }
 //-----------------------------------------------------------------------------

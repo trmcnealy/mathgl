@@ -197,6 +197,9 @@ double MGL_EXPORT_PURE mgl_expr_diff_v(HMEX ex, char dir, mreal *vars);
 /// Return value of expression for given variables
 void MGL_EXPORT mgl_expr_eval_dat(HMEX ex, HMDT res, HCDT vars[MGL_VS]);
 void MGL_EXPORT mgl_expr_eval_dat_(uintptr_t *ex, uintptr_t *res, uintptr_t vars[MGL_VS]);
+/// Return value of expression for given variables (OpenMP-based -- for large data arrays)
+void MGL_EXPORT mgl_expr_eval_omp(HMEX ex, HMDT res, HCDT vars[MGL_VS]);
+void MGL_EXPORT mgl_expr_eval_omp_(uintptr_t *ex, uintptr_t *res, uintptr_t vars[MGL_VS]);
 //-----------------------------------------------------------------------------
 /// Create HAEX object for expression evaluating
 HAEX MGL_EXPORT mgl_create_cexpr(const char *expr);
@@ -212,6 +215,9 @@ cmdual MGL_EXPORT mgl_cexpr_eval_v(HAEX ex, mdual *vars);
 /// Return value of expression for given variables
 void MGL_EXPORT mgl_cexpr_eval_dat(HAEX ex, HADT res, HCDT vars[MGL_VS]);
 void MGL_EXPORT mgl_cexpr_eval_dat_(uintptr_t *ex, uintptr_t *res, uintptr_t vars[MGL_VS]);
+/// Return value of expression for given variables (OpenMP-based -- for large data arrays)
+void MGL_EXPORT mgl_cexpr_eval_omp(HAEX ex, HADT res, HCDT vars[MGL_VS]);
+void MGL_EXPORT mgl_cexpr_eval_omp_(uintptr_t *ex, uintptr_t *res, uintptr_t vars[MGL_VS]);
 //-----------------------------------------------------------------------------
 /// Callback function for asking user a question. Result shouldn't exceed 1024.
 extern MGL_EXPORT void (*mgl_ask_func)(const wchar_t *quest, wchar_t *res);
