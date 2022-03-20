@@ -258,47 +258,47 @@ dual mglFormulaC::Calc(const dual var[MGL_VS]) const
 	return mgl_isfin(b) ? b : NAN;
 }
 //-----------------------------------------------------------------------------
-dual MGL_LOCAL_CONST ceqc(dual a,dual b)	{return a==b?1:0;}
-dual MGL_LOCAL_CONST cltc(dual a,dual b)	{return real(a-b)<0?1:0;}
-dual MGL_LOCAL_CONST cgtc(dual a,dual b)	{return real(a-b)>0?1:0;}
-dual MGL_LOCAL_CONST addc(dual a,dual b)	{return a+b;}
-dual MGL_LOCAL_CONST subc(dual a,dual b)	{return a-b;}
-dual MGL_LOCAL_CONST mulc(dual a,dual b)	{return a*b;}
-dual MGL_LOCAL_CONST divc(dual a,dual b)	{return a/b;}
-dual MGL_LOCAL_CONST ipwc(dual a,dual b)	{return mgl_ipowc(a,int(b.real()));}
-dual MGL_LOCAL_CONST powc(dual a,dual b)	{return exp(b*log(a));	}
-dual MGL_LOCAL_CONST llgc(dual a,dual b)	{return log(a)/log(b);	}
-dual MGL_LOCAL_CONST cmplxc(dual a,dual b)	{return a+dual(0,1)*b;	}
-dual MGL_LOCAL_CONST expi(dual a)	{	return exp(dual(0,1)*a);	}
-dual MGL_LOCAL_CONST expi(double a)	{	return dual(cos(a),sin(a));	}
+dual MGL_LOCAL_CONST ceqc(const dual &a,const dual &b)	{return a==b?1:0;}
+dual MGL_LOCAL_CONST cltc(const dual &a,const dual &b)	{return real(a-b)<0?1:0;}
+dual MGL_LOCAL_CONST cgtc(const dual &a,const dual &b)	{return real(a-b)>0?1:0;}
+dual MGL_LOCAL_CONST addc(const dual &a,const dual &b)	{return a+b;}
+dual MGL_LOCAL_CONST subc(const dual &a,const dual &b)	{return a-b;}
+dual MGL_LOCAL_CONST mulc(const dual &a,const dual &b)	{return a*b;}
+dual MGL_LOCAL_CONST divc(const dual &a,const dual &b)	{return a/b;}
+dual MGL_LOCAL_CONST ipwc(const dual &a,const dual &b)	{return mgl_ipowc(a,int(b.real()));}
+dual MGL_LOCAL_CONST powc(const dual &a,const dual &b)	{return exp(b*log(a));	}
+dual MGL_LOCAL_CONST llgc(const dual &a,const dual &b)	{return log(a)/log(b);	}
+dual MGL_LOCAL_CONST cmplxc(const dual &a,const dual &b)	{return a+dual(0,1)*b;	}
+dual MGL_LOCAL_CONST expi(const dual &a)	{	return exp(dual(0,1)*a);	}
+dual MGL_LOCAL_CONST expi(const double &a)	{	return dual(cos(a),sin(a));	}
 //-----------------------------------------------------------------------------
-dual MGL_NO_EXPORT ic = dual(0,1);
-dual MGL_LOCAL_CONST hypotc(dual x, dual y)	{	return sqrt(x*x+y*y);	}
-dual MGL_LOCAL_CONST asinhc(dual x)	{	return log(x+sqrt(x*x+mreal(1)));	}
-dual MGL_LOCAL_CONST acoshc(dual x)	{	return log(x+sqrt(x*x-mreal(1)));	}
-dual MGL_LOCAL_CONST atanhc(dual x)	{	return log((mreal(1)+x)/(mreal(1)-x))/mreal(2);	}
-dual MGL_LOCAL_CONST conjc(dual x)	{	return dual(real(x),-imag(x));	}
-dual MGL_LOCAL_CONST sinc(dual x)	{	return sin(x);	}
-dual MGL_LOCAL_CONST cosc(dual x)	{	return cos(x);	}
-dual MGL_LOCAL_CONST tanc(dual x)	{	return tan(x);	}
-dual MGL_LOCAL_CONST sinhc(dual x)	{	return sinh(x);	}
-dual MGL_LOCAL_CONST coshc(dual x)	{	return cosh(x);	}
-dual MGL_LOCAL_CONST tanhc(dual x)	{	return tanh(x);	}
-dual MGL_LOCAL_CONST asinc(dual x)	{	return log(ic*x+sqrt(mreal(1)-x*x))/ic;	}
-dual MGL_LOCAL_CONST acosc(dual x)	{	return log(x+sqrt(x*x-mreal(1)))/ic;	}
-dual MGL_LOCAL_CONST atanc(dual x)	{	return log((ic-x)/(ic+x))/(mreal(2)*ic);	}
-dual MGL_LOCAL_CONST expc(dual x)	{	return exp(x);	}
-dual MGL_LOCAL_CONST sqrtc(dual x)	{	return sqrt(x);	}
-dual MGL_LOCAL_CONST logc(dual x)	{	return log(x);	}
-dual MGL_LOCAL_CONST absc(dual x)	{	return abs(x);	}
-dual MGL_LOCAL_CONST argc(dual x)	{	return arg(x);	}
-dual MGL_LOCAL_CONST lgc(dual x)	{	return log10(x);}
-dual MGL_LOCAL_CONST realc(dual x)	{	return real(x);	}
-dual MGL_LOCAL_CONST imagc(dual x)	{	return imag(x);	}
-dual MGL_LOCAL_CONST normc(dual x)	{	return norm(x);	}
+const dual MGL_NO_EXPORT ic = dual(0,1);
+dual MGL_LOCAL_CONST hypotc(const dual &x, const dual &y)	{	return sqrt(x*x+y*y);	}
+dual MGL_LOCAL_CONST asinhc(const dual &x)	{	return log(x+sqrt(x*x+mreal(1)));	}
+dual MGL_LOCAL_CONST acoshc(const dual &x)	{	return log(x+sqrt(x*x-mreal(1)));	}
+dual MGL_LOCAL_CONST atanhc(const dual &x)	{	return log((mreal(1)+x)/(mreal(1)-x))/mreal(2);	}
+dual MGL_LOCAL_CONST conjc(const dual &x)	{	return dual(real(x),-imag(x));	}
+dual MGL_LOCAL_CONST sinc(const dual &x)	{	return sin(x);	}
+dual MGL_LOCAL_CONST cosc(const dual &x)	{	return cos(x);	}
+dual MGL_LOCAL_CONST tanc(const dual &x)	{	return tan(x);	}
+dual MGL_LOCAL_CONST sinhc(const dual &x)	{	return sinh(x);	}
+dual MGL_LOCAL_CONST coshc(const dual &x)	{	return cosh(x);	}
+dual MGL_LOCAL_CONST tanhc(const dual &x)	{	return tanh(x);	}
+dual MGL_LOCAL_CONST asinc(const dual &x)	{	return log(ic*x+sqrt(mreal(1)-x*x))/ic;	}
+dual MGL_LOCAL_CONST acosc(const dual &x)	{	return log(x+sqrt(x*x-mreal(1)))/ic;	}
+dual MGL_LOCAL_CONST atanc(const dual &x)	{	return log((ic-x)/(ic+x))/(mreal(2)*ic);	}
+dual MGL_LOCAL_CONST expc(const dual &x)	{	return exp(x);	}
+dual MGL_LOCAL_CONST sqrtc(const dual &x)	{	return sqrt(x);	}
+dual MGL_LOCAL_CONST logc(const dual &x)	{	return log(x);	}
+dual MGL_LOCAL_CONST absc(const dual &x)	{	return abs(x);	}
+dual MGL_LOCAL_CONST argc(const dual &x)	{	return arg(x);	}
+dual MGL_LOCAL_CONST lgc(const dual &x)	{	return log10(x);}
+dual MGL_LOCAL_CONST realc(const dual &x)	{	return real(x);	}
+dual MGL_LOCAL_CONST imagc(const dual &x)	{	return imag(x);	}
+dual MGL_LOCAL_CONST normc(const dual &x)	{	return norm(x);	}
 //-----------------------------------------------------------------------------
-typedef dual (*func_1)(dual);
-typedef dual (*func_2)(dual, dual);
+typedef dual (*func_1)(const dual&);
+typedef dual (*func_2)(const dual&, const dual&);
 static const func_2 f2[EQ_SIN-EQ_LT] = {cltc,cgtc,ceqc,addc,subc,mulc,divc,ipwc,powc,llgc,cmplxc,hypotc};
 static const func_1 f1[EQ_LAST-EQ_SIN] = {sinc,cosc,tanc,asinc,acosc,atanc,sinhc,coshc,tanhc,
 					asinhc,acoshc,atanhc,sqrtc,expc,expi,logc,lgc,absc,argc,conjc,realc,imagc,normc};
@@ -427,20 +427,71 @@ void mglFormulaC::CalcV(HADT res, HCDT var[MGL_VS]) const
 	Left->CalcV(res,var);
 	if(Kod<EQ_SIN)
 	{
-		if(Right->Kod==EQ_NUM)
-			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], Right->Res);
-		else if(Right->Kod==EQ_RND)
-			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], mgl_rnd());
+		const func_2 ff=f2[Kod-EQ_LT];
+		const dual &v = Right->Res;
+		if(Right->Kod==EQ_NUM)	switch(Kod)
+		{
+		case EQ_ADD:
+			for(long i=0;i<nn;i++)	res->a[i] += v;
+			break;
+		case EQ_SUB:
+			for(long i=0;i<nn;i++)	res->a[i] -= v;
+			break;
+		case EQ_MUL:
+			for(long i=0;i<nn;i++)	res->a[i] *= v;
+			break;
+		case EQ_DIV:
+			for(long i=0;i<nn;i++)	res->a[i] /= v;
+			break;
+		default:
+			for(long i=0;i<nn;i++)	res->a[i] = ff(res->a[i], v);
+		}
+		else if(Right->Kod==EQ_RND)	switch(Kod)
+		{
+		case EQ_ADD:
+			for(long i=0;i<nn;i++)	res->a[i] += mgl_rnd();
+			break;
+		case EQ_SUB:
+			for(long i=0;i<nn;i++)	res->a[i] -= mgl_rnd();
+			break;
+		case EQ_MUL:
+			for(long i=0;i<nn;i++)	res->a[i] *= mgl_rnd();
+			break;
+		case EQ_DIV:
+			for(long i=0;i<nn;i++)	res->a[i] /= mgl_rnd();
+			break;
+		default:
+			for(long i=0;i<nn;i++)	res->a[i] = ff(res->a[i], mgl_rnd());
+		}
 		else
 		{
-			mglDataC tmp(res);
-			Right->CalcV(&tmp, var);
-			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], tmp.a[i]);
+			mglDataC tmp(res->nx,res->ny,res->nz);
+			Right->CalcVomp(&tmp, var);
+			switch(Kod)
+			{
+			case EQ_ADD:
+				for(long i=0;i<nn;i++)	res->a[i] += tmp.a[i];
+				break;
+			case EQ_SUB:
+				for(long i=0;i<nn;i++)	res->a[i] -= tmp.a[i];
+				break;
+			case EQ_MUL:
+				for(long i=0;i<nn;i++)	res->a[i] *= tmp.a[i];
+				break;
+			case EQ_DIV:
+				for(long i=0;i<nn;i++)	res->a[i] /= tmp.a[i];
+				break;
+			default:
+				for(long i=0;i<nn;i++)	res->a[i] = ff(res->a[i], tmp.a[i]);
+			}
 		}
 	}
 	else if(Kod<EQ_LAST)
+	{
+		const func_1 ff=f1[Kod-EQ_SIN];
 		for(long i=0;i<nn;i++)
-			res->a[i] = f1[Kod-EQ_SIN](res->a[i]);
+			res->a[i] = ff(res->a[i]);
+	}
 	else
 		for(long i=0;i<nn;i++)	res->a[i] = NAN;
 }
@@ -555,24 +606,87 @@ void mglFormulaC::CalcVomp(HADT res, HCDT var[MGL_VS]) const
 	Left->CalcVomp(res,var);
 	if(Kod<EQ_SIN)
 	{
-		if(Right->Kod==EQ_NUM)
+		const func_2 ff=f2[Kod-EQ_LT];
+		const dual &v = Right->Res;
+		if(Right->Kod==EQ_NUM)	switch(Kod)
+		{
+		case EQ_ADD:
 #pragma omp parallel for
-			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], Right->Res);
-		else if(Right->Kod==EQ_RND)
+			for(long i=0;i<nn;i++)	res->a[i] += v;
+			break;
+		case EQ_SUB:
 #pragma omp parallel for
-			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], mgl_rnd());
+			for(long i=0;i<nn;i++)	res->a[i] -= v;
+			break;
+		case EQ_MUL:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] *= v;
+			break;
+		case EQ_DIV:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] /= v;
+			break;
+		default:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = ff(res->a[i], v);
+		}
+		else if(Right->Kod==EQ_RND)	switch(Kod)
+		{
+		case EQ_ADD:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] += mgl_rnd();
+			break;
+		case EQ_SUB:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] -= mgl_rnd();
+			break;
+		case EQ_MUL:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] *= mgl_rnd();
+			break;
+		case EQ_DIV:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] /= mgl_rnd();
+			break;
+		default:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = ff(res->a[i], mgl_rnd());
+		}
 		else
 		{
-			mglDataC tmp(res);
+			mglDataC tmp(res->nx,res->ny,res->nz);
 			Right->CalcVomp(&tmp, var);
+			switch(Kod)
+			{
+			case EQ_ADD:
 #pragma omp parallel for
-			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], tmp.a[i]);
+				for(long i=0;i<nn;i++)	res->a[i] += tmp.a[i];
+				break;
+			case EQ_SUB:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)	res->a[i] -= tmp.a[i];
+				break;
+			case EQ_MUL:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)	res->a[i] *= tmp.a[i];
+				break;
+			case EQ_DIV:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)	res->a[i] /= tmp.a[i];
+				break;
+			default:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)	res->a[i] = ff(res->a[i], tmp.a[i]);
+			}
 		}
 	}
 	else if(Kod<EQ_LAST)
+	{
+		const func_1 ff=f1[Kod-EQ_SIN];
 #pragma omp parallel for
 		for(long i=0;i<nn;i++)
-			res->a[i] = f1[Kod-EQ_SIN](res->a[i]);
+			res->a[i] = ff(res->a[i]);
+	}
 	else
 #pragma omp parallel for
 		for(long i=0;i<nn;i++)	res->a[i] = NAN;

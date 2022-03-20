@@ -52,6 +52,9 @@ void MGL_EXPORT mgl_set_num_thr(int n)
 	mglNumThr = n>0 ? n : get_nprocs_conf();
 #endif
 }
+#elif MGL_HAVE_OMP
+#include <omp.h>
+void MGL_EXPORT mgl_set_num_thr(int n)	{	mglNumThr = 1;	if(n>0)	omp_set_num_threads(n);	}
 #else
 void MGL_EXPORT mgl_set_num_thr(int)	{	mglNumThr = 1;	}
 #endif

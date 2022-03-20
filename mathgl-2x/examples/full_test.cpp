@@ -76,33 +76,32 @@ void mgls_prepare3v(mglData *ex, mglData *ey, mglData *ez);
 void save(mglGraph *gr,const char *name,const char *suf);
 void test(mglGraph *gr)
 {
-	const long nn=401;
+	const long nn=10001;
 	mglData j(nn);		j.Fill(0,nn-1);	j.Name("j");
-	mglData u(nn), r1(nn), r2, r3(nn);
+	mglDataC u(nn), r1(nn), r2, r3(nn);
 	u.Modify("exp(-6*x*x)");	u.Name("u");
 	HCDT var[MGL_VS];	memset(var,0,MGL_VS*sizeof(HCDT));
 	var['j'-'a'] = &j;	var['u'-'a']=&u;
-	const long num = 100000;
+	const long num = 100;
 	std::vector<mglDataA*> vars;
 	vars.push_back(&j);	vars.push_back(&u);
 	
-	const char *eq = "(u(j-1)+u(j+1)+2*(u(j))^2*u(j))/4";
-	mglExpr ex(eq);
-	time_t st, en1, en2, en3, en4;	time(&st);
+	const char *eq = "1i*(u(j-1)+u(j+1)+2*norm(u(j))*u(j))/4";
+	mglExprC ex(eq);
+	time_t st, en1, en2, en3;	time(&st);
 	for(long i=0;i<num;i++)		ex.CalcV(&r1,var);
 	time(&en1);	printf("time is %g sec\n",difftime(en1,st));
+// 	return;
 	for(long i=0;i<num;i++)		r2 = mglData(true, mglFormulaCalc(eq, vars));
 	time(&en2);	printf("time is %g sec\n",difftime(en2,en1));
 	for(long i=0;i<num;i++)	
 	{
 #pragma omp parallel for
 		for(long ii=0;ii<nn;ii++)
-			r3.a[ii] = (u.a[ii-1]+u.a[ii+1]+2*(u.a[ii]*u.a[ii])*u.a[ii])/4.;
+			r3.a[ii] = (u.a[ii-1]+u.a[ii+1]+2.*norm(u.a[ii])*u.a[ii])*dual(0,0.25);
 //			r3.a[ii] = dual(0,1)*(u.a[long(j.a[ii]+0.5)-1]+u.a[long(j.a[ii]+0.5)+1]+2*norm(u.a[long(j.a[ii]+0.5)])*u.a[long(j.a[ii]+0.5)])/4.;
 	}
 	time(&en3);	printf("time is %g sec\n",difftime(en3,en2));
-	for(long i=0;i<num;i++)		ex.CalcVomp(&r1,var);
-	time(&en4);	printf("time is %g sec\n",difftime(en4,en3));
 	return;
 	
 	mglParse par;

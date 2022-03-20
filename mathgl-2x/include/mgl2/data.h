@@ -690,6 +690,7 @@ inline mreal mglGSpline(const mglDataA &coef, mreal dx, mreal *d1=0, mreal *d2=0
 /** NOTE: you need to delete returned data array!*/
 HMDT MGL_EXPORT mglFormulaCalc(const char *str, const std::vector<mglDataA*> &vars);
 //-----------------------------------------------------------------------------
+extern long mgl_omp_thr;	// threshold for use OpenMP in CalcV(). NOTE: default value is 10000 for 8...12 cores CPU
 /// Wrapper class for expression evaluating
 class MGL_EXPORT mglExpr
 {
@@ -715,11 +716,9 @@ public:
 	inline double Diff(char dir, mreal var[MGL_VS])
 	{	return mgl_expr_diff_v(ex,dir, var);	}
 	/// Return value of expression for given variables
-	void CalcV(HMDT res, HCDT vars[MGL_VS])
-	{	mgl_expr_eval_dat(ex, res, vars);	}
-	/// Return value of expression for given variables (OpenMP-based -- for large data arrays)
-	void CalcVomp(HMDT res, HCDT vars[MGL_VS])
-	{	mgl_expr_eval_omp(ex, res, vars);	}
+	inline void CalcV(HMDT res, HCDT vars[MGL_VS])
+	{	if(res->GetNN()<mgl_omp_thr)	mgl_expr_eval_dat(ex, res, vars);
+		else	mgl_expr_eval_omp(ex, res, vars);	}
 };
 //-----------------------------------------------------------------------------
 /// Class which present equidistantly distributed data

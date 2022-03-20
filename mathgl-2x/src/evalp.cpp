@@ -181,7 +181,7 @@ HMDT MGL_NO_EXPORT mglApplyOperDiv(const std::wstring &a1, const std::wstring &a
 	mgl_delete_data(d);	return r;
 }
 //-----------------------------------------------------------------------------
-HADT MGL_NO_EXPORT mglApplyFuncC(const std::wstring &str, mglParser *arg, const std::vector<mglDataA*> &head, dual (*func)(dual), const std::vector<std::wstring> &fns)
+HADT MGL_NO_EXPORT mglApplyFuncC(const std::wstring &str, mglParser *arg, const std::vector<mglDataA*> &head, dual (*func)(const dual&), const std::vector<std::wstring> &fns)
 {
 	HADT d = mglFormulaCalcAC(str, arg, head,fns);
 	long n = d->GetNN();	dual *dd=d->a;
@@ -190,7 +190,7 @@ HADT MGL_NO_EXPORT mglApplyFuncC(const std::wstring &str, mglParser *arg, const 
 	return d;
 }
 //-----------------------------------------------------------------------------
-HADT MGL_NO_EXPORT mglApplyOperC(const std::wstring &a1, const std::wstring &a2, mglParser *arg, const std::vector<mglDataA*> &head, dual (*func)(dual,dual), const std::vector<std::wstring> &fns)
+HADT MGL_NO_EXPORT mglApplyOperC(const std::wstring &a1, const std::wstring &a2, mglParser *arg, const std::vector<mglDataA*> &head, dual (*func)(const dual&,const dual&), const std::vector<std::wstring> &fns)
 {
 	HADT a = mglFormulaCalcAC(a1,arg,head,fns), b = mglFormulaCalcAC(a2,arg,head,fns), r,d;
 	long na = a->GetNN(), nb = b->GetNN(), nn;
@@ -1098,39 +1098,39 @@ HMDT MGL_NO_EXPORT mglFormulaCalcA(std::wstring str, mglParser *arg, const std::
 	HMDT res = new mglData;	res->a[0]=NAN;	return res;
 }
 //-----------------------------------------------------------------------------
-dual MGL_LOCAL_CONST ceqc(dual a,dual b);	//{return a==b?1:0;}
-dual MGL_LOCAL_CONST cltc(dual a,dual b);	//{return real(a-b)<0?1:0;}
-dual MGL_LOCAL_CONST cgtc(dual a,dual b);	//{return real(a-b)>0?1:0;}
-dual MGL_LOCAL_CONST ipwc(dual a,dual b);	//{return mgl_ipowc(a,int(b.real()));}
-dual MGL_LOCAL_CONST powc(dual a,dual b);	//{return exp(b*log(a));	}
-dual MGL_LOCAL_CONST llgc(dual a,dual b);	//{return log(a)/log(b);	}
-dual MGL_LOCAL_CONST cmplxc(dual a,dual b);	//{return a+dual(0,1)*b;	}
-dual MGL_LOCAL_CONST expi(dual a);	//{	return exp(dual(0,1)*a);	}
+dual MGL_LOCAL_CONST ceqc(const dual & a,const dual & b);	//{return a==b?1:0;}
+dual MGL_LOCAL_CONST cltc(const dual & a,const dual & b);	//{return real(a-b)<0?1:0;}
+dual MGL_LOCAL_CONST cgtc(const dual & a,const dual & b);	//{return real(a-b)>0?1:0;}
+dual MGL_LOCAL_CONST ipwc(const dual & a,const dual & b);	//{return mgl_ipowc(a,int(b.real()));}
+dual MGL_LOCAL_CONST powc(const dual & a,const dual & b);	//{return exp(b*log(a));	}
+dual MGL_LOCAL_CONST llgc(const dual & a,const dual & b);	//{return log(a)/log(b);	}
+dual MGL_LOCAL_CONST cmplxc(const dual & a,const dual & b);	//{return a+dual(0,1)*b;	}
+dual MGL_LOCAL_CONST expi(const dual & a);	//{	return exp(dual(0,1)*a);	}
 dual MGL_LOCAL_CONST expi(double a);	//{	return dual(cos(a),sin(a));	}
 //-----------------------------------------------------------------------------
-dual MGL_LOCAL_CONST hypotc(dual x, dual y);	//{	return sqrt(x*x+y*y);	}
-dual MGL_LOCAL_CONST asinhc(dual x);	//{	return log(x+sqrt(x*x+mreal(1)));	}
-dual MGL_LOCAL_CONST acoshc(dual x);	//{	return log(x+sqrt(x*x-mreal(1)));	}
-dual MGL_LOCAL_CONST atanhc(dual x);	//{	return log((mreal(1)+x)/(mreal(1)-x))/mreal(2);	}
-dual MGL_LOCAL_CONST conjc(dual x);	//{	return dual(real(x),-imag(x));	}
-dual MGL_LOCAL_CONST sinc(dual x);	//{	return sin(x);	}
-dual MGL_LOCAL_CONST cosc(dual x);	//{	return cos(x);	}
-dual MGL_LOCAL_CONST tanc(dual x);	//{	return tan(x);	}
-dual MGL_LOCAL_CONST sinhc(dual x);	//{	return sinh(x);	}
-dual MGL_LOCAL_CONST coshc(dual x);	//{	return cosh(x);	}
-dual MGL_LOCAL_CONST tanhc(dual x);	//{	return tanh(x);	}
-dual MGL_LOCAL_CONST asinc(dual x);	//{	return log(ic*x+sqrt(mreal(1)-x*x))/ic;	}
-dual MGL_LOCAL_CONST acosc(dual x);	//{	return log(x+sqrt(x*x-mreal(1)))/ic;	}
-dual MGL_LOCAL_CONST atanc(dual x);	//{	return log((ic-x)/(ic+x))/(mreal(2)*ic);	}
-dual MGL_LOCAL_CONST expc(dual x);	//{	return exp(x);	}
-dual MGL_LOCAL_CONST sqrtc(dual x);	//{	return sqrt(x);	}
-dual MGL_LOCAL_CONST logc(dual x);	//{	return log(x);	}
-dual MGL_LOCAL_CONST absc(dual x);	//{	return abs(x);	}
-dual MGL_LOCAL_CONST argc(dual x);	//{	return arg(x);	}
-dual MGL_LOCAL_CONST lgc(dual x);	//{	return log10(x);}
-dual MGL_LOCAL_CONST realc(dual x);	//{	return real(x);	}
-dual MGL_LOCAL_CONST imagc(dual x);	//{	return imag(x);	}
-dual MGL_LOCAL_CONST normc(dual x);	//{	return norm(x);	}
+dual MGL_LOCAL_CONST hypotc(const dual & x, const dual & y);	//{	return sqrt(x*x+y*y);	}
+dual MGL_LOCAL_CONST asinhc(const dual & x);	//{	return log(x+sqrt(x*x+mreal(1)));	}
+dual MGL_LOCAL_CONST acoshc(const dual & x);	//{	return log(x+sqrt(x*x-mreal(1)));	}
+dual MGL_LOCAL_CONST atanhc(const dual & x);	//{	return log((mreal(1)+x)/(mreal(1)-x))/mreal(2);	}
+dual MGL_LOCAL_CONST conjc(const dual & x);	//{	return dual(real(x),-imag(x));	}
+dual MGL_LOCAL_CONST sinc(const dual & x);	//{	return sin(x);	}
+dual MGL_LOCAL_CONST cosc(const dual & x);	//{	return cos(x);	}
+dual MGL_LOCAL_CONST tanc(const dual & x);	//{	return tan(x);	}
+dual MGL_LOCAL_CONST sinhc(const dual & x);	//{	return sinh(x);	}
+dual MGL_LOCAL_CONST coshc(const dual & x);	//{	return cosh(x);	}
+dual MGL_LOCAL_CONST tanhc(const dual & x);	//{	return tanh(x);	}
+dual MGL_LOCAL_CONST asinc(const dual & x);	//{	return log(ic*x+sqrt(mreal(1)-x*x))/ic;	}
+dual MGL_LOCAL_CONST acosc(const dual & x);	//{	return log(x+sqrt(x*x-mreal(1)))/ic;	}
+dual MGL_LOCAL_CONST atanc(const dual & x);	//{	return log((ic-x)/(ic+x))/(mreal(2)*ic);	}
+dual MGL_LOCAL_CONST expc(const dual & x);	//{	return exp(x);	}
+dual MGL_LOCAL_CONST sqrtc(const dual & x);	//{	return sqrt(x);	}
+dual MGL_LOCAL_CONST logc(const dual & x);	//{	return log(x);	}
+dual MGL_LOCAL_CONST absc(const dual & x);	//{	return abs(x);	}
+dual MGL_LOCAL_CONST argc(const dual & x);	//{	return arg(x);	}
+dual MGL_LOCAL_CONST lgc(const dual & x);	//{	return log10(x);}
+dual MGL_LOCAL_CONST realc(const dual & x);	//{	return real(x);	}
+dual MGL_LOCAL_CONST imagc(const dual & x);	//{	return imag(x);	}
+dual MGL_LOCAL_CONST normc(const dual & x);	//{	return norm(x);	}
 //-----------------------------------------------------------------------------
 /// Parse string and substitute the script argument
 // All numbers are presented as mglData(1). Do boundary checking.

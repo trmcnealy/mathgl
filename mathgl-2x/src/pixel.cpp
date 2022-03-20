@@ -20,9 +20,6 @@
 #include <algorithm>
 #include "mgl2/canvas.h"
 #include "mgl2/thread.h"
-#if MGL_HAVE_OMP
-#include <omp.h>
-#endif
 
 //-----------------------------------------------------------------------------
 void mglCanvas::pxl_combine(long id, long n, const void *)

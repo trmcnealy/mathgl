@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 #endif
 //-----------------------------------------------------------------------------
+long mgl_omp_thr = 1000;	// threshold for use OpenMP in CalcV(). NOTE: default value is 10000 for 8...12 cores CPU
 //	constants for expression parsing
 enum{
 EQ_NUM=0,	// a variable substitution
@@ -660,20 +661,71 @@ void mglFormula::CalcV(HMDT res, HCDT var[MGL_VS]) const
 	Left->CalcV(res,var);
 	if(Kod<EQ_SIN)
 	{
-		if(Right->Kod==EQ_NUM)
-			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], Right->Res);
-		else if(Right->Kod==EQ_RND)
-			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], mgl_rnd());
+		const func_2 ff=f2[Kod-EQ_LT];
+		const double v = Right->Res;
+		if(Right->Kod==EQ_NUM)	switch(Kod)
+		{
+		case EQ_ADD:
+			for(long i=0;i<nn;i++)	res->a[i] += v;
+			break;
+		case EQ_SUB:
+			for(long i=0;i<nn;i++)	res->a[i] -= v;
+			break;
+		case EQ_MUL:
+			for(long i=0;i<nn;i++)	res->a[i] *= v;
+			break;
+		case EQ_DIV:
+			for(long i=0;i<nn;i++)	res->a[i] /= v;
+			break;
+		default:
+			for(long i=0;i<nn;i++)	res->a[i] = ff(res->a[i], v);
+		}
+		else if(Right->Kod==EQ_RND)	switch(Kod)
+		{
+		case EQ_ADD:
+			for(long i=0;i<nn;i++)	res->a[i] += mgl_rnd();
+			break;
+		case EQ_SUB:
+			for(long i=0;i<nn;i++)	res->a[i] -= mgl_rnd();
+			break;
+		case EQ_MUL:
+			for(long i=0;i<nn;i++)	res->a[i] *= mgl_rnd();
+			break;
+		case EQ_DIV:
+			for(long i=0;i<nn;i++)	res->a[i] /= mgl_rnd();
+			break;
+		default:
+			for(long i=0;i<nn;i++)	res->a[i] = ff(res->a[i], mgl_rnd());
+		}
 		else
 		{
-			mglData tmp(res);
-			Right->CalcV(&tmp, var);
-			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], tmp.a[i]);
+			mglData tmp(res->nx,res->ny,res->nz);
+			Right->CalcVomp(&tmp, var);
+			switch(Kod)
+			{
+			case EQ_ADD:
+				for(long i=0;i<nn;i++)	res->a[i] += tmp.a[i];
+				break;
+			case EQ_SUB:
+				for(long i=0;i<nn;i++)	res->a[i] -= tmp.a[i];
+				break;
+			case EQ_MUL:
+				for(long i=0;i<nn;i++)	res->a[i] *= tmp.a[i];
+				break;
+			case EQ_DIV:
+				for(long i=0;i<nn;i++)	res->a[i] /= tmp.a[i];
+				break;
+			default:
+				for(long i=0;i<nn;i++)	res->a[i] = ff(res->a[i], tmp.a[i]);
+			}
 		}
 	}
 	else if(Kod<EQ_SN)
+	{
+		const func_1 ff=f1[Kod-EQ_SIN];
 		for(long i=0;i<nn;i++)
-			res->a[i] = f1[Kod-EQ_SIN](res->a[i]);
+			res->a[i] = ff(res->a[i]);
+	}
 	else if(Kod<=EQ_DC)
 	{
 #if MGL_HAVE_GSL
@@ -781,7 +833,7 @@ void mglFormula::CalcV(HMDT res, HCDT var[MGL_VS]) const
 		}
 		else
 		{
-			mglData tmp(res);
+			mglData tmp(res->nx,res->ny,res->nz);
 			Right->CalcV(&tmp, var);
 			switch(Kod)
 			{
@@ -976,24 +1028,87 @@ void mglFormula::CalcVomp(HMDT res, HCDT var[MGL_VS]) const
 	Left->CalcVomp(res,var);
 	if(Kod<EQ_SIN)
 	{
-		if(Right->Kod==EQ_NUM)
+		const func_2 ff=f2[Kod-EQ_LT];
+		const double v = Right->Res;
+		if(Right->Kod==EQ_NUM)	switch(Kod)
+		{
+		case EQ_ADD:
 #pragma omp parallel for
-			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], Right->Res);
-		else if(Right->Kod==EQ_RND)
+			for(long i=0;i<nn;i++)	res->a[i] += v;
+			break;
+		case EQ_SUB:
 #pragma omp parallel for
-			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], mgl_rnd());
+			for(long i=0;i<nn;i++)	res->a[i] -= v;
+			break;
+		case EQ_MUL:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] *= v;
+			break;
+		case EQ_DIV:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] /= v;
+			break;
+		default:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = ff(res->a[i], v);
+		}
+		else if(Right->Kod==EQ_RND)	switch(Kod)
+		{
+		case EQ_ADD:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] += mgl_rnd();
+			break;
+		case EQ_SUB:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] -= mgl_rnd();
+			break;
+		case EQ_MUL:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] *= mgl_rnd();
+			break;
+		case EQ_DIV:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] /= mgl_rnd();
+			break;
+		default:
+#pragma omp parallel for
+			for(long i=0;i<nn;i++)	res->a[i] = ff(res->a[i], mgl_rnd());
+		}
 		else
 		{
-			mglData tmp(res);
+			mglData tmp(res->nx,res->ny,res->nz);
 			Right->CalcVomp(&tmp, var);
+			switch(Kod)
+			{
+			case EQ_ADD:
 #pragma omp parallel for
-			for(long i=0;i<nn;i++)	res->a[i] = f2[Kod-EQ_LT](res->a[i], tmp.a[i]);
+				for(long i=0;i<nn;i++)	res->a[i] += tmp.a[i];
+				break;
+			case EQ_SUB:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)	res->a[i] -= tmp.a[i];
+				break;
+			case EQ_MUL:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)	res->a[i] *= tmp.a[i];
+				break;
+			case EQ_DIV:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)	res->a[i] /= tmp.a[i];
+				break;
+			default:
+#pragma omp parallel for
+				for(long i=0;i<nn;i++)	res->a[i] = ff(res->a[i], tmp.a[i]);
+			}
 		}
 	}
 	else if(Kod<EQ_SN)
+	{
+		const func_1 ff=f1[Kod-EQ_SIN];
 #pragma omp parallel for
 		for(long i=0;i<nn;i++)
-			res->a[i] = f1[Kod-EQ_SIN](res->a[i]);
+			res->a[i] = ff(res->a[i]);
+	}
 	else if(Kod<=EQ_DC)
 	{
 #if MGL_HAVE_GSL
@@ -1113,7 +1228,7 @@ void mglFormula::CalcVomp(HMDT res, HCDT var[MGL_VS]) const
 		}
 		else
 		{
-			mglData tmp(res);
+			mglData tmp(res->nx,res->ny,res->nz);
 			Right->CalcVomp(&tmp, var);
 			switch(Kod)
 			{
