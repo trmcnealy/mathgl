@@ -864,15 +864,14 @@ static void *mgl_qo2d_hprep(void *par)
 	for(long i=t->id;i<nx;i+=mglNumThr)
 	{
 		// x terms
-		mreal x1 = (2*i-nx+1)*f->dr, hh = 1 - ra->t1*x1;
-		hh = sqrt(sqrt(0.041+hh*hh*hh*hh));
-		mreal tt = (ra->pt + ra->d1*x1)/hh - ra->pt;
+		mreal x1 = (2*i-nx+1)*f->dr;
+		mreal tt = (ra->t1*ra->pt + ra->d1)*x1; // *(1+x1*ra->t1*x1);
 		dual tmp = f->ham(abs(f->a[i]), r[0]+ra->x1*x1, r[1]+ra->y1*x1, r[3]+ra->x0*tt, r[4]+ra->y0*tt, f->par);
-		f->hx[i] = tmp - f->h0/mreal(2);
+		f->hx[i] = (tmp - f->h0/mreal(2))/ra->ch;
 		// u-y terms
 		x1 = f->dk/2*(i<nx/2 ? i:i-nx);
 		tmp = f->ham(0, r[0], r[1], r[3]+ra->x1*x1, r[4]+ra->y1*x1, f->par);
-		f->hu[i] = tmp - f->h0/mreal(2);
+		f->hu[i] = (tmp - f->h0/mreal(2))/ra->ch;
 
 		if(imag(f->hx[i])>0)	f->hx[i] = f->hx[i].real();
 		if(imag(f->hu[i])>0)	f->hu[i] = f->hu[i].real();
@@ -1019,23 +1018,24 @@ static void *mgl_qo3d_hprep(void *par)
 	{
 		long i = ii%nx, j = ii/nx;
 		// x-y terms
-		mreal x1 = (2*i-nx+1)*f->dr, x2 = (2*j-nx+1)*f->dr, hh = 1-ra->t1*x1-ra->t2*x2;
-		hh = sqrt(sqrt(0.041+hh*hh*hh*hh));
-		mreal tt = (ra->pt + ra->d1*x1 + ra->d2*x2)/hh - ra->pt;
+		mreal x1 = (2*i-nx+1)*f->dr, x2 = (2*j-nx+1)*f->dr;
+		mreal tt = (ra->t1*ra->pt + ra->d1)*x1 + (ra->t2*ra->pt + ra->d2)*x2;
 		f->hxy[ii] = f->ham(abs(f->a[i]), r[0]+ra->x1*x1+ra->x2*x2, r[1]+ra->y1*x1+ra->y2*x2, r[2]+ra->z1*x1+ra->z2*x2, r[3]+ra->x0*tt, r[4]+ra->y0*tt, r[5]+ra->z0*tt, f->par);
+		f->hxy[ii] /= ra->ch;
 		// x-v terms
-		x1 = (2*i-nx+1)*f->dr;	x2 = f->dk/2*(j<nx/2 ? j:j-nx);	hh = 1-ra->t1*x1;
-		hh = sqrt(sqrt(0.041+hh*hh*hh*hh));
-		tt = (ra->pt + ra->d1*x1)/hh - ra->pt;
+		x1 = (2*i-nx+1)*f->dr;	x2 = f->dk/2*(j<nx/2 ? j:j-nx);
+		tt = (ra->t1*ra->pt + ra->d1)*x1;
 		f->hxv[ii] = f->ham(0, r[0]+ra->x1*x1, r[1]+ra->y1*x1, r[2]+ra->z1*x1, r[3]+ra->x0*tt+ra->x2*x2, r[4]+ra->y0*tt+ra->y2*x2, r[5]+ra->z0*tt+ra->z2*x2, f->par);
+		f->hxv[ii] /= ra->ch;
 		// u-y terms
-		x1 = f->dk/2*(i<nx/2 ? i:i-nx);	x2 = (2*j-nx+1)*f->dr;	hh = 1-ra->t2*x2;
-		hh = sqrt(sqrt(0.041+hh*hh*hh*hh));
-		tt = (ra->pt + ra->d2*x2)/hh - ra->pt;
+		x1 = f->dk/2*(i<nx/2 ? i:i-nx);	x2 = (2*j-nx+1)*f->dr;
+		tt = (ra->t2*ra->pt + ra->d2)*x2;
 		f->huy[ii] = f->ham(0, r[0]+ra->x2*x2, r[1]+ra->y2*x2, r[2]+ra->z2*x2, r[3]+ra->x1*x1+ra->x0*tt, r[4]+ra->y1*x1+ra->y0*tt, r[5]+ra->z1*x1+ra->z0*tt, f->par);
+		f->huy[ii] /= ra->ch;
 		// u-y terms
 		x1 = f->dk/2*(i<nx/2 ? i:i-nx);	x2 = f->dk/2*(j<nx/2 ? j:j-nx);
 		f->huv[ii] = f->ham(0, r[0], r[1], r[2], r[3]+ra->x1*x1+ra->x2*x2, r[4]+ra->y1*x1+ra->y2*x2, r[5]+ra->z1*x1+ra->z2*x2, f->par);
+		f->huv[ii] /= ra->ch;
 	}
 	return 0;
 }
