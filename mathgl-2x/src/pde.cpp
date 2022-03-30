@@ -280,14 +280,14 @@ void static mgl_pde_hprep(const mgl_pde_ham *f)
 	delete res;
 	if(ny>2)
 	{
-		x.Fill(f->xs);	p.Freq(f->dp,'x');
+		x.Fill(f->xs);	p.Freq(-f->dp,'x');
 		res = mglFormulaCalcC(f->eqs, list);
 #pragma omp parallel for
 		for(long i=0;i<nx*ny;i++)	f->huy[i] = res->a[i]*dd;
 		delete res;
 	}
-	x.Fill(f->xs);	p.Freq(f->dp,'x');
-	y.Fill(f->ys);	q.Freq(f->dq,'y');
+	x.Fill(f->xs);	p.Freq(-f->dp,'x');
+	y.Fill(f->ys);	q.Freq(-f->dq,'y');
 	res = mglFormulaCalcC(f->eqs, list);
 #pragma omp parallel for
 	for(long i=0;i<nx*ny;i++)	f->huv[i] = res->a[i]*dd;
