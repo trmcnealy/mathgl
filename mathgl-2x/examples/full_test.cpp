@@ -76,6 +76,14 @@ void mgls_prepare3v(mglData *ex, mglData *ey, mglData *ez);
 void save(mglGraph *gr,const char *name,const char *suf);
 void test(mglGraph *gr)
 {
+	mglData ray=mglRay("p^2+q^2+i*p*(p>0)",mglPoint(0,-1,0),mglPoint(0,0.5,0),0.01,2);
+	mglData re(128), im(128);
+	gr->Fill(re, "exp(-(200*x/15)^2*0.4^2/2)");
+	mglData bb=mglQO2d("p^2+q^2+i*p*(p>0)", re, im, ray, 0.4, -200);
+	mglData pb = bb.SubData(-1,-1,1).Hist(51,-1,1);
+	pb.Norm(0,1);	gr->Bars(pb,"2r");
+	return;
+	
 	const long nn=10001;
 	mglData j(nn);		j.Fill(0,nn-1);	j.Name("j");
 	mglDataC u(nn), r1(nn), r2, r3(nn);
@@ -104,7 +112,7 @@ void test(mglGraph *gr)
 	time(&en3);	printf("time is %g sec\n",difftime(en3,en2));
 	return;
 	
-	mglParse par;
+ 	mglParse par;
 	par.Execute(gr,"plot [0,-1,nan,0.1,0.5,1.1] 'o'");	//fplot 'x'");	//"box:fplot '2*sin(pi*x)' 'ko'");
 // 	par.Execute(gr,"colorbar;size -2;crange 0 1;value 90");
 // 	par.Execute(gr,"fplot 'x';legend 'рус':legend");

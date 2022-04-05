@@ -887,10 +887,11 @@ HADT MGL_EXPORT mgl_qo2d_func_c(mdual (*ham)(mreal u, mreal x, mreal y, mreal px
 	if(!ray)	return 0;
 	const long nx=ini_re->GetNx(), nt=ray->ny, n7=ray->nx;
 	if(nx<2 || ini_im->GetNx()!=nx || nt<2)	return 0;
-	mglDataC *res=new mglDataC(nx,nt,1);
+	mglDataC *res=new mglDataC(nx, nt, k0>0?1:2);
+	k0 = fabs(k0);
 
-	dual *a=new dual[2*nx], *hu=new dual[2*nx],  *hx=new dual[2*nx];
-	double *dmp=new double[2*nx];
+	dual *a=new dual[2*nx], *g=new dual[2*nx], *hu=new dual[2*nx],  *hx=new dual[2*nx];
+	double *dmp=new double[2*nx], *pd=new double[2*nx];	memset(pd,0,2*nx*sizeof(double));
 	mgl_ap *ra = new mgl_ap[nt];	mgl_init_ra(nt, n7, ray->a, ra);	// ray
 
 	mreal dr = r/(nx-1), dk = M_PI*(nx-1)/(k0*r*nx);
@@ -910,8 +911,14 @@ HADT MGL_EXPORT mgl_qo2d_func_c(mdual (*ham)(mreal u, mreal x, mreal y, mreal px
 	// start calculation
 	for(long k=0;k<nt;k++)
 	{
-		for(long i=0;i<nx;i++)	// "save"
-			res->a[i+k*nx]=a[i+nx/2]*mreal(sqrt(ra[0].ch/ra[k].ch));
+		if(res->nz>1)	// "save"
+			for(long i=0;i<nx;i++)
+			{
+				res->a[i+k*nx]=a[i+nx/2]*mreal(sqrt(ra[0].ch/ra[k].ch));
+				res->a[i+(k+nt)*nx] = pd[i+nx/2]*ra[0].ch/ra[k].ch;
+			}
+		else	for(long i=0;i<nx;i++)
+				res->a[i+k*nx]=a[i+nx/2]*mreal(sqrt(ra[0].ch/ra[k].ch));
 		if(xx && yy)	for(long i=0;i<nx;i++)	// prepare xx, yy
 		{
 			mreal x1 = (2*i-nx+1)*dr;
@@ -924,10 +931,14 @@ HADT MGL_EXPORT mgl_qo2d_func_c(mdual (*ham)(mreal u, mreal x, mreal y, mreal px
 		mglStartThread(mgl_qo2d_hprep,0,2*nx,0,0,0,0,&tmp);
 		// Step for field
 		dual dt = dual(0, -ra[k].dt*k0);
-		for(long i=0;i<2*nx;i++)	a[i] *= exp(hx[i]*dt);
+		for(long i=0;i<2*nx;i++)
+		{	pd[i] = norm(a[i])*imag(hx[i]);		a[i] *= exp(hx[i]*dt);	}
 		mgl_fft((double *)a, 1, 2*nx, wtx, wsx, false);
-		for(long i=0;i<2*nx;i++)	a[i] *= exp(hu[i]*dt);
+		for(long i=0;i<2*nx;i++)
+		{	g[i] = a[i]*imag(hu[i]);	a[i] *= exp(hu[i]*dt);	}
 		mgl_fft((double *)a, 1, 2*nx, wtx, wsx, true);
+		mgl_fft((double *)g, 1, 2*nx, wtx, wsx, true);
+		for(long i=0;i<2*nx;i++)	pd[i] += real(g[i]*conj(a[i]));
 
 /*		// Calculate B1			// TODO make more general scheme later!!!
 		hh = ra[k].pt*(1/sqrt(sqrt(1.041))-1);
@@ -953,13 +964,14 @@ HADT MGL_EXPORT mgl_qo2d_func_c(mdual (*ham)(mreal u, mreal x, mreal y, mreal px
 		for(i=0;i<2*nx;i++)	a[i] *= a1;*/
 	}
 	mgl_fft_free(wtx,&wsx,1);
-	delete []a;		delete []hu;	delete []hx;	delete []ra;	delete []dmp;
+	delete []a;	delete []g;	delete []pd;	delete []hu;	delete []hx;	delete []ra;	delete []dmp;
 	return res;
 }
 //-----------------------------------------------------------------------------
 HMDT MGL_EXPORT mgl_qo2d_func(mdual (*ham)(mreal u, mreal x, mreal y, mreal px, mreal py, void *par), void *par, HCDT ini_re, HCDT ini_im, HCDT ray_dat, mreal r, mreal k0, HMDT xx, HMDT yy)
 {
 	HADT res = mgl_qo2d_func_c(ham,par,ini_re,ini_im,ray_dat,r,k0,xx,yy);
+	if(!res)	return NULL;
 	HMDT out = mgl_datac_abs(res);	delete res;	return out;
 }
 //-----------------------------------------------------------------------------
@@ -981,6 +993,7 @@ HADT MGL_EXPORT mgl_qo2d_solve_c(const char *ham, HCDT ini_re, HCDT ini_im, HCDT
 HMDT MGL_EXPORT mgl_qo2d_solve(const char *ham, HCDT ini_re, HCDT ini_im, HCDT ray_dat, mreal r, mreal k0, HMDT xx, HMDT yy)
 {
 	HADT res = mgl_qo2d_solve_c(ham,ini_re,ini_im,ray_dat,r,k0,xx,yy);
+	if(!res)	return NULL;
 	HMDT out = mgl_datac_abs(res);	delete res;	return out;
 }
 //-----------------------------------------------------------------------------
@@ -1184,6 +1197,7 @@ HADT MGL_EXPORT mgl_qo3d_func_c(mdual (*ham)(mreal u, mreal x, mreal y, mreal z,
 HMDT MGL_EXPORT mgl_qo3d_func(mdual (*ham)(mreal u, mreal x, mreal y, mreal z, mreal px, mreal py, mreal pz, void *par), void *par, HCDT ini_re, HCDT ini_im, HCDT ray_dat, mreal r, mreal k0, HMDT xx, HMDT yy, HMDT zz)
 {
 	HADT res = mgl_qo3d_func_c(ham,par,ini_re,ini_im,ray_dat,r,k0,xx,yy,zz);
+	if(!res)	return NULL;
 	HMDT out = mgl_datac_abs(res);	delete res;	return out;
 }
 //-----------------------------------------------------------------------------
@@ -1205,6 +1219,7 @@ HADT MGL_EXPORT mgl_qo3d_solve_c(const char *ham, HCDT ini_re, HCDT ini_im, HCDT
 HMDT MGL_EXPORT mgl_qo3d_solve(const char *ham, HCDT ini_re, HCDT ini_im, HCDT ray_dat, mreal r, mreal k0, HMDT xx, HMDT yy, HMDT zz)
 {
 	HADT res = mgl_qo3d_solve_c(ham,ini_re,ini_im,ray_dat,r,k0,xx,yy,zz);
+	if(!res)	return NULL;
 	HMDT out = mgl_datac_abs(res);	delete res;	return out;
 }
 //-----------------------------------------------------------------------------
