@@ -288,7 +288,7 @@ extern MGL_EXPORT uint64_t mgl_mask_val[16];
 #define MGL_ENABLE_ALPHA 	0x00000020 	///< Flag that Alpha is used
 #define MGL_ENABLE_LIGHT 	0x00000040 	///< Flag of using lightning
 #define MGL_TICKS_ROTATE 	0x00000080 	///< Allow ticks rotation
-#define MGL_TICKS_SKIP		0x00000100 	///< Allow ticks rotation
+#define MGL_TICKS_SKIP		0x00000100 	///< Allow ticks skipping
 // flags for internal use only
 #define MGL_DISABLE_SCALE	0x00000200 	///< Temporary flag for disable scaling (used for axis)
 #define MGL_FINISHED 		0x00000400 	///< Flag that final picture (i.e. mglCanvas::G) is ready

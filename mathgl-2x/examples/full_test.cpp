@@ -76,6 +76,10 @@ void mgls_prepare3v(mglData *ex, mglData *ey, mglData *ez);
 void save(mglGraph *gr,const char *name,const char *suf);
 void test(mglGraph *gr)
 {
+	dual res = mgl_atoc("-i6.22018e-06",1);
+	printf("%g, %g\n",real(res), imag(res));
+	return;
+	
 	mglData ray=mglRay("p^2+q^2+i*p*(p>0)",mglPoint(0,-1,0),mglPoint(0,0.5,0),0.01,2);
 	mglData re(128), im(128);
 	gr->Fill(re, "exp(-(200*x/15)^2*0.4^2/2)");

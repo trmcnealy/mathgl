@@ -56,6 +56,7 @@ cmdual MGL_EXPORT mgl_atoc(const char *s, int adv)
 	while(s[ll]<=' ')	ll--;
 	if(adv && *s=='(')		sscanf(s,"(%lg,%lg)",&re,&im);
 	else if(*s=='i')		{	re=0;	im=atof(s+1);	}
+	else if(*s=='-' && s[1]=='i')		{	re=0;	im=-atof(s+2);	}
 	else if(adv && *s=='[')	sscanf(s,"[%lg,%lg]",&re,&im);
 	else if(adv && *s=='{')	sscanf(s,"{%lg,%lg}",&re,&im);
 	else if(s[ll]=='i')

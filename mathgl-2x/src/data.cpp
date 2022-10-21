@@ -1397,14 +1397,14 @@ mreal MGL_EXPORT mgl_data_momentum_val(HCDT dd, char dir, mreal *x, mreal *w, mr
 		for(long i=0;i<nx*ny*nz;i++)
 		{
 			mreal d = mreal(i%nx), v = dd->vthr(i);
-			i0+= v;	i1+= v*d;
+			if(mgl_isnum(v))	{	i0+= v;	i1+= v*d;	}
 		}
 		is = i1/i0;
 #pragma omp parallel for reduction(+:i2,i3,i4)
 		for(long i=0;i<nx*ny*nz;i++)
 		{
 			mreal d = mreal(i%nx)-is, t = d*d, v = dd->vthr(i);
-			i2+= v*t;	i3+= v*d*t;	i4+= v*t*t;
+			if(mgl_isnum(v))	{	i2+= v*t;	i3+= v*d*t;	i4+= v*t*t;	}
 		}
 		break;
 	case 'y':
@@ -1412,14 +1412,14 @@ mreal MGL_EXPORT mgl_data_momentum_val(HCDT dd, char dir, mreal *x, mreal *w, mr
 		for(long i=0;i<nx*ny*nz;i++)
 		{
 			mreal d = mreal((i/nx)%ny), v = dd->vthr(i);
-			i0+= v;	i1+= v*d;
+			if(mgl_isnum(v))	{	i0+= v;	i1+= v*d;	}
 		}
 		is = i1/i0;
 #pragma omp parallel for reduction(+:i2,i3,i4)
 		for(long i=0;i<nx*ny*nz;i++)
 		{
 			mreal d = mreal((i/nx)%ny)-is, t = d*d, v = dd->vthr(i);
-			i2+= v*t;	i3+= v*d*t;		i4+= v*t*t;
+			if(mgl_isnum(v))	{	i2+= v*t;	i3+= v*d*t;		i4+= v*t*t;	}
 		}
 		break;
 	case 'z':
@@ -1427,26 +1427,31 @@ mreal MGL_EXPORT mgl_data_momentum_val(HCDT dd, char dir, mreal *x, mreal *w, mr
 		for(long i=0;i<nx*ny*nz;i++)
 		{
 			mreal d = mreal(i/(nx*ny)), v = dd->vthr(i);
-			i0+= v;	i1+= v*d;
+			if(mgl_isnum(v))	{	i0+= v;	i1+= v*d;	}
 		}
 		is = i1/i0;
 #pragma omp parallel for reduction(+:i2,i3,i4)
 		for(long i=0;i<nx*ny*nz;i++)
 		{
 			mreal d = mreal(i/(nx*ny))-is, t = d*d, v = dd->vthr(i);
-			i2+= v*t;	i3+= v*d*t;	i4+= v*t*t;
+			if(mgl_isnum(v))	{	i2+= v*t;	i3+= v*d*t;	i4+= v*t*t;	}
 		}
 		break;
 	default:	// "self-dispersion"
 		i0 = nx*ny*nz;
 #pragma omp parallel for reduction(+:i1)
-		for(long i=0;i<nx*ny*nz;i++)	i1 += dd->vthr(i);
+		for(long i=0;i<nx*ny*nz;i++)
+		{
+			mreal v = dd->vthr(i);
+			if(mgl_isnum(v))	i1 += v;
+			else	i0--;
+		}
 		is = i1/i0;
 #pragma omp parallel for reduction(+:i2,i3,i4)
 		for(long i=0;i<nx*ny*nz;i++)
 		{
 			mreal v = dd->vthr(i)-is, t = v*v;
-			i2+= t;	i3+= v*t;	i4+= t*t;
+			if(mgl_isnum(v))	{	i2+= t;	i3+= v*t;	i4+= t*t;	}
 		}
 	}
 	if(i0==0)	return 0;
